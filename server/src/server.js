@@ -1,0 +1,72 @@
+// server.js
+const express = require("express");
+const cors = require("cors");
+const dotenv = require("dotenv");
+const sequelize = require("./database/index.js");
+const app = express();
+
+dotenv.config();
+const PORT = process.env.PORT || 4000;
+
+const corsOptions = {
+  origin: [process.env.FRONTEND_URL], // allowed origins
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true, // if you need cookies or auth headers
+};
+
+// Middleware to parse JSON
+app.use(express.json(corsOptions));
+app.use(cors());
+
+// API ROUTES
+const authRoutes = require("./routes/auth.routes.js");
+app.use("/api/auth", authRoutes);
+
+const userRoutes = require("./routes/user.routes.js");
+app.use("/api/users", userRoutes);
+
+const partsRoutes = require("./routes/parts.routes.js");
+app.use("/api/parts", partsRoutes);
+
+const stockItemRoutes = require("./routes/stockItem.routes.js");
+app.use("/api/stockItem", stockItemRoutes);
+
+// Test route
+app.get("/", (req, res) => {
+  res.send("Hello from Node backend 🚀");
+});
+
+// Sync database before starting server
+sequelize
+  .sync({
+    alter: true,
+    // alter: false,
+  })
+  .then(() => {
+    console.log("Database synced successfully");
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+  })
+  .catch((error) => {
+    console.error("Error syncing database:", error);
+  });
+
+// Start server
+async function startServer() {
+  try {
+    await sequelize.authenticate();
+    console.log("✅ Database connected successfully.");
+
+    await sequelize.sync(); // sync models
+    console.log("🧱 Models synchronized.");
+
+    app.listen(PORT, () => {
+      console.log(`🚀 Server running at http://localhost:${PORT}`);
+    });
+  } catch (error) {
+    console.error("❌ Failed to start server:", error.message);
+  }
+}
+
+startServer();
