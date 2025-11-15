@@ -34,7 +34,7 @@ export default function Home() {
 
   return (
     <div style={{ height: "100dvh" }}>
-      {user?.isAdmin ? <AdminHomePage user={user} /> : <UserHomePage />}
+      <AdminHomePage user={user!} />
     </div>
   );
 }

@@ -28,9 +28,6 @@ app.use("/api/users", userRoutes);
 const partsRoutes = require("./routes/parts.routes.js");
 app.use("/api/parts", partsRoutes);
 
-const stockItemRoutes = require("./routes/stockItem.routes.js");
-app.use("/api/stockItem", stockItemRoutes);
-
 // Test route
 app.get("/", (req, res) => {
   res.send("Hello from Node backend 🚀");
