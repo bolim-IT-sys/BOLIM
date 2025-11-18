@@ -21,6 +21,7 @@ import {
   getOutQuantity,
   getSafetyStock,
   getTotalByYear,
+  getTotalByYearExcludingCurrentMonth,
 } from "../../../helper/helper";
 
 interface Props {
@@ -47,6 +48,8 @@ export const ViewPartStocks = ({ part, setParts }: Props) => {
     inboundDate: new Date().toISOString().split("T")[0],
     outboundDate: new Date().toISOString().split("T")[0],
   });
+
+  const [month, setMonth] = useState<number>(currentMonth());
 
   const fetchTransactions = async () => {
     try {
@@ -97,7 +100,6 @@ export const ViewPartStocks = ({ part, setParts }: Props) => {
   ];
 
   const year = currentYear();
-  const month = currentMonth();
 
   return (
     <>
@@ -108,39 +110,44 @@ export const ViewPartStocks = ({ part, setParts }: Props) => {
         onClose={() => setModalShow(false)}
         title={
           <>
-            <h3>
-              {`${part.partNumber}`}:{" "}
-              <span
-                className={`${
-                  part.quantity <
-                  getSafetyStock(
-                    outbounds.map((o) => ({
-                      quantity: o.quantity,
-                      date: String(o.outboundDate),
-                    })),
-                    year,
-                    month
-                  )
-                    ? "bg-red-100 text-red-900"
-                    : "bg-emerald-100 text-emerald-800"
-                } rounded px-1`}
-              >
-                <b>{part.quantity} </b>
-                <i className="text-sm">
-                  {part.quantity <
-                  getSafetyStock(
-                    outbounds.map((o) => ({
-                      quantity: o.quantity,
-                      date: String(o.outboundDate),
-                    })),
-                    year,
-                    month
-                  ) ? (
-                    <>Warning: Low stock!</>
-                  ) : null}
-                </i>
-              </span>
-            </h3>
+            <div className="flex items-center gap-2">
+              <h3 className="">
+                {`${part.partNumber}`}:{" "}
+                <span
+                  className={`${
+                    part.quantity <
+                    getSafetyStock(
+                      outbounds.map((o) => ({
+                        quantity: o.quantity,
+                        date: String(o.outboundDate),
+                      })),
+                      year,
+                      month
+                    )
+                      ? "bg-red-100 text-red-900"
+                      : "bg-emerald-100 text-emerald-800"
+                  } rounded px-2`}
+                >
+                  <b>{part.quantity} </b>
+                  <i className="text-sm">
+                    {part.quantity <
+                    getSafetyStock(
+                      outbounds.map((o) => ({
+                        quantity: o.quantity,
+                        date: String(o.outboundDate),
+                      })),
+                      year,
+                      month
+                    ) ? (
+                      <>Warning: Low stock!</>
+                    ) : null}
+                  </i>
+                </span>
+              </h3>
+              <h4>
+                {months[month]} - {year}
+              </h4>
+            </div>
           </>
         }
         size="2xl"
@@ -173,7 +180,8 @@ export const ViewPartStocks = ({ part, setParts }: Props) => {
               {months.map((monthHead, index) => (
                 <th
                   key={index}
-                  className={`border ${month === index ? "border-emerald-700 bg-emerald-500 text-neutral-50" : "border-neutral-400"} px-3 py-2 text-center`}
+                  className={`border ${month === index ? "border-emerald-700 bg-emerald-500 text-neutral-50" : "border-neutral-400"} px-3 py-2 text-center cursor-pointer`}
+                  onClick={() => setMonth(index)}
                 >
                   <h5>{monthHead}</h5>
                 </th>
@@ -218,12 +226,13 @@ export const ViewPartStocks = ({ part, setParts }: Props) => {
                   <td className="border border-neutral-400 px-3 py-2">
                     <div className="flex justify-center items-center flex-col gap-1 text-green-600">
                       <p className="text-green-600">
-                        {getTotalByYear(
-                          inbounds.map((i) => ({
-                            quantity: i.quantity,
-                            date: String(i.inboundDate),
+                        {getTotalByYearExcludingCurrentMonth(
+                          inbounds.map((o) => ({
+                            quantity: o.quantity,
+                            date: String(o.inboundDate),
                           })),
-                          year
+                          year,
+                          month + 1
                         )}
                       </p>
                       <h6>
@@ -249,6 +258,7 @@ export const ViewPartStocks = ({ part, setParts }: Props) => {
                     >
                       <div className="flex justify-center items-center gap-1">
                         <p className="text-red-500">
+                          {/* OUTBOUND PERMONTH */}
                           {getOutQuantity(outbounds, month) > 0
                             ? `-${getOutQuantity(outbounds, month)}`
                             : 0}
@@ -259,23 +269,27 @@ export const ViewPartStocks = ({ part, setParts }: Props) => {
                   <td className="border border-neutral-400 px-3 py-2">
                     <div className="flex justify-center items-center flex-col text-red-500">
                       <p className="">
-                        {getTotalByYear(
-                          outbounds.map((o) => ({
-                            quantity: o.quantity,
-                            date: String(o.outboundDate),
-                          })),
-                          year
-                        )}
-                      </p>
-                      <h6>
-                        (AVERAGE MONTHLY USAGE:{" "}
-                        {getAverageOutboundPerMonth(
+                        {/* TOTAL OUTBOUNDS BASED ON CURRENT MONTH */}
+                        {getTotalByYearExcludingCurrentMonth(
                           outbounds.map((o) => ({
                             quantity: o.quantity,
                             date: String(o.outboundDate),
                           })),
                           year,
-                          month
+                          month + 1
+                        )}
+                      </p>
+                      <h6>
+                        (AVERAGE MONTHLY USAGE :{" "}
+                        {Math.round(
+                          getTotalByYearExcludingCurrentMonth(
+                            outbounds.map((o) => ({
+                              quantity: o.quantity,
+                              date: String(o.outboundDate),
+                            })),
+                            year,
+                            month
+                          ) / month
                         )}
                         )
                       </h6>

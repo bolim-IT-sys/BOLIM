@@ -25,7 +25,16 @@ export default function NavBar({ user, fetchAllUsers }: NavbarProps) {
         style={{ width: "100%" }}
       >
         <div className="flex justify-between items-center mx-3">
-          <h4 className="">BOLIM(SPARE PARTS)</h4>
+          <div className="flex justify-center items-center">
+            <div className="size-10 flex justify-center items-center">
+              <img
+                className="w-full"
+                src="../../public/logowithtext.png"
+                alt="navLogo"
+              />
+            </div>
+            <h4 className="">BOLIM(SPARE PARTS)</h4>
+          </div>
           <div>
             <Dropdown
               trigger={

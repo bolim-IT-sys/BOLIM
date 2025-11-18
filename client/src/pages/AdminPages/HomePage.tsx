@@ -11,8 +11,6 @@ import PrimaryButton from "../../components/button/PrimaryButton";
 import {
   fetchAllInbounds,
   fetchAllOutbounds,
-  type Inbound,
-  type Outbound,
 } from "../../services/InboundOutbound.Service";
 import { currentMonth, currentYear, getSafetyStock } from "../../helper/helper";
 
@@ -22,8 +20,6 @@ interface HomeProps {
 
 export default function HomePage({ user }: HomeProps) {
   const [parts, setParts] = useState<Part[]>([]);
-  const [allInbounds, setAllInbounds] = useState<Inbound[]>([]);
-  const [allOutbounds, setAllOutbounds] = useState<Outbound[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isDeleting, setIsDeleting] = useState<number>(0);
 
@@ -46,22 +42,6 @@ export default function HomePage({ user }: HomeProps) {
         fetchAllOutbounds(),
         fetchParts(),
       ]);
-
-      if (inResult.success) {
-        setAllInbounds(inResult.data!);
-        // console.log("Fetched Inbounds: ", result.data);
-      } else {
-        console.log("No inbound.");
-        setAllInbounds([]);
-      }
-
-      if (outResult.success) {
-        setAllOutbounds(outResult.data!);
-        // console.log("Fetched Outbounds: ", outResult.data);
-      } else {
-        console.log("No outbound.");
-        setAllOutbounds([]);
-      }
 
       if (result.success) {
         const inbounds = inResult.success ? inResult.data : [];

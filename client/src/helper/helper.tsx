@@ -52,10 +52,10 @@ export const getTotalByYear = (
 // FOR COMPUTING OUTBOUND AVERAGE WITHOUT CURRENT MONTH
 export const getTotalByYearExcludingCurrentMonth = (
   data: { quantity: number; date: string }[],
-  year: number
+  year: number,
+  month: number
 ) => {
-  const now = new Date();
-  const currentMonth = now.getMonth(); // 0-based (Jan = 0)
+  const currentMonth = month; // 0-based (Jan = 0)
 
   return data
     .filter((item) => {
@@ -74,7 +74,7 @@ export const getAverageOutboundPerMonth = (
   month: number
 ) => {
   return currentMonth() > 0
-    ? Math.round(getTotalByYearExcludingCurrentMonth(data, year) / month)
+    ? Math.round(getTotalByYearExcludingCurrentMonth(data, year, month) / month)
     : 0;
 };
 

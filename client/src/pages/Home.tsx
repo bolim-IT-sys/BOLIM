@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import AdminHomePage from "./AdminPages/HomePage";
-import UserHomePage from "./UserPages/HomePage";
 import { fetchUserData, type User } from "../services/userService";
 import { useNavigate } from "react-router-dom";
 
