@@ -20,22 +20,40 @@ export const formatDate = (date: string | Date) => {
 };
 
 // COMPUTING INBOUND PER MONTH
-export const getInQuantity = (data: Inbound[], monthAbb: string): number => {
+export const getInQuantity = (
+  data: Inbound[],
+  monthAbb: string,
+  year: number
+): number => {
   return data.reduce((sum, item) => {
+    const date = new Date(item.inboundDate);
     const month = new Date(item.inboundDate)
       .toLocaleString("en-US", { month: "short" })
       .toUpperCase();
-    return month === monthAbb.toUpperCase() ? sum + item.quantity : sum;
+    const itemYear = date.getFullYear();
+
+    return month === monthAbb.toUpperCase() && itemYear === year
+      ? sum + item.quantity
+      : sum;
   }, 0);
 };
 
 // COMPUTING OUTBOUND PER MONTH
-export const getOutQuantity = (data: Outbound[], monthAbb: string): number => {
+export const getOutQuantity = (
+  data: Outbound[],
+  monthAbb: string,
+  year: number
+): number => {
   return data.reduce((sum, item) => {
+    const date = new Date(item.outboundDate);
     const month = new Date(item.outboundDate)
       .toLocaleString("en-US", { month: "short" })
       .toUpperCase();
-    return month === monthAbb.toUpperCase() ? sum + item.quantity : sum;
+    const itemYear = date.getFullYear();
+
+    return month === monthAbb.toUpperCase() && itemYear === year
+      ? sum + item.quantity
+      : sum;
   }, 0);
 };
 

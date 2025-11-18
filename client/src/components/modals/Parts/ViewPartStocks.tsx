@@ -16,11 +16,9 @@ import { Outbounding } from "./Outbounding";
 import {
   currentMonth,
   currentYear,
-  getAverageOutboundPerMonth,
   getInQuantity,
   getOutQuantity,
   getSafetyStock,
-  getTotalByYear,
   getTotalByYearExcludingCurrentMonth,
 } from "../../../helper/helper";
 
@@ -49,7 +47,10 @@ export const ViewPartStocks = ({ part, setParts }: Props) => {
     outboundDate: new Date().toISOString().split("T")[0],
   });
 
-  const [month, setMonth] = useState<number>(currentMonth());
+  const currentMonthOption = currentMonth();
+  const [month, setMonth] = useState<number>(currentMonthOption);
+  const currentYearOption = currentYear();
+  const [chosenYear, setYear] = useState<number>(currentYearOption);
 
   const fetchTransactions = async () => {
     try {
@@ -84,6 +85,14 @@ export const ViewPartStocks = ({ part, setParts }: Props) => {
     fetchTransactions();
   };
 
+  const startYear = currentYearOption - 5;
+
+  const years = [];
+
+  for (let y = startYear; y <= currentYearOption; y++) {
+    years.push(y);
+  }
+
   const months = [
     "JAN",
     "FEB",
@@ -98,8 +107,6 @@ export const ViewPartStocks = ({ part, setParts }: Props) => {
     "NOV",
     "DEC",
   ];
-
-  const year = currentYear();
 
   return (
     <>
@@ -121,7 +128,7 @@ export const ViewPartStocks = ({ part, setParts }: Props) => {
                         quantity: o.quantity,
                         date: String(o.outboundDate),
                       })),
-                      year,
+                      chosenYear,
                       month
                     )
                       ? "bg-red-100 text-red-900"
@@ -136,7 +143,7 @@ export const ViewPartStocks = ({ part, setParts }: Props) => {
                         quantity: o.quantity,
                         date: String(o.outboundDate),
                       })),
-                      year,
+                      chosenYear,
                       month
                     ) ? (
                       <>Warning: Low stock!</>
@@ -145,7 +152,29 @@ export const ViewPartStocks = ({ part, setParts }: Props) => {
                 </span>
               </h3>
               <h4>
-                {months[month]} - {year}
+                <select
+                  className="no-arrow rounded-lg hover:bg-neutral-200 transition duration-350 cursor-pointer px-2 py-.5 focus:bg-neutral-50  focus:ring-1 focus:ring-neutral-300 focus:outline-none"
+                  value={month}
+                  onChange={(e) => setMonth(Number(e.target.value))}
+                >
+                  {months.map((month, index) => (
+                    <option key={index} value={index}>
+                      {month}
+                    </option>
+                  ))}
+                </select>{" "}
+                -{" "}
+                <select
+                  className="no-arrow rounded-lg hover:bg-neutral-200 transition duration-350 cursor-pointer px-2 py-.5 focus:bg-neutral-50  focus:ring-1 focus:ring-neutral-300 focus:outline-none"
+                  value={chosenYear}
+                  onChange={(e) => setYear(Number(e.target.value))}
+                >
+                  {years.map((year) => (
+                    <option key={year} value={year}>
+                      {year}
+                    </option>
+                  ))}
+                </select>
               </h4>
             </div>
           </>
@@ -216,8 +245,8 @@ export const ViewPartStocks = ({ part, setParts }: Props) => {
                     >
                       <div className="flex justify-center items-center gap-1">
                         <p className="text-green-600">
-                          {getInQuantity(inbounds, month) > 0
-                            ? `+${getInQuantity(inbounds, month)}`
+                          {getInQuantity(inbounds, month, chosenYear) > 0
+                            ? `+${getInQuantity(inbounds, month, chosenYear)}`
                             : 0}
                         </p>
                       </div>
@@ -231,7 +260,7 @@ export const ViewPartStocks = ({ part, setParts }: Props) => {
                             quantity: o.quantity,
                             date: String(o.inboundDate),
                           })),
-                          year,
+                          chosenYear,
                           month + 1
                         )}
                       </p>
@@ -242,7 +271,7 @@ export const ViewPartStocks = ({ part, setParts }: Props) => {
                             quantity: o.quantity,
                             date: String(o.outboundDate),
                           })),
-                          year,
+                          chosenYear,
                           month
                         )}
                         )
@@ -259,8 +288,8 @@ export const ViewPartStocks = ({ part, setParts }: Props) => {
                       <div className="flex justify-center items-center gap-1">
                         <p className="text-red-500">
                           {/* OUTBOUND PERMONTH */}
-                          {getOutQuantity(outbounds, month) > 0
-                            ? `-${getOutQuantity(outbounds, month)}`
+                          {getOutQuantity(outbounds, month, chosenYear) > 0
+                            ? `-${getOutQuantity(outbounds, month, chosenYear)}`
                             : 0}
                         </p>
                       </div>
@@ -275,7 +304,7 @@ export const ViewPartStocks = ({ part, setParts }: Props) => {
                             quantity: o.quantity,
                             date: String(o.outboundDate),
                           })),
-                          year,
+                          chosenYear,
                           month + 1
                         )}
                       </p>
@@ -287,10 +316,21 @@ export const ViewPartStocks = ({ part, setParts }: Props) => {
                               quantity: o.quantity,
                               date: String(o.outboundDate),
                             })),
-                            year,
+                            chosenYear,
                             month
                           ) / month
-                        )}
+                        ) > 0
+                          ? Math.round(
+                              getTotalByYearExcludingCurrentMonth(
+                                outbounds.map((o) => ({
+                                  quantity: o.quantity,
+                                  date: String(o.outboundDate),
+                                })),
+                                chosenYear,
+                                month
+                              ) / month
+                            )
+                          : 0}
                         )
                       </h6>
                     </div>
