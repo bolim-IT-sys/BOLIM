@@ -11,15 +11,13 @@ export default function SideNavBar() {
           >
             <h4>Dashbaord</h4>
           </Link>
-          <h4 className="p-2 hover:bg-neutral-300 transition duration-150 w-full rounded cursor-pointer">
-            <Link to="/home">Home</Link>
-          </h4>
-          <h4 className="p-2 hover:bg-neutral-300 transition duration-150 w-full rounded cursor-pointer">
-            Settngs
-          </h4>
-          <h4 className="p-2 hover:bg-neutral-300 transition duration-150 w-full rounded cursor-pointer">
-            Help / Support
-          </h4>
+          <Link
+            className="p-2 hover:bg-neutral-300 transition duration-150 w-full rounded cursor-pointer"
+            to="/home"
+          >
+            <h4>Home</h4>
+          </Link>
+
           <div></div>
         </div>
       </div>

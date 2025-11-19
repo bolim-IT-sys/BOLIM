@@ -19,7 +19,7 @@ export const sortByPrice = (parts: Part[], order: "asc" | "desc") => {
 
   return [...parts].sort((a, b) => {
     return order === "asc"
-      ? String(a.unitPrice).localeCompare(String(b.unitPrice))
-      : String(b.unitPrice).localeCompare(String(a.unitPrice));
+      ? Number(a.unitPrice) - Number(b.unitPrice)
+      : Number(b.unitPrice) - Number(a.unitPrice);
   });
 };
