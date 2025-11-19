@@ -1,25 +1,19 @@
-import type { User } from "../services/userService";
+import { Link } from "react-router-dom";
 
-interface SideNavbarProps {
-  user?: User;
-}
-
-export default function SideNavBar({ user }: SideNavbarProps) {
+export default function SideNavBar() {
   return (
     <>
       <div className="bg-neutral-50 w-100 shadow-md">
         <div className="flex flex-col justify-start items-start gap-1 mt-5.5 mx-3">
+          <Link
+            className="p-2 hover:bg-neutral-300 transition duration-150 w-full rounded cursor-pointer"
+            to="/dashboard"
+          >
+            <h4>Dashbaord</h4>
+          </Link>
           <h4 className="p-2 hover:bg-neutral-300 transition duration-150 w-full rounded cursor-pointer">
-            Home
+            <Link to="/home">Home</Link>
           </h4>
-          {user?.isAdmin ? (
-            <>
-              <h4 className="p-2 hover:bg-neutral-300 transition duration-150 w-full rounded cursor-pointer">
-                Dashbaord
-              </h4>
-            </>
-          ) : null}
-
           <h4 className="p-2 hover:bg-neutral-300 transition duration-150 w-full rounded cursor-pointer">
             Settngs
           </h4>

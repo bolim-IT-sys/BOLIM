@@ -4,9 +4,12 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
+
+import Mainlayout from "./pages/Mainlayout";
+
 import LoginPage from "./pages/LoginPage";
-import HomePage from "./pages/Home";
-import ProtectedRoute from "./routes/ProtectedRoute";
+import HomePage from "./pages/AdminPages/HomePage";
+import Dashboard from "./pages/AdminPages/Dashboard";
 import "./styles/index.css";
 import "boxicons/css/boxicons.min.css";
 
@@ -15,14 +18,11 @@ export default function App() {
     <Router>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
-        <Route
-          path="/home"
-          element={
-            <ProtectedRoute>
-              <HomePage />
-            </ProtectedRoute>
-          }
-        />
+        <Route element={<Mainlayout />}>
+          <Route path="/home" element={<HomePage />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+        </Route>
+
         <Route path="*" element={<Navigate to="/login" />} />
       </Routes>
     </Router>

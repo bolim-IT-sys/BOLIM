@@ -13,3 +13,13 @@ export const sortByPartNumber = (parts: Part[], order: "asc" | "desc") => {
       : String(b.partNumber).localeCompare(String(a.partNumber));
   });
 };
+
+export const sortByPrice = (parts: Part[], order: "asc" | "desc") => {
+  console.log(typeof parts[0].unitPrice, parts[0].unitPrice);
+
+  return [...parts].sort((a, b) => {
+    return order === "asc"
+      ? String(a.unitPrice).localeCompare(String(b.unitPrice))
+      : String(b.unitPrice).localeCompare(String(a.unitPrice));
+  });
+};
