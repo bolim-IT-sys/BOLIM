@@ -13,6 +13,7 @@ import {
   fetchAllOutbounds,
 } from "../../services/InboundOutbound.Service";
 import { currentMonth, currentYear, getSafetyStock } from "../../helper/helper";
+import { sortByPartNumber, sortByStocks } from "../../helper/sorting.helper";
 
 interface HomeProps {
   user: User;
@@ -20,6 +21,9 @@ interface HomeProps {
 
 export default function HomePage({ user }: HomeProps) {
   const [parts, setParts] = useState<Part[]>([]);
+  const [currentParts, setCurrentParts] = useState<Part[]>([]);
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const [sortBy, setSortBy] = useState<string>("partNumber");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isDeleting, setIsDeleting] = useState<number>(0);
 
@@ -31,8 +35,18 @@ export default function HomePage({ user }: HomeProps) {
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentParts = parts.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(parts.length / itemsPerPage);
+
+  const [totalPages, setTotalPages] = useState<number>(0);
+
+  useEffect(() => {
+    setItemsPerPage(20);
+    setCurrentParts(parts.slice(indexOfFirstItem, indexOfLastItem));
+    console.log(
+      "Current parts: ",
+      parts.slice(indexOfFirstItem, indexOfLastItem)
+    );
+    setTotalPages(Math.ceil(parts.length / itemsPerPage));
+  }, [parts, currentPage, indexOfFirstItem, indexOfLastItem, itemsPerPage]);
 
   const fetchAllParts = async () => {
     try {
@@ -74,6 +88,30 @@ export default function HomePage({ user }: HomeProps) {
   useEffect(() => {
     fetchAllParts();
   }, []);
+
+  const handleSortByStocks = () => {
+    const sorted = sortByStocks(
+      parts,
+      sortBy === "stocks" && sortOrder === "asc" ? "asc" : "desc"
+    );
+    console.log("Sorted Parts by QTY: ", sorted);
+    setSortBy("stocks");
+    setParts(sorted);
+    setSortOrder(sortBy === "stocks" && sortOrder === "asc" ? "desc" : "asc");
+  };
+
+  const handleSortByPartNumber = () => {
+    const sorted = sortByPartNumber(
+      parts,
+      sortBy === "partNumber" && sortOrder === "asc" ? "desc" : "asc"
+    );
+    console.log("Sorted Parts by Part Number: ", sorted);
+    setSortBy("partNumber");
+    setParts(sorted);
+    setSortOrder(
+      sortBy === "partNumber" && sortOrder === "asc" ? "desc" : "asc"
+    );
+  };
 
   const handleDelete = async (partId: number) => {
     const isConfirm = window.confirm(
@@ -125,9 +163,19 @@ export default function HomePage({ user }: HomeProps) {
                   style={{ zIndex: 5 }}
                 >
                   <tr>
-                    <th className="border border-neutral-300 text-center">
+                    <th
+                      className="border border-neutral-300 text-center cursor-pointer"
+                      onClick={handleSortByPartNumber}
+                    >
                       <div className="h-10 flex justify-center items-center border border-neutral-300">
-                        <h5>PART NUMBER</h5>
+                        <h5>
+                          PART NUMBER{" "}
+                          {sortBy === "partNumber"
+                            ? sortOrder === "asc"
+                              ? "▲"
+                              : "▼"
+                            : "⇅"}
+                        </h5>
                       </div>
                     </th>
                     <th className="border border-neutral-300 text-center">
@@ -150,9 +198,20 @@ export default function HomePage({ user }: HomeProps) {
                         <h5>COMPANY</h5>
                       </div>
                     </th>
-                    <th className="border border-neutral-300 text-center">
+                    <th
+                      className="border border-neutral-300 text-center cursor-pointer"
+                      onClick={handleSortByStocks}
+                    >
                       <div className="h-10 flex justify-center items-center border border-neutral-300">
-                        <h5> CURRENT STOCKS</h5>
+                        <h5>
+                          {" "}
+                          CURRENT STOCKS{" "}
+                          {sortBy === "stocks"
+                            ? sortOrder === "asc"
+                              ? "▲"
+                              : "▼"
+                            : "⇅"}
+                        </h5>
                       </div>
                     </th>
                     <th className="w-30 border border-neutral-300 text-center">
