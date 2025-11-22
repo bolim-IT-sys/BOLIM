@@ -5,6 +5,21 @@ export const currentYear = () => {
   return new Date().getFullYear();
 };
 
+export const monthList = [
+  "JAN",
+  "FEB",
+  "MAR",
+  "APR",
+  "MAY",
+  "JUN",
+  "JUL",
+  "AUG",
+  "SEP",
+  "OCT",
+  "NOV",
+  "DEC",
+];
+
 // GETTING CURRENT MONTH
 export const currentMonth = () => {
   return new Date().getMonth();
