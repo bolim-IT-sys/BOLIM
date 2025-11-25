@@ -55,10 +55,7 @@ export default function HomePage() {
   useEffect(() => {
     setItemsPerPage(20);
     setCurrentParts(displayParts.slice(indexOfFirstItem, indexOfLastItem));
-    console.log(
-      "Current parts: ",
-      parts.slice(indexOfFirstItem, indexOfLastItem)
-    );
+
     setTotalPages(Math.ceil(parts.length / itemsPerPage));
   }, [
     displayParts,

@@ -1,4 +1,11 @@
-import { currentMonth, getInQuantity, monthList } from "../../helper/helper";
+import {
+  currentMonth,
+  getInQuantity,
+  getOutQuantity,
+  getSafetyStock,
+  getTotalByYearExcludingCurrentMonth,
+  monthList,
+} from "../../helper/helper";
 import * as XLSX from "xlsx-js-style";
 import type { Part } from "../../services/Part.Service";
 import SuccessButton from "../button/SuccessButton";
@@ -19,6 +26,8 @@ export const DownloadPartData = ({ parts }: ItemDataProp) => {
   const [currentDate, setCurrentDate] = useState<string>(
     new Date().toISOString().split("T")[0]
   );
+  const [previousMonth, setPreviousMonth] = useState<number>(0);
+  const [previousYear, setPreviousYear] = useState<number>(0);
   const [latestMonth, setLatestMonth] = useState<number>(0);
   const [latestYear, setLatestYear] = useState<number>(0);
 
@@ -26,22 +35,126 @@ export const DownloadPartData = ({ parts }: ItemDataProp) => {
     const cDate = new Date(currentDate);
     setLatestYear(cDate.getFullYear());
     setLatestMonth(cDate.getMonth() + 1);
-  });
+    console.log(
+      "Latest month and year: ",
+      cDate.getMonth() + 1,
+      " ",
+      cDate.getFullYear()
+    );
+    const pDate = new Date(prevDate);
+    setPreviousYear(pDate.getFullYear());
+    setPreviousMonth(pDate.getMonth() + 1);
+    console.log(
+      "Latest month and year: ",
+      pDate.getMonth() + 1,
+      " ",
+      pDate.getFullYear()
+    );
+  }, [currentDate, prevDate]);
 
   const handleExportToExcel = () => {
     // Prepare data for Excel
+    const partsWithDummy = [
+      {
+        partNumber: "",
+        specs: "",
+        category: "",
+        unitPrice: 0,
+        company: "",
+        quantity: 0,
+        inbounds: [],
+        outbounds: [],
+      } as Part,
+      ...parts,
+    ];
+    const excelData = partsWithDummy.map((part) => {
+      // COMPUTING FOR INBOUND AND OUTBOUND TOTAL PERMONTH
+      const getInOutQuantity = (
+        month: string,
+        year: number,
+        dataType: string
+      ) => {
+        if (dataType === "inbound") {
+          const inboundQuantity = getInQuantity(part.inbounds!, month, year);
+          return inboundQuantity > 0 ? `${inboundQuantity}` : "";
+        } else {
+          const outboundQuantity = getOutQuantity(part.outbounds!, month, year);
+          return outboundQuantity > 0 ? `${outboundQuantity}` : "";
+        }
+      };
 
-    const excelData = parts.map((part) => {
+      const prevInbounds = getTotalByYearExcludingCurrentMonth(
+        part.inbounds!.map((i) => ({
+          quantity: i.quantity,
+          date: String(i.inboundDate),
+        })),
+        previousYear,
+        previousMonth
+      );
+      const prevOutbounds = getTotalByYearExcludingCurrentMonth(
+        part.outbounds!.map((o) => ({
+          quantity: o.quantity,
+          date: String(o.outboundDate),
+        })),
+        previousYear,
+        previousMonth
+      );
+
+      const latestInbounds = getTotalByYearExcludingCurrentMonth(
+        part.inbounds!.map((i) => ({
+          quantity: i.quantity,
+          date: String(i.inboundDate),
+        })),
+        latestYear,
+        latestMonth
+      );
+      const latestOutbounds = getTotalByYearExcludingCurrentMonth(
+        part.outbounds!.map((o) => ({
+          quantity: o.quantity,
+          date: String(o.outboundDate),
+        })),
+        latestYear,
+        latestMonth - 1
+      );
+
+      const totalInbounds = getTotalByYearExcludingCurrentMonth(
+        part.inbounds!.map((o) => ({
+          quantity: o.quantity,
+          date: String(o.inboundDate),
+        })),
+        latestYear,
+        latestMonth + 1
+      );
+
+      const totalOutbounds = getTotalByYearExcludingCurrentMonth(
+        part.outbounds!.map((o) => ({
+          quantity: o.quantity,
+          date: String(o.outboundDate),
+        })),
+        latestYear,
+        12
+      );
+
       const monthInboundObject = Object.fromEntries(
         monthList.map((m) => [
           m + "i",
-          getInQuantity(part.inbounds!, m, latestYear) > 0
-            ? `${getInQuantity(part.inbounds!, m, latestYear)}`
-            : "",
+          getInOutQuantity(m, latestYear, "inbound"),
         ])
       );
       const monthOutboundObject = Object.fromEntries(
-        monthList.map((m) => [m + "o", ""])
+        monthList.map((m) => [
+          m + "o",
+          getInOutQuantity(m, latestYear, "outbound"),
+        ])
+      );
+
+      const safetyStock = getSafetyStock(
+        part.outbounds!.map((o) => ({
+          quantity: o.quantity,
+          date: String(o.outboundDate),
+        })),
+        latestYear,
+        latestMonth
       );
 
       return {
@@ -52,21 +165,23 @@ export const DownloadPartData = ({ parts }: ItemDataProp) => {
         Company: part.company || "N/A",
 
         // MONTH LIST FOR INBOUND DATA
-        "STOCKS end of (ea)": 0,
+        "STOCKS end of comparing month (ea)": prevInbounds - prevOutbounds || 0,
         ...monthInboundObject,
-        "Total Inbound": 0,
+        "Total Inbound": totalInbounds || 0,
 
         // MONTH LIST FOR OUTBOUND DATA
         ...monthOutboundObject,
-        "Total Usage (ea)": 0,
+        "Total Usage (ea)": totalOutbounds || 0,
 
-        "Average Monthly Usage: 2024 (12 mos)": 0,
-        "Average monthly usage": 0,
+        "Average Monthly Usage: 2024 (12 mos)": Math.round(prevOutbounds / 11),
+        "Average monthly usage": Math.round(
+          latestOutbounds / (latestMonth - 1)
+        ),
 
-        "safety stock": 0,
+        "safety stock": safetyStock,
 
-        "STOCKS end of 2025(ea)": 0,
-        "Securement rate": 0,
+        "STOCKS end of 2025(ea)": latestOutbounds,
+        "Securement rate": `${Math.round((latestOutbounds / safetyStock) * 100)}%`,
 
         "Excess/insufficient quantity": 0,
         "Urgent Request (Secure Rate Less than 50%)": 0,
@@ -89,7 +204,7 @@ export const DownloadPartData = ({ parts }: ItemDataProp) => {
           "company\n(업체)",
 
           // FOR INBOUND SPAN
-          "STOCKS end of (ea)",
+          `STOCKS end of ${monthList[previousMonth - 1]} ${previousYear} (ea)`,
 
           "INBOUND",
           ...Array(monthList.length - 1).fill(""),
@@ -107,7 +222,7 @@ export const DownloadPartData = ({ parts }: ItemDataProp) => {
 
           "safety stock\n(안전재고)",
 
-          "STOCKS end of 2025(ea)",
+          `STOCKS end of ${monthList[latestMonth - 1]} ${latestYear}(ea)`,
           "Securement rate\n(확보율)",
 
           "Excess/insufficient quantity\n(과/부족수량)",
@@ -208,7 +323,6 @@ export const DownloadPartData = ({ parts }: ItemDataProp) => {
 
     // FOR CENTRALIZING ALL CELLS
     const rangeAll = XLSX.utils.decode_range(worksheet["!ref"]!);
-
     for (let R = rangeAll.s.r; R <= rangeAll.e.r; ++R) {
       for (let C = rangeAll.s.c; C <= rangeAll.e.c; ++C) {
         const address = XLSX.utils.encode_cell({ r: R, c: C });
@@ -321,9 +435,8 @@ export const DownloadPartData = ({ parts }: ItemDataProp) => {
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Stock Report");
 
-    // Generate filename with current date
-    const date = new Date().toISOString().split("T")[0];
-    const filename = `${currentMonth()}_Stock_${date}.xlsx`;
+    // FILENAME
+    const filename = `${monthList[latestMonth - 1]}_${latestYear}_SPARE_PARTS_SUMMARY.xlsx`;
 
     // Download file
     XLSX.writeFile(workbook, filename);
@@ -359,20 +472,7 @@ export const DownloadPartData = ({ parts }: ItemDataProp) => {
       >
         <div className="mb-1">
           <label className="block font-medium text-gray-700">
-            <p>DATA FROM:</p>
-          </label>
-          <InputField
-            label="Latest date"
-            type="date"
-            value={currentDate}
-            required={true}
-            onChange={(value: string) => setCurrentDate(value)}
-            autoComplete={`Latest date`}
-          />
-        </div>
-        <div className="mb-1">
-          <label className="block font-medium text-gray-700">
-            <p>COMPARE TO:</p>
+            <p>PREVIOUS DATE:</p>
           </label>
           <InputField
             label="Previous date"
@@ -381,6 +481,19 @@ export const DownloadPartData = ({ parts }: ItemDataProp) => {
             required={true}
             onChange={(value: string) => setPrevDate(value)}
             autoComplete={`Previous date`}
+          />
+        </div>
+        <div className="mb-1">
+          <label className="block font-medium text-gray-700">
+            <p>CURRENT DATE:</p>
+          </label>
+          <InputField
+            label="Latest date"
+            type="date"
+            value={currentDate}
+            required={true}
+            onChange={(value: string) => setCurrentDate(value)}
+            autoComplete={`Latest date`}
           />
         </div>
       </Modal>

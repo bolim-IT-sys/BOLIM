@@ -65,7 +65,7 @@ export default function Mainlayout() {
         }));
 
         setParts(partWithInboundOutbound);
-        console.log("Fetched Parts: ", partWithInboundOutbound);
+        // console.log("Fetched Parts: ", partWithInboundOutbound);
       } else {
         console.log("No parts found.");
         setParts([]);

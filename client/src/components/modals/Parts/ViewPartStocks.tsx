@@ -245,6 +245,7 @@ export const ViewPartStocks = ({ part, setParts }: Props) => {
                     >
                       <div className="flex justify-center items-center gap-1">
                         <p className="text-green-600">
+                          {/* INBOUND QUANTITY PER MONTH */}
                           {getInQuantity(inbounds, month, chosenYear) > 0
                             ? `+${getInQuantity(inbounds, month, chosenYear)}`
                             : 0}
@@ -255,6 +256,7 @@ export const ViewPartStocks = ({ part, setParts }: Props) => {
                   <td className="border border-neutral-400 px-3 py-2">
                     <div className="flex justify-center items-center flex-col gap-1 text-green-600">
                       <p className="text-green-600">
+                        {/* TOTAL QUANTITY */}
                         {getTotalByYearExcludingCurrentMonth(
                           inbounds.map((o) => ({
                             quantity: o.quantity,
