@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+
 interface buttonProps {
   text: ReactNode;
   loadingText?: string;
