@@ -1,5 +1,6 @@
 import {
   currentMonth,
+  currentYear,
   getInQuantity,
   getOutQuantity,
   getSafetyStock,
@@ -45,7 +46,7 @@ export const DownloadPartData = ({ parts }: ItemDataProp) => {
     setPreviousYear(pDate.getFullYear());
     setPreviousMonth(pDate.getMonth() + 1);
     console.log(
-      "Latest month and year: ",
+      "Previous month and year: ",
       pDate.getMonth() + 1,
       " ",
       pDate.getFullYear()
@@ -99,15 +100,6 @@ export const DownloadPartData = ({ parts }: ItemDataProp) => {
         previousYear,
         previousMonth
       );
-
-      const latestInbounds = getTotalByYearExcludingCurrentMonth(
-        part.inbounds!.map((i) => ({
-          quantity: i.quantity,
-          date: String(i.inboundDate),
-        })),
-        latestYear,
-        latestMonth
-      );
       const latestOutbounds = getTotalByYearExcludingCurrentMonth(
         part.outbounds!.map((o) => ({
           quantity: o.quantity,
@@ -117,13 +109,43 @@ export const DownloadPartData = ({ parts }: ItemDataProp) => {
         latestMonth - 1
       );
 
+      const latestInboundsWithCurrentMonth =
+        getTotalByYearExcludingCurrentMonth(
+          part.inbounds!.map((i) => ({
+            quantity: i.quantity,
+            date: String(i.inboundDate),
+          })),
+          latestYear,
+          latestMonth
+        );
+      const latestOutboundsWithCurrentMonth =
+        getTotalByYearExcludingCurrentMonth(
+          part.outbounds!.map((o) => ({
+            quantity: o.quantity,
+            date: String(o.outboundDate),
+          })),
+          latestYear,
+          latestMonth
+        );
+
+      const stocksLeft =
+        latestInboundsWithCurrentMonth - latestOutboundsWithCurrentMonth;
+
+      const lastYearOutbounds = getTotalByYearExcludingCurrentMonth(
+        part.outbounds!.map((o) => ({
+          quantity: o.quantity,
+          date: String(o.outboundDate),
+        })),
+        currentYear() - 1,
+        12
+      );
       const totalInbounds = getTotalByYearExcludingCurrentMonth(
         part.inbounds!.map((o) => ({
           quantity: o.quantity,
           date: String(o.inboundDate),
         })),
         latestYear,
-        latestMonth + 1
+        12
       );
 
       const totalOutbounds = getTotalByYearExcludingCurrentMonth(
@@ -148,14 +170,19 @@ export const DownloadPartData = ({ parts }: ItemDataProp) => {
         ])
       );
 
+      const aveMonthlyUsage = Math.round(latestOutbounds / (latestMonth - 1));
+
       const safetyStock = getSafetyStock(
         part.outbounds!.map((o) => ({
           quantity: o.quantity,
           date: String(o.outboundDate),
         })),
         latestYear,
-        latestMonth
+        latestMonth - 1
       );
+      const securementRate = Math.round((stocksLeft / safetyStock) * 100);
+
+      const excessInsufficient = stocksLeft - safetyStock;
 
       return {
         "Part number": part.partNumber,
@@ -173,19 +200,26 @@ export const DownloadPartData = ({ parts }: ItemDataProp) => {
         ...monthOutboundObject,
         "Total Usage (ea)": totalOutbounds || 0,
 
-        "Average Monthly Usage: 2024 (12 mos)": Math.round(prevOutbounds / 11),
-        "Average monthly usage": Math.round(
-          latestOutbounds / (latestMonth - 1)
+        "Average Monthly Usage: 2024 (12 mos)": Math.round(
+          lastYearOutbounds / 11
         ),
+        "Average monthly usage": aveMonthlyUsage,
 
         "safety stock": safetyStock,
 
-        "STOCKS end of 2025(ea)": latestOutbounds,
-        "Securement rate": `${Math.round((latestOutbounds / safetyStock) * 100)}%`,
+        "STOCKS end of 2025(ea)": stocksLeft,
+        "Securement rate": securementRate !== 0 ? `${securementRate}%` : "", //END OF MONTH STOCK / SAFETY STOCK
 
-        "Excess/insufficient quantity": 0,
-        "Urgent Request (Secure Rate Less than 50%)": 0,
-        "Order Quantity (Regular Order)": 0,
+        "Excess/insufficient quantity":
+          stocksLeft !== 0 ? excessInsufficient : "", //END OF MONTH STOCK - SAFETY STOCK
+        "Urgent Request (Secure Rate Less than 50%)":
+          securementRate < 50 && securementRate !== 0
+            ? Math.abs(excessInsufficient)
+            : "",
+        "Order Quantity (Regular Order)":
+          securementRate < 100 && securementRate !== 0
+            ? Math.abs(excessInsufficient)
+            : "",
       };
     });
 
@@ -398,6 +432,23 @@ export const DownloadPartData = ({ parts }: ItemDataProp) => {
             right: { style: "thin", color: { rgb: "000000" } },
           },
         };
+
+        // === MAKE "Order Quantity (Regular Order)" RED IF > 0 ===
+        if (C === 39) {
+          // Column for Order Quantity (Regular Order)
+          const cellValue = Number(worksheet[address].v);
+          if (!isNaN(cellValue) && cellValue > 0) {
+            worksheet[address].s = {
+              ...worksheet[address].s,
+              fill: { fgColor: { rgb: "FFC6C6" } },
+              font: {
+                ...worksheet[address].s.font,
+                color: { rgb: "740000" },
+                bold: true,
+              },
+            };
+          }
+        }
       }
     }
 
@@ -429,7 +480,7 @@ export const DownloadPartData = ({ parts }: ItemDataProp) => {
       { wch: 30 }, // Order Quantity (Regular Order)
     ];
 
-    worksheet["!rows"] = [{ hpt: 30 }];
+    worksheet["!rows"] = [{ hpt: 40 }];
 
     // Create workbook
     const workbook = XLSX.utils.book_new();

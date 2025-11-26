@@ -21,13 +21,20 @@ import {
   getSafetyStock,
   getTotalByYearExcludingCurrentMonth,
 } from "../../../helper/helper";
+import { useOutletContext } from "react-router-dom";
 
 interface Props {
   part: Part;
   setParts: Dispatch<SetStateAction<Part[]>>;
 }
 
+interface ContextType {
+  fetchAllParts: () => void;
+}
+
 export const ViewPartStocks = ({ part, setParts }: Props) => {
+  const { fetchAllParts } = useOutletContext<ContextType>();
+
   const [modalShow, setModalShow] = useState<boolean>(false);
 
   const [inbounds, setInbounds] = useState<Inbound[]>([]);
@@ -72,7 +79,7 @@ export const ViewPartStocks = ({ part, setParts }: Props) => {
     } finally {
       setTimeout(() => {
         setIsLoading(false);
-      }, 1500);
+      }, 0);
     }
   };
 
@@ -347,6 +354,7 @@ export const ViewPartStocks = ({ part, setParts }: Props) => {
       {/* INBOUNDING */}
       <Inbounding
         part={part}
+        fetchAllParts={fetchAllParts!}
         setParts={setParts}
         formData={formData}
         setFormData={setFormData}
@@ -362,6 +370,7 @@ export const ViewPartStocks = ({ part, setParts }: Props) => {
       {/* OUTBOUNDING */}
       <Outbounding
         part={part}
+        fetchAllParts={fetchAllParts!}
         setParts={setParts}
         formData={formData}
         setFormData={setFormData}

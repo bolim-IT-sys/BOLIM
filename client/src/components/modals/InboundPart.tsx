@@ -49,7 +49,7 @@ export const InboundPart = ({ fetchAllParts }: Props) => {
         setTimeout(() => {
           setIsLoading(false);
           alert(`Error: ${result.message}`);
-        }, 1500);
+        }, 0);
       }
     } catch (error) {
       console.error("Unexpecter error occured: ", error);

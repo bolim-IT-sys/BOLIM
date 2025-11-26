@@ -44,7 +44,7 @@ export default function Mainlayout() {
 
   const fetchAllParts = async () => {
     try {
-      setIsFetching(true);
+      // setIsFetching(true);
       const [inResult, outResult, result] = await Promise.all([
         fetchAllInbounds(),
         fetchAllOutbounds(),
@@ -72,15 +72,22 @@ export default function Mainlayout() {
       }
     } catch (err) {
       console.log("Unexpected error occured: ", err);
+    }
+  };
+
+  const loadParts = async () => {
+    try {
+      setIsFetching(true);
+      await fetchAllParts();
     } finally {
       setTimeout(() => {
         setIsFetching(false);
-      }, 2000);
+      }, 1000);
     }
   };
 
   useEffect(() => {
-    fetchAllParts();
+    loadParts();
   }, []);
 
   return (

@@ -11,6 +11,7 @@ import type { Dispatch, SetStateAction } from "react";
 
 interface Props {
   part: Part;
+  fetchAllParts: () => void;
   setParts: Dispatch<SetStateAction<Part[]>>;
   formData: InboundOutboundType;
   setFormData: Dispatch<SetStateAction<InboundOutboundType>>;
@@ -25,6 +26,7 @@ interface Props {
 
 export const Outbounding = ({
   part,
+  fetchAllParts,
   setParts,
   formData,
   setFormData,
@@ -48,6 +50,7 @@ export const Outbounding = ({
           setOutboundShow(false);
           setModalShow(true);
           fetchTransactions();
+          fetchAllParts();
           // UPDATING THE QUANTITY OF THE INBOUNDED PART
           setParts((prevParts) =>
             prevParts.map((p) =>
@@ -57,26 +60,25 @@ export const Outbounding = ({
             )
           );
           // RESETTING FORMDATA AFTER INBOUND
-          setFormData({
+          setFormData((prev) => ({
+            ...prev,
             partId: part.id!,
-            currentQuantity: part.quantity - Number(formData.quantity),
+            currentQuantity: part.quantity + Number(formData.quantity),
             quantity: "",
-            inboundDate: new Date().toISOString().split("T")[0],
-            outboundDate: new Date().toISOString().split("T")[0],
-          });
-        }, 1500);
+          }));
+        }, 0);
         // Redirect or update UI
       } else {
         setTimeout(() => {
           alert(`Error: ${result.message}`);
-        }, 1500);
+        }, 0);
       }
     } catch (error) {
       console.error("Unexpecter error occured: ", error);
     } finally {
       setTimeout(() => {
         setOutBounding(false);
-      }, 1500);
+      }, 0);
     }
   };
 

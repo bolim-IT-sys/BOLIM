@@ -53,7 +53,7 @@ export default function HomePage() {
   }, [searchTerm, parts]);
 
   useEffect(() => {
-    setItemsPerPage(20);
+    setItemsPerPage(50);
     setCurrentParts(displayParts.slice(indexOfFirstItem, indexOfLastItem));
 
     setTotalPages(Math.ceil(parts.length / itemsPerPage));
