@@ -4,6 +4,7 @@ import { logout } from "../services/authService";
 import { useNavigate } from "react-router-dom";
 import { Dropdown, DropdownItem } from "./Dropdown";
 import DangerButton from "./button/DangerButton";
+import logo from "/logowithtext.png";
 
 interface NavbarProps {
   user: User;
@@ -27,11 +28,7 @@ export default function NavBar({ user, fetchAllUsers }: NavbarProps) {
         <div className="flex justify-between items-center mx-3">
           <div className="flex justify-center items-center">
             <div className="size-10 flex justify-center items-center">
-              <img
-                className="w-full"
-                src="../../public/logowithtext.png"
-                alt="navLogo"
-              />
+              <img className="w-full" src={logo} alt="navLogo" />
             </div>
             <h4 className="">BOLIM(SPARE PARTS)</h4>
           </div>
