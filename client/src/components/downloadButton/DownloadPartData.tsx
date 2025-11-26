@@ -1,5 +1,4 @@
 import {
-  currentMonth,
   currentYear,
   getInQuantity,
   getOutQuantity,
