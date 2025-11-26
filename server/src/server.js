@@ -6,7 +6,7 @@ const sequelize = require("./database/index.js");
 const app = express();
 
 dotenv.config();
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT;
 
 const corsOptions = {
   origin: [process.env.FRONTEND_URL], // allowed origins
