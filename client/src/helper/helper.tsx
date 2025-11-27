@@ -72,6 +72,23 @@ export const getOutQuantity = (
   }, 0);
 };
 
+// FOR COMPUTING OVERALL INBOUND AND OUTBOUND UNTIL CURRENT MONTH AND YEAR
+export const getTotal = (
+  data: { quantity: number; date: string }[],
+  year: number,
+  month: number // 0-based month (Jan = 0)
+) => {
+  return data
+    .filter((item) => {
+      const d = new Date(item.date);
+      const itemYear = d.getFullYear();
+      const itemMonth = d.getMonth();
+
+      return itemYear < year || (itemYear === year && itemMonth < month);
+    })
+    .reduce((sum, item) => sum + item.quantity, 0);
+};
+
 // FOR COMPUTING TOTAL INBOUND AND OUTBOUND PER YEAR
 export const getTotalByYear = (
   data: { quantity: number; date: string }[],
