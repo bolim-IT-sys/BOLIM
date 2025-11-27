@@ -36,21 +36,21 @@ export const DownloadPartData = ({ parts }: ItemDataProp) => {
     const cDate = new Date(currentDate);
     setLatestYear(cDate.getFullYear());
     setLatestMonth(cDate.getMonth() + 1);
-    console.log(
-      "Latest month and year: ",
-      cDate.getMonth() + 1,
-      " ",
-      cDate.getFullYear()
-    );
+    // console.log(
+    //   "Latest month and year: ",
+    //   cDate.getMonth() + 1,
+    //   " ",
+    //   cDate.getFullYear()
+    // );
     const pDate = new Date(prevDate);
     setPreviousYear(pDate.getFullYear());
     setPreviousMonth(pDate.getMonth() + 1);
-    console.log(
-      "Previous month and year: ",
-      pDate.getMonth() + 1,
-      " ",
-      pDate.getFullYear()
-    );
+    // console.log(
+    //   "Previous month and year: ",
+    //   pDate.getMonth() + 1,
+    //   " ",
+    //   pDate.getFullYear()
+    // );
   }, [currentDate, prevDate]);
 
   const handleExportToExcel = () => {

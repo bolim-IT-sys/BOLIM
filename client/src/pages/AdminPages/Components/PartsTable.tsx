@@ -13,6 +13,7 @@ import {
 import { ViewPartStocks } from "../../../components/modals/Parts/ViewPartStocks";
 import { EditingPart } from "../../../components/modals/Parts/EditingPart";
 import DangerButton from "../../../components/button/DangerButton";
+import { useSearchParams } from "react-router-dom";
 
 type Props = {
   parts: Part[];
@@ -29,30 +30,33 @@ export const PartsTable = ({
   isFetching,
   currentParts,
 }: Props) => {
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
-  const [sortBy, setSortBy] = useState<string>("partNumber");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const sort = searchParams.get("sort") || "partNumber";
+  const order = searchParams.get("order") || "asc";
+
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc" | string>(
+    `${order}`
+  );
+  const [sortBy, setSortBy] = useState<string>(sort);
   const [isDeleting, setIsDeleting] = useState<number>(0);
 
   const year = currentYear();
   const month = currentMonth();
-
-  const handleSortByStocks = () => {
-    const sorted = sortByStocks(
-      parts,
-      sortBy === "stocks" && sortOrder === "asc" ? "asc" : "desc"
-    );
-    console.log("Sorted Parts by QTY: ", sorted);
-    setSortBy("stocks");
-    setParts(sorted);
-    setSortOrder(sortBy === "stocks" && sortOrder === "asc" ? "desc" : "asc");
-  };
 
   const handleSortByPartNumber = () => {
     const sorted = sortByPartNumber(
       parts,
       sortBy === "partNumber" && sortOrder === "asc" ? "desc" : "asc"
     );
-    console.log("Sorted Parts by Part Number: ", sorted);
+    // console.log("Sorted Parts by Part Number: ", sorted);
+    const newParams = new URLSearchParams(searchParams);
+    newParams.set("sort", "partNumber");
+    newParams.set(
+      "order",
+      sortBy === "partNumber" && sortOrder === "asc" ? "desc" : "asc"
+    );
+    setSearchParams(newParams);
+
     setSortBy("partNumber");
     setParts(sorted);
     setSortOrder(
@@ -65,12 +69,39 @@ export const PartsTable = ({
       parts,
       sortBy === "unitPrice" && sortOrder === "asc" ? "asc" : "desc"
     );
-    console.log("Sorted Parts by Unit Price: ", sorted, " by: ", sortOrder);
+    // console.log("Sorted Parts by Unit Price: ", sorted, " by: ", sortOrder);
+    const newParams = new URLSearchParams(searchParams);
+    newParams.set("sort", "unitPrice");
+    newParams.set(
+      "order",
+      sortBy === "unitPrice" && sortOrder === "asc" ? "desc" : "asc"
+    );
+    setSearchParams(newParams);
+
     setSortBy("unitPrice");
     setParts(sorted);
     setSortOrder(
       sortBy === "unitPrice" && sortOrder === "asc" ? "desc" : "asc"
     );
+  };
+
+  const handleSortByStocks = () => {
+    const sorted = sortByStocks(
+      parts,
+      sortBy === "stocks" && sortOrder === "asc" ? "asc" : "desc"
+    );
+    // console.log("Sorted Parts by QTY: ", sorted);
+    const newParams = new URLSearchParams(searchParams);
+    newParams.set("sort", "stocks");
+    newParams.set(
+      "order",
+      sortBy === "stocks" && sortOrder === "asc" ? "desc" : "asc"
+    );
+    setSearchParams(newParams);
+
+    setSortBy("stocks");
+    setParts(sorted);
+    setSortOrder(sortBy === "stocks" && sortOrder === "asc" ? "desc" : "asc");
   };
 
   const handleDelete = async (partId: number) => {

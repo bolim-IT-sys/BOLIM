@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { fetchUserData, type User } from "../services/userService";
-import { useNavigate, Outlet } from "react-router-dom";
+import { useNavigate, Outlet, useSearchParams } from "react-router-dom";
 import NavBar from "../components/NavBar";
 import SideNavBar from "../components/SideNavBar";
 import {
@@ -8,11 +8,20 @@ import {
   fetchAllOutbounds,
 } from "../services/InboundOutbound.Service";
 import { fetchParts, type Part } from "../services/Part.Service";
+import {
+  sortByPartNumber,
+  sortByPrice,
+  sortByStocks,
+} from "../helper/sorting.helper";
 
 export default function Mainlayout() {
   const [user, setUser] = useState<User>();
   const [parts, setParts] = useState<Part[]>([]);
   const [isFetching, setIsFetching] = useState(false);
+
+  const [searchParams] = useSearchParams();
+  const sort = searchParams.get("sort") || "";
+  const order = searchParams.get("order") || "";
 
   const navigate = useNavigate();
 
@@ -64,7 +73,36 @@ export default function Mainlayout() {
             outbounds?.filter((outbound) => outbound.partId === part.id) || [],
         }));
 
-        setParts(partWithInboundOutbound);
+        if (sort === "partNumber") {
+          console.log(`Sorting by part number and by ${order}`);
+          const sorted = sortByPartNumber(
+            partWithInboundOutbound,
+            sort === "partNumber" && order === "asc" ? "asc" : "desc"
+          );
+          setParts(sorted);
+        } else if (sort === "stocks") {
+          console.log(`Sorting by stocks and by ${order}`);
+          const sorted = sortByStocks(
+            partWithInboundOutbound,
+            sort === "stocks" && order === "asc" ? "desc" : "asc"
+          );
+          setParts(sorted);
+        } else if (sort === "unitPrice") {
+          console.log(`Sorting by unit price and by ${order}`);
+          const sorted = sortByPrice(
+            partWithInboundOutbound,
+            sort === "unitPrice" && order === "asc" ? "desc" : "asc"
+          );
+          setParts(sorted);
+        } else {
+          console.log(`Sorting by part number and by ${order}`);
+          const sorted = sortByPartNumber(
+            partWithInboundOutbound,
+            sort === "partNumber" && order === "asc" ? "desc" : "asc"
+          );
+          setParts(sorted);
+        }
+
         // console.log("Fetched Parts: ", partWithInboundOutbound);
       } else {
         console.log("No parts found.");
