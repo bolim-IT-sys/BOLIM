@@ -3,6 +3,7 @@ import {
   getInQuantity,
   getOutQuantity,
   getSafetyStock,
+  getTotal,
   getTotalByYearExcludingCurrentMonth,
   monthList,
 } from "../../helper/helper";
@@ -35,21 +36,21 @@ export const DownloadPartData = ({ parts }: ItemDataProp) => {
     const cDate = new Date(currentDate);
     setLatestYear(cDate.getFullYear());
     setLatestMonth(cDate.getMonth() + 1);
-    console.log(
-      "Latest month and year: ",
-      cDate.getMonth() + 1,
-      " ",
-      cDate.getFullYear()
-    );
+    // console.log(
+    //   "Latest month and year: ",
+    //   cDate.getMonth() + 1,
+    //   " ",
+    //   cDate.getFullYear()
+    // );
     const pDate = new Date(prevDate);
     setPreviousYear(pDate.getFullYear());
     setPreviousMonth(pDate.getMonth() + 1);
-    console.log(
-      "Previous month and year: ",
-      pDate.getMonth() + 1,
-      " ",
-      pDate.getFullYear()
-    );
+    // console.log(
+    //   "Previous month and year: ",
+    //   pDate.getMonth() + 1,
+    //   " ",
+    //   pDate.getFullYear()
+    // );
   }, [currentDate, prevDate]);
 
   const handleExportToExcel = () => {
@@ -108,27 +109,34 @@ export const DownloadPartData = ({ parts }: ItemDataProp) => {
         latestMonth - 1
       );
 
-      const latestInboundsWithCurrentMonth =
-        getTotalByYearExcludingCurrentMonth(
-          part.inbounds!.map((i) => ({
-            quantity: i.quantity,
-            date: String(i.inboundDate),
-          })),
-          latestYear,
-          latestMonth
-        );
-      const latestOutboundsWithCurrentMonth =
-        getTotalByYearExcludingCurrentMonth(
-          part.outbounds!.map((o) => ({
-            quantity: o.quantity,
-            date: String(o.outboundDate),
-          })),
-          latestYear,
-          latestMonth
-        );
+      const overallInboundsWithCurrentMonth = getTotal(
+        part.inbounds!.map((i) => ({
+          quantity: i.quantity,
+          date: String(i.inboundDate),
+        })),
+        latestYear,
+        latestMonth
+      );
+      const overallOutboundsWithCurrentMonth = getTotal(
+        part.outbounds!.map((o) => ({
+          quantity: o.quantity,
+          date: String(o.outboundDate),
+        })),
+        latestYear,
+        latestMonth
+      );
 
       const stocksLeft =
-        latestInboundsWithCurrentMonth - latestOutboundsWithCurrentMonth;
+        overallInboundsWithCurrentMonth - overallOutboundsWithCurrentMonth;
+
+      console.log(
+        "Inbounds: ",
+        overallInboundsWithCurrentMonth,
+        ", Outbounds: ",
+        overallOutboundsWithCurrentMonth,
+        ", TOTAL: ",
+        stocksLeft
+      );
 
       const lastYearOutbounds = getTotalByYearExcludingCurrentMonth(
         part.outbounds!.map((o) => ({

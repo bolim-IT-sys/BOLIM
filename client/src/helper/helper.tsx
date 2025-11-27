@@ -1,5 +1,12 @@
 import type { Inbound, Outbound } from "../services/InboundOutbound.Service";
 
+export const formatNumberShort = (num: number) => {
+  if (num >= 1_000_000_000) return (num / 1_000_000_000).toFixed(2) + "B";
+  if (num >= 1_000_000) return (num / 1_000_000).toFixed(2) + "M";
+  if (num >= 1_000) return (num / 1_000).toFixed(2) + "K";
+  return num.toString();
+};
+
 // GETTING CURRENT YEAR
 export const currentYear = () => {
   return new Date().getFullYear();
@@ -70,6 +77,23 @@ export const getOutQuantity = (
       ? sum + item.quantity
       : sum;
   }, 0);
+};
+
+// FOR COMPUTING OVERALL INBOUND AND OUTBOUND UNTIL CURRENT MONTH AND YEAR
+export const getTotal = (
+  data: { quantity: number; date: string }[],
+  year: number,
+  month: number // 0-based month (Jan = 0)
+) => {
+  return data
+    .filter((item) => {
+      const d = new Date(item.date);
+      const itemYear = d.getFullYear();
+      const itemMonth = d.getMonth();
+
+      return itemYear < year || (itemYear === year && itemMonth < month);
+    })
+    .reduce((sum, item) => sum + item.quantity, 0);
 };
 
 // FOR COMPUTING TOTAL INBOUND AND OUTBOUND PER YEAR
