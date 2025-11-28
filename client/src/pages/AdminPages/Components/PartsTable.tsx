@@ -119,21 +119,30 @@ export const PartsTable = ({
       const result = await removePart(partId);
 
       if (result.success) {
-        setTimeout(() => {
-          alert(result.message);
-          fetchAllParts();
-        }, 1500);
+        setTimeout(
+          () => {
+            alert(result.message);
+            fetchAllParts();
+          },
+          import.meta.env.VITE_TIME_OUT
+        );
       } else {
-        setTimeout(() => {
-          alert(result.message);
-        }, 1500);
+        setTimeout(
+          () => {
+            alert(result.message);
+          },
+          import.meta.env.VITE_TIME_OUT
+        );
       }
     } catch (error) {
       console.error("Error occured: ", error);
     } finally {
-      setTimeout(() => {
-        setIsDeleting(0);
-      }, 1500);
+      setTimeout(
+        () => {
+          setIsDeleting(0);
+        },
+        import.meta.env.VITE_TIME_OUT
+      );
     }
   };
   return (

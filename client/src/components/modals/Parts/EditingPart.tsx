@@ -36,30 +36,39 @@ export const EditingPart = ({ fetchAllParts, part }: EditingProps) => {
       // console.log("creating part");
 
       if (result.success) {
-        setTimeout(() => {
-          alert(result.message);
-          fetchAllParts();
-          setModalShow(false);
-          setFormData({
-            partNumber: "",
-            specs: "",
-            category: "",
-            unitPrice: "",
-            company: "",
-          });
-        }, 1500);
+        setTimeout(
+          () => {
+            alert(result.message);
+            fetchAllParts();
+            setModalShow(false);
+            setFormData({
+              partNumber: "",
+              specs: "",
+              category: "",
+              unitPrice: "",
+              company: "",
+            });
+          },
+          import.meta.env.VITE_TIME_OUT
+        );
         // Redirect or update UI
       } else {
-        setTimeout(() => {
-          alert(`${result.message}`);
-        }, 1500);
+        setTimeout(
+          () => {
+            alert(`${result.message}`);
+          },
+          import.meta.env.VITE_TIME_OUT
+        );
       }
     } catch (error) {
       console.error("Unexpecter error occured: ", error);
     } finally {
-      setTimeout(() => {
-        setIsLoading(false);
-      }, 1500);
+      setTimeout(
+        () => {
+          setIsLoading(false);
+        },
+        import.meta.env.VITE_TIME_OUT
+      );
     }
   };
 

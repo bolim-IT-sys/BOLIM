@@ -45,40 +45,49 @@ export const Inbounding = ({
       // console.log("deploying stock item.");
 
       if (result.success) {
-        setTimeout(() => {
-          alert(result.message);
-          fetchTransactions();
-          fetchAllParts();
-          setInboundShow(false);
-          setModalShow(true);
-          // UPDATING THE QUANTITY OF THE INBOUNDED PART
-          setParts((prevParts) =>
-            prevParts.map((p) =>
-              p.id === formData.partId
-                ? { ...p, quantity: p.quantity + Number(formData.quantity) }
-                : p
-            )
-          );
-          // RESETTING FORMDATA AFTER INBOUND
-          setFormData((prev) => ({
-            ...prev,
-            partId: part.id!,
-            currentQuantity: part.quantity + Number(formData.quantity),
-            quantity: "",
-          }));
-        }, 0);
+        setTimeout(
+          () => {
+            alert(result.message);
+            fetchTransactions();
+            fetchAllParts();
+            setInboundShow(false);
+            setModalShow(true);
+            // UPDATING THE QUANTITY OF THE INBOUNDED PART
+            setParts((prevParts) =>
+              prevParts.map((p) =>
+                p.id === formData.partId
+                  ? { ...p, quantity: p.quantity + Number(formData.quantity) }
+                  : p
+              )
+            );
+            // RESETTING FORMDATA AFTER INBOUND
+            setFormData((prev) => ({
+              ...prev,
+              partId: part.id!,
+              currentQuantity: part.quantity + Number(formData.quantity),
+              quantity: "",
+            }));
+          },
+          import.meta.env.VITE_TIME_OUT
+        );
         // Redirect or update UI
       } else {
-        setTimeout(() => {
-          alert(`Error: ${result.message}`);
-        }, 0);
+        setTimeout(
+          () => {
+            alert(`Error: ${result.message}`);
+          },
+          import.meta.env.VITE_TIME_OUT
+        );
       }
     } catch (error) {
       console.error("Unexpecter error occured: ", error);
     } finally {
-      setTimeout(() => {
-        setInBounding(false);
-      }, 0);
+      setTimeout(
+        () => {
+          setInBounding(false);
+        },
+        import.meta.env.VITE_TIME_OUT
+      );
     }
   };
 

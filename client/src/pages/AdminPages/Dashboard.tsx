@@ -1,250 +1,226 @@
-import { TrendingUp, AlertTriangle, Boxes } from "lucide-react";
 import type { Part } from "../../services/Part.Service";
 import { useOutletContext } from "react-router-dom";
+import InputField from "../../components/InputField";
+import { useEffect, useMemo, useState } from "react";
+import { KeyMetrics } from "./Components/KeyMetrics";
 import {
-  currentMonth,
-  currentYear,
-  formatNumberShort,
-  getSafetyStock,
-} from "../../helper/helper";
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
 
 interface ContextType {
   parts: Part[];
 }
 
-interface CategoryStats {
-  [key: string]: {
-    count: number;
-    value: number;
-    quantity: number;
-  };
-}
-
 export default function Dashboard() {
   const { parts } = useOutletContext<ContextType>();
-  // Calculate metrics
-  const totalParts = parts.length;
-  const totalInventoryValue = parts.reduce(
-    (sum, part) => sum + part.unitPrice * part.quantity,
-    0
-  );
-  const lowStockParts = parts.filter((part) => {
-    const safetyStock = getSafetyStock(
-      part.outbounds!.map((o) => ({
-        quantity: o.quantity,
-        date: String(o.outboundDate),
-      })),
-      currentYear(),
-      currentMonth()
+
+  const [startDate, setStartDate] = useState<string>();
+  const [endDate, setEndDate] = useState<string>();
+
+  useEffect(() => {
+    const today = new Date();
+
+    // Calculate Monday of current week
+    const day = today.getDay(); // 0 = Sunday, 1 = Monday, ...
+    const diffToMonday = day === 0 ? -6 : 1 - day;
+
+    const start = new Date(today);
+    start.setDate(today.getDate() + diffToMonday + 1);
+    start.setHours(0, 0, 0, 0);
+
+    // End of week = start + 6 days (Sunday)
+    const end = new Date(start);
+    end.setDate(start.getDate() + 5);
+    end.setHours(23, 59, 59, 999);
+
+    setStartDate(start.toISOString().split("T")[0]);
+    setEndDate(end.toISOString().split("T")[0]);
+  }, []);
+
+  const filteredAndRankedParts = useMemo(() => {
+    if (!startDate || !endDate) {
+      return [];
+    }
+    const start = new Date(startDate);
+    start.setHours(0, 0, 0, 0);
+
+    const end = new Date(endDate);
+    end.setHours(23, 59, 59, 999);
+
+    const processedParts = parts.map((part) => {
+      // console.log("Filtering parts...", part.partNumber);
+      const filteredOutbounds = part.outbounds!.filter((outbound) => {
+        const date = new Date(outbound.outboundDate);
+        date.setHours(0, 0, 0, 0); // Normalize to start of day
+        return date >= start && date <= end;
+      });
+      console.log(
+        `Filtered outbounds for ${part.partNumber}: `,
+        filteredOutbounds
+      );
+
+      // Calculate totals
+
+      const totalOutbound = filteredOutbounds.reduce(
+        (sum, outbound) => sum + outbound.quantity,
+        0
+      );
+
+      return {
+        ...part,
+        filteredOutbounds,
+        totalOutbound,
+        outboundCount: filteredOutbounds.length,
+      };
+    });
+
+    // Filter parts that have both inbounds and outbounds
+    const partsWithBoth = processedParts.filter(
+      (part) => part.totalOutbound > 0
     );
 
-    return part.quantity > 0 && part.quantity < safetyStock;
-  });
-  const outOfStockParts = parts.filter((part) => part.quantity === 0);
+    // Sort by total outbound (usage) descending
+    return partsWithBoth.sort((a, b) => b.totalOutbound - a.totalOutbound);
+  }, [parts, startDate, endDate]);
 
-  // Category breakdown
-  const categoryStats: CategoryStats = parts.reduce((acc, part) => {
-    if (!acc[part.category]) {
-      acc[part.category] = { count: 0, value: 0, quantity: 0 };
-    }
-    acc[part.category].count += 1;
-    acc[part.category].value += part.unitPrice * part.quantity;
-    acc[part.category].quantity += part.quantity;
-    return acc;
-  }, {} as CategoryStats);
+  const chartData = useMemo(() => {
+    return filteredAndRankedParts.map((part, index) => ({
+      name: part.partNumber,
+      fullName: `${part.specs} (${part.category})`,
+      company: part.company,
+      rank: index + 1,
+      outbound: part.totalOutbound,
+      stock: part.quantity,
+    }));
+  }, [filteredAndRankedParts]);
 
-  // Company breakdown
-  const companyStats: CategoryStats = parts.reduce((acc, part) => {
-    if (!acc[part.company]) {
-      acc[part.company] = { count: 0, value: 0, quantity: 0 };
-    }
-    acc[part.company].count += 1;
-    acc[part.company].value += part.unitPrice * part.quantity;
-    acc[part.company].quantity += part.quantity;
-    return acc;
-  }, {} as CategoryStats);
+  useEffect(() => {
+    console.log("FILTERED PARTS: ", filteredAndRankedParts);
+  }, [filteredAndRankedParts]);
 
   return (
     <>
       <div className=" ">
         {/* Header */}
-        <div className="mb-4">
+        <div className="mb-3">
           <h2 className="font-bold text-gray-900">DASHBOARD</h2>
         </div>
         <div className="h-full overflow-auto">
           {/* Key Metrics Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <div className={`bg-sky-500 text-neutral-50 rounded shadow p-6`}>
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-neutral-50">
-                    Total Parts
-                  </p>
-                  <p className="text-2xl font-bold text-neutral-0 mt-2">
-                    {totalParts}
-                  </p>
-                  <p className="text-sm text-neutral-100 mt-1">
-                    Number of spare parts
-                  </p>
-                </div>
-                <div
-                  className={`size-13 flex justify-center items-center p-3 rounded-full bg-neutral-50 text-sky-500`}
-                >
-                  <h3 className="">
-                    <i className="bx  bxs-package"></i>
-                  </h3>
-                </div>
-              </div>
-            </div>
-
-            <div
-              className={`bg-emerald-500 text-neutral-50 rounded shadow p-6`}
-            >
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-neutral-50">
-                    Inventory Value
-                  </p>
-                  <p className="text-2xl font-bold text-neutral-0 mt-2">
-                    {`₩ ${formatNumberShort(totalInventoryValue)}`}
-                    {/* {`₩${totalInventoryValue.toLocaleString("en-US", { maximumFractionDigits: 2 })}`} */}
-                  </p>
-                  <p className="text-sm text-neutral-100 mt-1">
-                    Total stock value
-                  </p>
-                </div>
-                <div
-                  className={`size-13 flex justify-center items-center p-3 rounded-full bg-neutral-50 text-emerald-500`}
-                >
-                  <h3 className="mt-1">
-                    <i className="bx  bxs-currency-notes"></i>
-                  </h3>
-                </div>
-              </div>
-            </div>
-            <div className={`bg-yellow-400 text-neutral-50 rounded shadow p-6`}>
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-neutral-50">
-                    Low Stock Alert
-                  </p>
-                  <p className="text-2xl font-bold text-neutral-0 mt-2">
-                    {`${lowStockParts.length}`}
-                    {/* {`₩${totalInventoryValue.toLocaleString("en-US", { maximumFractionDigits: 2 })}`} */}
-                  </p>
-                  <p className="text-sm text-neutral-100 mt-1">
-                    Parts below safety stocks
-                  </p>
-                </div>
-                <div
-                  className={`size-13 flex justify-center items-center p-3 rounded-full bg-neutral-50 text-yellow-400`}
-                >
-                  <h3 className="mt-1">
-                    <i className="bx  bxs-alert-triangle"></i>
-                  </h3>
-                </div>
-              </div>
-            </div>
-            <div className={`bg-red-500 text-neutral-50 rounded shadow p-6`}>
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-neutral-50">
-                    Out of Stock
-                  </p>
-                  <p className="text-2xl font-bold text-neutral-0 mt-2">
-                    {`${outOfStockParts.length}`}
-                    {/* {`₩${totalInventoryValue.toLocaleString("en-US", { maximumFractionDigits: 2 })}`} */}
-                  </p>
-                  <p className="text-sm text-neutral-100 mt-1">
-                    Immediate attention needed
-                  </p>
-                </div>
-                <div
-                  className={`size-13 flex justify-center items-center p-3 rounded-full bg-neutral-50 text-red-500`}
-                >
-                  <h3 className="mt-1">
-                    <i className="bx  bxs-trending-down"></i>
-                  </h3>
-                </div>
-              </div>
-            </div>
-          </div>
+          <KeyMetrics parts={parts} />
 
           {/* Two Column Layout */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            {/* Category Breakdown */}
-            <div className="bg-white rounded-lg shadow p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-bold text-gray-900">By Category</h2>
-                <Boxes size={20} className="text-gray-400" />
-              </div>
-              <div className="space-y-4">
-                {Object.entries(categoryStats).map(([category, stats]) => (
-                  <div key={category} className="border-b pb-3 last:border-b-0">
-                    <div className="flex justify-between items-start mb-2">
-                      <span className="font-medium text-gray-700">
-                        {category}
-                      </span>
-                      <span className="text-sm font-semibold text-blue-600">
-                        $
-                        {stats.value.toLocaleString("en-US", {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        })}
-                      </span>
-                    </div>
-                    <div className="flex justify-between text-sm text-gray-500">
-                      <span>{stats.count} parts</span>
-                      <span>{stats.quantity} units</span>
-                    </div>
-                  </div>
-                ))}
-                {Object.keys(categoryStats).length === 0 && (
-                  <p className="text-gray-500 text-center py-4">
-                    No categories available
-                  </p>
-                )}
-              </div>
+          <div className="flex justify-start items-center gap-2">
+            <div className="mb-1">
+              <label className="block font-medium text-gray-700">
+                <p>START DATE:</p>
+              </label>
+              <InputField
+                label="START DATE"
+                type="date"
+                value={startDate!}
+                required={true}
+                onChange={(value: string) => setStartDate(value)}
+                autoComplete={`Previous date`}
+              />
             </div>
+            <div className="mb-1">
+              <label className="block font-medium text-gray-700">
+                <p>END DATE:</p>
+              </label>
+              <InputField
+                label="END DATE"
+                type="date"
+                value={endDate!}
+                required={true}
+                onChange={(value: string) => setEndDate(value)}
+                autoComplete={`Previous date`}
+              />
+            </div>
+          </div>
+          <div>
+            <div className="bg-white rounded-xl shadow-lg">
+              <h2 className="text-xl font-bold text-gray-800 mb-3 flex items-center gap-2">
+                <i className="bx  bxs-chart-bar-columns"></i> Parts Usage
+                Overview
+              </h2>
 
-            {/* Company Breakdown */}
-            <div className="bg-white rounded-lg shadow p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-bold text-gray-900">By Company</h2>
-                <TrendingUp size={20} className="text-gray-400" />
-              </div>
-              <div className="space-y-4">
-                {Object.entries(companyStats).map(([company, stats]) => (
-                  <div key={company} className="border-b pb-3 last:border-b-0">
-                    <div className="flex justify-between items-start mb-2">
-                      <span className="font-medium text-gray-700">
-                        {company}
-                      </span>
-                      <span className="text-sm font-semibold text-green-600">
-                        $
-                        {stats.value.toLocaleString("en-US", {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        })}
-                      </span>
-                    </div>
-                    <div className="flex justify-between text-sm text-gray-500">
-                      <span>{stats.count} parts</span>
-                      <span>{stats.quantity} units</span>
-                    </div>
-                  </div>
-                ))}
-                {Object.keys(companyStats).length === 0 && (
-                  <p className="text-gray-500 text-center py-4">
-                    No companies available
+              {filteredAndRankedParts.length > 0 ? (
+                <ResponsiveContainer width="100%" height={430}>
+                  <BarChart
+                    data={chartData}
+                    margin={{ top: 0, right: 30, left: 0, bottom: 0 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis
+                      dataKey="name"
+                      angle={-40}
+                      textAnchor="end"
+                      height={80}
+                      interval={0}
+                      style={{ fontSize: "12px" }}
+                    />
+                    <YAxis />
+                    <Tooltip
+                      content={({ active, payload }) => {
+                        if (active && payload && payload.length) {
+                          return (
+                            <div className="bg-white p-4 rounded-lg shadow-lg border border-gray-200">
+                              <p className="font-bold text-gray-800 mb-1">
+                                {payload[0].payload.name}
+                              </p>
+                              <p className="text-sm text-gray-600 mb-1">
+                                {payload[0].payload.fullName}
+                              </p>
+                              <p className="text-sm text-gray-600 mb-2">
+                                {payload[0].payload.company}
+                              </p>
+                              <p className="text-sm text-gray-600 mb-1">
+                                Rank: #{payload[0].payload.rank}
+                              </p>
+                              <p className="text-sm text-red-600">
+                                Outbound: {payload[0].payload.outbound}
+                              </p>
+                              <p className="text-sm text-blue-600">
+                                Current Stock: {payload[0].payload.stock}
+                              </p>
+                            </div>
+                          );
+                        }
+                        return null;
+                      }}
+                    />
+                    <Legend />
+                    <Bar dataKey="outbound" fill="#ef4444" name="Outbound" />
+                    <Bar dataKey="stock" fill="#3b82f6" name="Current Stock" />
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="text-center py-12" style={{ height: 430 }}>
+                  <h1 className="text-neutral-500">
+                    <i className="bx  bxs-package"></i>
+                  </h1>
+                  <h3 className="text-xl font-semibold text-gray-600 mb-2">
+                    No Data Available
+                  </h3>
+                  <p className="text-gray-500">
+                    No parts have both inbound and outbound transactions within
+                    the selected date range.
                   </p>
-                )}
-              </div>
+                </div>
+              )}
             </div>
           </div>
 
           {/* Alert Section */}
-          {(lowStockParts.length > 0 || outOfStockParts.length > 0) && (
+          {/* {(lowStockParts.length > 0 || outOfStockParts.length > 0) && (
             <div className="bg-white rounded-lg shadow p-6">
               <h2 className="text-xl font-bold text-gray-900 mb-4">
                 Inventory Alerts
@@ -304,7 +280,7 @@ export default function Dashboard() {
                 </div>
               )}
             </div>
-          )}
+          )} */}
         </div>
       </div>
     </>
