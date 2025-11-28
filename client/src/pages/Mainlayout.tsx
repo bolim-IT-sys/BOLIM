@@ -103,7 +103,10 @@ export default function Mainlayout() {
           setParts(sorted);
         }
 
-        // console.log("Fetched Parts: ", partWithInboundOutbound);
+        // console.log(
+        //   "Fetched Parts with inbounds and outbounds: ",
+        //   partWithInboundOutbound
+        // );
       } else {
         console.log("No parts found.");
         setParts([]);
@@ -118,9 +121,12 @@ export default function Mainlayout() {
       setIsFetching(true);
       await fetchAllParts();
     } finally {
-      setTimeout(() => {
-        setIsFetching(false);
-      }, 1000);
+      setTimeout(
+        () => {
+          setIsFetching(false);
+        },
+        import.meta.env.VITE_TIME_OUT
+      );
     }
   };
 
@@ -134,7 +140,7 @@ export default function Mainlayout() {
       <div className="flex justify-start w-dvw pt-15 ">
         <SideNavBar />
         <div className="h-full w-9/10 ">
-          <div className="bg-neutral-50 h-95/100 my-7 mx-5 p-5 rounded-sm">
+          <div className="bg-white h-95/100 my-7 mx-5 p-5 rounded-sm">
             <Outlet
               context={{ user, parts, setParts, fetchAllParts, isFetching }}
             />

@@ -31,25 +31,31 @@ export const InboundPart = ({ fetchAllParts }: Props) => {
       console.log("Adding part.");
 
       if (result.success) {
-        setTimeout(() => {
-          setIsLoading(false);
-          alert(result.message);
-          fetchAllParts();
-          setModalShow(false);
-          setFormData({
-            partNumber: "",
-            specs: "",
-            category: "",
-            unitPrice: "",
-            company: "",
-          });
-        }, 1500);
+        setTimeout(
+          () => {
+            setIsLoading(false);
+            alert(result.message);
+            fetchAllParts();
+            setModalShow(false);
+            setFormData({
+              partNumber: "",
+              specs: "",
+              category: "",
+              unitPrice: "",
+              company: "",
+            });
+          },
+          import.meta.env.VITE_TIME_OUT
+        );
         // Redirect or update UI
       } else {
-        setTimeout(() => {
-          setIsLoading(false);
-          alert(`Error: ${result.message}`);
-        }, 0);
+        setTimeout(
+          () => {
+            setIsLoading(false);
+            alert(`Error: ${result.message}`);
+          },
+          import.meta.env.VITE_TIME_OUT
+        );
       }
     } catch (error) {
       console.error("Unexpecter error occured: ", error);

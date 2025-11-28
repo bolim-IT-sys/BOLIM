@@ -28,24 +28,33 @@ export const EditingStock = ({ fetchAllStocks, stock }: EditingProps) => {
       // console.log("creating stock");
 
       if (result.success) {
-        setTimeout(() => {
-          alert(result.message);
-          fetchAllStocks();
-          setModalShow(false);
-          setFormData({ name: "", specs: "" });
-        }, 1500);
+        setTimeout(
+          () => {
+            alert(result.message);
+            fetchAllStocks();
+            setModalShow(false);
+            setFormData({ name: "", specs: "" });
+          },
+          import.meta.env.VITE_TIME_OUT
+        );
         // Redirect or update UI
       } else {
-        setTimeout(() => {
-          alert(`${result.message}`);
-        }, 1500);
+        setTimeout(
+          () => {
+            alert(`${result.message}`);
+          },
+          import.meta.env.VITE_TIME_OUT
+        );
       }
     } catch (error) {
       console.error("Unexpecter error occured: ", error);
     } finally {
-      setTimeout(() => {
-        setIsLoading(false);
-      }, 1500);
+      setTimeout(
+        () => {
+          setIsLoading(false);
+        },
+        import.meta.env.VITE_TIME_OUT
+      );
     }
   };
 

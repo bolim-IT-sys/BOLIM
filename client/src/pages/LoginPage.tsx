@@ -43,21 +43,30 @@ export default function LoginPage() {
       const result = await login(formData);
 
       if (result.success) {
-        setTimeout(() => {
-          navigate("/home");
-          alert("Loggin Success");
-        }, 1500);
+        setTimeout(
+          () => {
+            navigate("/home");
+            alert("Loggin Success");
+          },
+          import.meta.env.VITE_TIME_OUT
+        );
       } else {
-        setTimeout(() => {
-          alert("Invalid credentials");
-        }, 1500);
+        setTimeout(
+          () => {
+            alert("Invalid credentials");
+          },
+          import.meta.env.VITE_TIME_OUT
+        );
       }
     } catch (error) {
       console.error("Unexpected error occured: ", error);
     } finally {
-      setTimeout(() => {
-        setIsLoading(false);
-      }, 1500);
+      setTimeout(
+        () => {
+          setIsLoading(false);
+        },
+        import.meta.env.VITE_TIME_OUT
+      );
     }
   };
 

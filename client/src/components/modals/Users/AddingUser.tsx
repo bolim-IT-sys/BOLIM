@@ -29,18 +29,24 @@ export const AddingUser = ({ fetchAllUsers }: AddingProps) => {
       console.log("creating user");
 
       if (result.success) {
-        setTimeout(() => {
-          setIsLoading(false);
-          alert("User created successfully!");
-          fetchAllUsers();
-          setModalShow(false);
-        }, 1500);
+        setTimeout(
+          () => {
+            setIsLoading(false);
+            alert("User created successfully!");
+            fetchAllUsers();
+            setModalShow(false);
+          },
+          import.meta.env.VITE_TIME_OUT
+        );
         // Redirect or update UI
       } else {
-        setTimeout(() => {
-          setIsLoading(false);
-          alert(`Error: ${result.message}`);
-        }, 1500);
+        setTimeout(
+          () => {
+            setIsLoading(false);
+            alert(`Error: ${result.message}`);
+          },
+          import.meta.env.VITE_TIME_OUT
+        );
       }
     } catch (error) {
       console.error("Unexpecter error occured: ", error);
