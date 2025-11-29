@@ -2,7 +2,7 @@ import type { Part } from "../../services/Part.Service";
 import { useOutletContext } from "react-router-dom";
 import InputField from "../../components/InputField";
 import { useEffect, useMemo, useState } from "react";
-import { KeyMetrics } from "./Components/KeyMetrics";
+import { KeyMetrics } from "./Components/dashboard/KeyMetrics";
 import {
   BarChart,
   Bar,

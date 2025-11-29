@@ -1,10 +1,10 @@
 import {
   currentMonth,
   currentYear,
-  formatNumberShort,
   getSafetyStock,
-} from "../../../helper/helper";
-import type { Part } from "../../../services/Part.Service";
+} from "../../../../helper/helper";
+import type { Part } from "../../../../services/Part.Service";
+import { StockValue } from "./StockValue";
 
 type Props = {
   parts: Part[];
@@ -12,10 +12,7 @@ type Props = {
 
 export const KeyMetrics = ({ parts }: Props) => {
   const totalParts = parts.length;
-  const totalInventoryValue = parts.reduce(
-    (sum, part) => sum + part.unitPrice * part.quantity,
-    0
-  );
+
   const lowStockParts = parts.filter((part) => {
     const safetyStock = getSafetyStock(
       part.outbounds!.map((o) => ({
@@ -53,28 +50,7 @@ export const KeyMetrics = ({ parts }: Props) => {
             </div>
           </div>
         </div>
-
-        <div className={`bg-emerald-500 text-neutral-50 rounded shadow p-6`}>
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-neutral-50">
-                Inventory Value
-              </p>
-              <p className="text-2xl font-bold text-neutral-0 mt-2">
-                {`₩ ${formatNumberShort(totalInventoryValue)}`}
-                {/* {`₩${totalInventoryValue.toLocaleString("en-US", { maximumFractionDigits: 2 })}`} */}
-              </p>
-              <p className="text-sm text-neutral-100 mt-1">Total stock value</p>
-            </div>
-            <div
-              className={`size-13 flex justify-center items-center p-3 rounded-full bg-neutral-50 text-emerald-500`}
-            >
-              <h3 className="mt-1">
-                <i className="bx  bxs-currency-notes"></i>
-              </h3>
-            </div>
-          </div>
-        </div>
+        <StockValue parts={parts} />
         <div className={`bg-yellow-400 text-neutral-50 rounded shadow p-6`}>
           <div className="flex items-center justify-between">
             <div>

@@ -245,22 +245,22 @@ export const PartsTable = ({
                   {currentParts.map((part) => (
                     <tr key={part.id} className="hover:bg-gray-50">
                       <td className="text-center border border-neutral-300 px-3 py-2">
-                        {part.partNumber}
+                        <h6>{part.partNumber}</h6>
                       </td>
                       <td className="text-center border border-neutral-300 px-3 py-2">
-                        {part.specs}
+                        <h6>{part.specs}</h6>
                       </td>
                       <td className="text-center border border-neutral-300 px-3 py-2">
-                        {part.category}
+                        <h6>{part.category}</h6>
                       </td>
                       <td className="text-center border border-neutral-300 px-3 py-2">
-                        {part.unitPrice}
+                        <h6>{part.unitPrice}</h6>
                       </td>
                       <td className="text-center border border-neutral-300 px-3 py-2">
-                        {part.company}
+                        <h6>{part.company}</h6>
                       </td>
                       <td className="text-center border border-neutral-300 px-3 py-2">
-                        <p
+                        <h6
                           className={`${
                             part.quantity <
                             getSafetyStock(
@@ -275,8 +275,8 @@ export const PartsTable = ({
                               : "bg-emerald-100 text-emerald-800"
                           } rounded px-1`}
                         >
-                          <b>{part.quantity} </b>
-                        </p>
+                          <b>{part.quantity}</b>
+                        </h6>
                       </td>
                       <td
                         className=" text-center border border-neutral-300 p-2"
