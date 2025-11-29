@@ -4,7 +4,7 @@ import { logout } from "../services/authService";
 import { useNavigate } from "react-router-dom";
 import { Dropdown, DropdownItem } from "./Dropdown";
 import DangerButton from "./button/DangerButton";
-import logo from "/logowithtext.png";
+import logo from "/bolimlogo.png";
 
 interface NavbarProps {
   user: User;
@@ -26,7 +26,7 @@ export default function NavBar({ user, fetchAllUsers }: NavbarProps) {
         style={{ width: "100%" }}
       >
         <div className="flex justify-between items-center mx-3">
-          <div className="flex justify-center items-center">
+          <div className="flex justify-center items-center gap-2">
             <div className="size-10 flex justify-center items-center">
               <img className="w-full" src={logo} alt="navLogo" />
             </div>

@@ -9,6 +9,7 @@
 
   /* TEXT CUSTOM SIZES */
   --text-xs: clamp(0.75rem, 0.7rem + 0.2vw, 0.8rem);
+  --text-xs: clamp(0.75rem, 0.7rem + 0.2vw, 0.8rem);
   --text-sm: clamp(0.875rem, 0.8rem + 0.3vw, 1rem);
   --text-md: clamp(1rem, 0.9rem + 0.5vw, 1.25rem);
   --text-lg: clamp(1.25rem, 1rem + 0.8vw, 1.5rem);
