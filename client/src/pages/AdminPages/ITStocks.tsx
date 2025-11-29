@@ -14,7 +14,7 @@ interface ContextType {
   isFetching: boolean;
 }
 
-export default function HomePage() {
+export default function ITStocks() {
   const { parts, setParts, fetchAllParts, isFetching } =
     useOutletContext<ContextType>();
   const [currentParts, setCurrentParts] = useState<Part[]>([]);
