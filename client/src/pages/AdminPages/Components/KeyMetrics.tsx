@@ -26,8 +26,8 @@ export const KeyMetrics = ({ parts }: Props) => {
       currentMonth()
     );
     const lowStockParts = part.quantity > 0 && part.quantity < safetyStock;
-    console.log("Low Stock Parts: ", lowStockParts);
-    return part.quantity > 0 && part.quantity < safetyStock;
+    // console.log("Low Stock Parts: ", lowStockParts);
+    return lowStockParts;
   });
   const outOfStockParts = parts.filter((part) => part.quantity === 0);
   return (

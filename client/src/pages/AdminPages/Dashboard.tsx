@@ -61,10 +61,10 @@ export default function Dashboard() {
         date.setHours(0, 0, 0, 0); // Normalize to start of day
         return date >= start && date <= end;
       });
-      console.log(
-        `Filtered outbounds for ${part.partNumber}: `,
-        filteredOutbounds
-      );
+      // console.log(
+      //   `Filtered outbounds for ${part.partNumber}: `,
+      //   filteredOutbounds
+      // );
 
       // Calculate totals
 
@@ -101,9 +101,9 @@ export default function Dashboard() {
     }));
   }, [filteredAndRankedParts]);
 
-  useEffect(() => {
-    console.log("FILTERED PARTS: ", filteredAndRankedParts);
-  }, [filteredAndRankedParts]);
+  // useEffect(() => {
+  //   console.log("FILTERED PARTS: ", filteredAndRankedParts);
+  // }, [filteredAndRankedParts]);
 
   return (
     <>
