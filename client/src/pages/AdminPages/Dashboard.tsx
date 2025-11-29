@@ -2,7 +2,7 @@ import type { Part } from "../../services/Part.Service";
 import { useOutletContext } from "react-router-dom";
 import InputField from "../../components/InputField";
 import { useEffect, useMemo, useState } from "react";
-import { KeyMetrics } from "./Components/KeyMetrics";
+import { KeyMetrics } from "./Components/dashboard/KeyMetrics";
 import {
   BarChart,
   Bar,
@@ -61,10 +61,10 @@ export default function Dashboard() {
         date.setHours(0, 0, 0, 0); // Normalize to start of day
         return date >= start && date <= end;
       });
-      console.log(
-        `Filtered outbounds for ${part.partNumber}: `,
-        filteredOutbounds
-      );
+      // console.log(
+      //   `Filtered outbounds for ${part.partNumber}: `,
+      //   filteredOutbounds
+      // );
 
       // Calculate totals
 
@@ -101,9 +101,9 @@ export default function Dashboard() {
     }));
   }, [filteredAndRankedParts]);
 
-  useEffect(() => {
-    console.log("FILTERED PARTS: ", filteredAndRankedParts);
-  }, [filteredAndRankedParts]);
+  // useEffect(() => {
+  //   console.log("FILTERED PARTS: ", filteredAndRankedParts);
+  // }, [filteredAndRankedParts]);
 
   return (
     <>

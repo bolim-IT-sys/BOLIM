@@ -24,7 +24,7 @@ export default function LoginPage() {
         }
         const result = await fetchUserData(token);
         if (result.success) {
-          navigate("/home");
+          navigate("/dashboard");
         }
       } catch (error) {
         console.log(error);
@@ -45,7 +45,7 @@ export default function LoginPage() {
       if (result.success) {
         setTimeout(
           () => {
-            navigate("/home");
+            navigate("/dashboard");
             alert("Loggin Success");
           },
           import.meta.env.VITE_TIME_OUT
