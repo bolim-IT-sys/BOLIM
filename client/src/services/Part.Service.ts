@@ -3,6 +3,7 @@ import type { Inbound, Outbound } from "./InboundOutbound.Service";
 
 export interface Part {
   id?: number;
+  image?: File | string | null;
   partNumber: string;
   specs: string;
   category: string;
@@ -14,6 +15,7 @@ export interface Part {
 }
 
 export interface AddingPartType {
+  image?: File | null;
   partNumber: string;
   specs: string;
   category: string;
@@ -140,17 +142,12 @@ export async function createPart(
 
 export async function editPart(
   id: number,
-  formData: AddingPartType
+  formData: FormData | AddingPartType
 ): Promise<PartResponse> {
   try {
     const response = await axios.put(
       `${API_URL}/parts/updatePart/${id}`,
-      formData,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
+      formData
     );
     // console.log("editing user details");
     if (response.status === 200) {

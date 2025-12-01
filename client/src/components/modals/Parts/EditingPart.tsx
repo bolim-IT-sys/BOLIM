@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import InputField from "../../InputField";
 import { Modal } from "../../Modal";
 import SuccessButton from "../../button/SuccessButton";
@@ -17,6 +17,7 @@ interface EditingProps {
 export const EditingPart = ({ fetchAllParts, part }: EditingProps) => {
   const [modalShow, setModalShow] = useState<boolean>(false);
   const [formData, setFormData] = useState<AddingPartType>({
+    image: null,
     partNumber: part.partNumber,
     specs: part.specs,
     category: part.category,
@@ -27,12 +28,40 @@ export const EditingPart = ({ fetchAllParts, part }: EditingProps) => {
   const handleChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
+  const [preview, setPreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const id = part.id;
+
+  const handleSelectImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const imgURL = URL.createObjectURL(file);
+    setPreview(imgURL);
+    setFormData((prev) => ({
+      ...prev,
+      image: file,
+    }));
+  };
 
   const handleSubmit = async () => {
     setIsLoading(true);
     try {
-      const result = await editPart(id!, formData);
+      if (!id) return;
+
+      const fd = new FormData();
+
+      fd.append("partNumber", formData.partNumber);
+      fd.append("specs", formData.specs);
+      fd.append("category", formData.category);
+      fd.append("unitPrice", formData.unitPrice);
+      fd.append("company", formData.company);
+
+      if (formData.image) {
+        fd.append("image", formData.image);
+      }
+
+      const result = await editPart(id, fd);
       // console.log("creating part");
 
       if (result.success) {
@@ -42,11 +71,11 @@ export const EditingPart = ({ fetchAllParts, part }: EditingProps) => {
             fetchAllParts();
             setModalShow(false);
             setFormData({
-              partNumber: "",
-              specs: "",
-              category: "",
-              unitPrice: "",
-              company: "",
+              partNumber: formData.partNumber,
+              specs: formData.specs,
+              category: formData.category,
+              unitPrice: String(formData.unitPrice),
+              company: formData.company,
             });
           },
           import.meta.env.VITE_TIME_OUT
@@ -74,6 +103,7 @@ export const EditingPart = ({ fetchAllParts, part }: EditingProps) => {
 
   const NoChanges = () => {
     return (
+      !formData.image &&
       part.partNumber === formData.partNumber &&
       part.specs === formData.specs &&
       part.category === formData.category &&
@@ -108,6 +138,34 @@ export const EditingPart = ({ fetchAllParts, part }: EditingProps) => {
         }
       >
         <div className="text-start">
+          <div className="mb-1">
+            <div className="h-38 flex justify-center items-center">
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                ref={fileInputRef}
+                onChange={handleSelectImage}
+              />
+              <div
+                className="size-38 bg-neutral-200 flex justify-center items-center flex-col rounded  cursor-pointer"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                {preview ? (
+                  <img
+                    src={preview}
+                    alt="Preview"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <>
+                    <i className="bx bx-image-landscape"></i>
+                    <h6>NO IMAGE</h6>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
           <div className="mb-1">
             <label className="block font-medium text-gray-700">
               <p>PART NUMBER</p>

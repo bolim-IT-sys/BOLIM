@@ -131,6 +131,10 @@ const updatePart = async (partsId, PartData) => {
       updateData.quantity = PartData.quantity;
     }
 
+    if (PartData.image) {
+      updateData.image = PartData.image;
+    }
+
     await parts.update(updateData);
 
     console.log("Part updated successfully.");

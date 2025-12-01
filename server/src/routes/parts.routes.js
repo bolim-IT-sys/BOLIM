@@ -1,4 +1,5 @@
 const express = require("express");
+const { upload } = require("../middlewares/pinUpload");
 const {
   getAllParts,
   createPart,
@@ -16,7 +17,7 @@ const router = express.Router();
 
 router.get("/fetchParts", getAllParts);
 router.post("/createPart", createPart);
-router.put("/updatePart/:id", updatePart);
+router.put("/updatePart/:id", upload.single("image"), updatePart);
 router.delete("/deletePart/:id", deletePart);
 
 router.post("/inbound", inboundPart);

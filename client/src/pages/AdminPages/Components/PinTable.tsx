@@ -158,6 +158,14 @@ export const PinTable = ({
               onClick={handleSortByPartNumber}
             >
               <div className="h-10 flex justify-center items-center border border-neutral-300">
+                <h5>IMAGE</h5>
+              </div>
+            </th>
+            <th
+              className="hover:bg-sky-600 transition duration-200 border border-neutral-300 text-center cursor-pointer"
+              onClick={handleSortByPartNumber}
+            >
+              <div className="h-10 flex justify-center items-center border border-neutral-300">
                 <h5>
                   PIN NUMBER{" "}
                   {sortBy === "partNumber"
@@ -244,6 +252,25 @@ export const PinTable = ({
                 <>
                   {currentParts.map((part) => (
                     <tr key={part.id} className="hover:bg-gray-50">
+                      <td className="text-center border border-neutral-300 cursor-pointer">
+                        <div className="h-18 flex justify-center items-center">
+                          <div className="size-18 bg-neutral-200 flex justify-center items-center flex-col rounded">
+                            {!part.image ? (
+                              <>
+                                <i className="bx bx-image-landscape"></i>
+                                <h6>NO IMAGE</h6>
+                              </>
+                            ) : (
+                              <>
+                                <img
+                                  src={`${import.meta.env.VITE_API_URL}/uploads/pinImage/${part.image}`}
+                                  alt=""
+                                />
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      </td>
                       <td className="text-center border border-neutral-300 px-3 py-2">
                         <h6>{part.partNumber}</h6>
                       </td>

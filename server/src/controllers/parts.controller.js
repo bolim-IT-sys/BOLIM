@@ -72,8 +72,14 @@ const createPart = async (req, res) => {
 const updatePart = async (req, res) => {
   try {
     const PartId = req.params.id;
+    // console.log("=== DEBUG INFO ===");
+    // console.log("Headers:", req.headers);
+    // console.log("Body:", req.body);
+    // console.log("File:", req.file);
+    // console.log("Files:", req.files); // In case it's an array
+    // console.log("==================");
+    // const PartId = req.params.id;
 
-    // Optional: Validate request body first
     if (
       !req.body.partNumber ||
       !req.body.specs ||
@@ -84,6 +90,19 @@ const updatePart = async (req, res) => {
       return res.status(400).json({
         message: "Please fill in all required fields.",
       });
+    }
+
+    const data = {
+      partNumber: req.body.partNumber,
+      specs: req.body.specs,
+      category: req.body.category,
+      unitPrice: req.body.unitPrice,
+      company: req.body.company,
+    };
+
+    if (req.file) {
+      data.image = req.file.filename; // save image name or URL to DB
+      console.log("Image name: ", req.file.filename);
     }
 
     // Check if part exists
@@ -99,11 +118,12 @@ const updatePart = async (req, res) => {
 
     // CHECKING IF CHANGES WERE MADE.
     if (
-      req.body.partNumber === existingPart.partNumber &&
-      req.body.specs === existingPart.specs &&
-      req.body.category === existingPart.category &&
-      parseFloat(req.body.unitPrice) === existingPart.unitPrice &&
-      req.body.company === existingPart.company
+      data.image === existingPart.image &&
+      data.partNumber === existingPart.partNumber &&
+      data.specs === existingPart.specs &&
+      data.category === existingPart.category &&
+      parseFloat(data.unitPrice) === existingPart.unitPrice &&
+      data.company === existingPart.company
     ) {
       console.log("No changes made.");
       return res.status(409).json({
@@ -113,9 +133,9 @@ const updatePart = async (req, res) => {
     }
 
     //checking if the username is already taken
-    if (req.body.partNumber !== existingPart.partNumber) {
+    if (data.partNumber !== existingPart.partNumber) {
       const userWithSamePartNumber = await partService.findPartByPartNumber(
-        req.body.partNumber
+        data.partNumber
       );
 
       if (userWithSamePartNumber) {
@@ -127,8 +147,7 @@ const updatePart = async (req, res) => {
       }
       console.log("No match found.");
     }
-
-    const updatePart = await partService.updatePart(PartId, req.body);
+    const updatePart = await partService.updatePart(PartId, data);
 
     // Return consistent response structure
     res.status(200).json({
