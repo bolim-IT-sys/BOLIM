@@ -135,9 +135,16 @@ export default function Dashboard() {
 
           <div>
             <div className="bg-white rounded-xl shadow-lg">
-              <h2 className="text-xl font-bold text-gray-800 mb-1 flex items-center gap-2">
-                <i className="bx  bxs-chart-bar-columns"></i> Parts Usage
-                Overview
+              <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+                <i className="bx  bxs-chart-bar-columns"></i>{" "}
+                {dataType === "Pins"
+                  ? "Pins "
+                  : dataType === "ITStocks"
+                    ? "IT Stocks "
+                    : dataType === "MaterialControl"
+                      ? "Material Control "
+                      : "Part "}
+                Usage Overview
               </h2>
               <div className="flex justify-start items-center gap-2 mb-2">
                 <div className="mb-1">
@@ -164,7 +171,10 @@ export default function Dashboard() {
                     type="date"
                     value={startDate!}
                     required={true}
-                    onChange={(value: string) => setStartDate(value)}
+                    onChange={(value: string) => {
+                      setStartDate(value);
+                      setDateRange("custom");
+                    }}
                     autoComplete={`Previous date`}
                   />
                 </div>
@@ -177,7 +187,10 @@ export default function Dashboard() {
                     type="date"
                     value={endDate!}
                     required={true}
-                    onChange={(value: string) => setEndDate(value)}
+                    onChange={(value: string) => {
+                      setEndDate(value);
+                      setDateRange("custom");
+                    }}
                     autoComplete={`Previous date`}
                   />
                 </div>

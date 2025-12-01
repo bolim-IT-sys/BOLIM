@@ -2,8 +2,8 @@ import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
 import { type Part } from "../../services/Part.Service";
 import { AddingPart } from "../../components/modals/Parts/AddingPart";
 import { useOutletContext } from "react-router-dom";
-import { PartsTable } from "./Components/PartsTable";
-import { PartsPagination } from "./Components/PartsPagination";
+import { PartsTable } from "./Components/PinTable";
+import { PartsPagination } from "./Components/DataPagination";
 import InputField from "../../components/InputField";
 import { DownloadPartData } from "../../components/downloadButton/DownloadPartData";
 

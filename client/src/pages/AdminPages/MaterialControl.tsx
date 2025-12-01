@@ -2,8 +2,8 @@ import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
 import { type Part } from "../../services/Part.Service";
 import { AddingPart } from "../../components/modals/Parts/AddingPart";
 import { useOutletContext } from "react-router-dom";
-import { PartsTable } from "./Components/PartsTable";
-import { PartsPagination } from "./Components/PartsPagination";
+import { PinTable } from "./Components/PinTable";
+import { DataPagination } from "./Components/DataPagination";
 import InputField from "../../components/InputField";
 import { DownloadPartData } from "../../components/downloadButton/DownloadPartData";
 
@@ -83,7 +83,7 @@ export default function MaterialControl() {
         </div>
       </div>
       <div className="h-87/100 overflow-auto border-y border-gray-300">
-        <PartsTable
+        <PinTable
           parts={displayParts}
           setParts={setParts}
           fetchAllParts={fetchAllParts}
@@ -91,7 +91,7 @@ export default function MaterialControl() {
           currentParts={currentParts}
         />
       </div>
-      <PartsPagination
+      <DataPagination
         parts={displayParts}
         indexOfFirstItem={indexOfFirstItem}
         indexOfLastItem={indexOfLastItem}

@@ -23,7 +23,7 @@ type Props = {
   currentParts: Part[];
 };
 
-export const PartsTable = ({
+export const PinTable = ({
   parts,
   setParts,
   fetchAllParts,
@@ -159,7 +159,7 @@ export const PartsTable = ({
             >
               <div className="h-10 flex justify-center items-center border border-neutral-300">
                 <h5>
-                  PART NUMBER{" "}
+                  PIN NUMBER{" "}
                   {sortBy === "partNumber"
                     ? sortOrder === "asc"
                       ? "▲"

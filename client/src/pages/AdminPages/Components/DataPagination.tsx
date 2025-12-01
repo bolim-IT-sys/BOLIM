@@ -11,7 +11,7 @@ type Props = {
   totalPages: number;
 };
 
-export const PartsPagination = ({
+export const DataPagination = ({
   indexOfFirstItem,
   indexOfLastItem,
   parts,
