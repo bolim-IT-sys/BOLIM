@@ -7,26 +7,26 @@ import type { Part } from "../../../../services/Part.Service";
 import { StockValue } from "./StockValue";
 
 type Props = {
-  parts: Part[];
+  data: Part[];
 };
 
-export const KeyMetrics = ({ parts }: Props) => {
-  const totalParts = parts.length;
+export const KeyMetrics = ({ data }: Props) => {
+  const totalParts = data.length;
 
-  const lowStockParts = parts.filter((part) => {
+  const lowStockParts = data.filter((stock) => {
     const safetyStock = getSafetyStock(
-      part.outbounds!.map((o) => ({
+      stock.outbounds!.map((o) => ({
         quantity: o.quantity,
         date: String(o.outboundDate),
       })),
       currentYear(),
       currentMonth()
     );
-    const lowStockParts = part.quantity > 0 && part.quantity < safetyStock;
+    const lowStockParts = stock.quantity > 0 && stock.quantity < safetyStock;
     // console.log("Low Stock Parts: ", lowStockParts);
     return lowStockParts;
   });
-  const outOfStockParts = parts.filter((part) => part.quantity === 0);
+  const outOfStockParts = data.filter((stock) => stock.quantity === 0);
   return (
     <>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-2">
@@ -50,7 +50,7 @@ export const KeyMetrics = ({ parts }: Props) => {
             </div>
           </div>
         </div>
-        <StockValue parts={parts} />
+        <StockValue data={data} />
         <div className={`bg-yellow-400 text-neutral-50 rounded shadow p-6`}>
           <div className="flex items-center justify-between">
             <div>

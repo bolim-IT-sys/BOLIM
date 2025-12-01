@@ -17,7 +17,7 @@ import {
 import { TrendingUp } from "lucide-react";
 
 type Props = {
-  parts: Part[];
+  data: Part[];
 };
 
 interface MonthlyStockValue {
@@ -26,12 +26,12 @@ interface MonthlyStockValue {
   displayMonth: string;
 }
 
-export const StockValue = ({ parts }: Props) => {
+export const StockValue = ({ data }: Props) => {
   const [modalShow, setModalShow] = useState(false);
   const [startDate, setStartDate] = useState<string>();
   const [endDate, setEndDate] = useState<string>();
 
-  const totalInventoryValue = parts.reduce(
+  const totalInventoryValue = data.reduce(
     (sum, part) => sum + part.unitPrice * part.quantity,
     0
   );
@@ -71,12 +71,12 @@ export const StockValue = ({ parts }: Props) => {
       // Calculate stock value at the end of this month
       let monthValue = 0;
 
-      parts.forEach((part) => {
+      data.forEach((stock) => {
         // Calculate net quantity up to the end of this month
         let netQuantity = 0;
 
         // Add all inbounds up to this month
-        part.inbounds?.forEach((inbound) => {
+        stock.inbounds?.forEach((inbound) => {
           const inboundDate = new Date(inbound.inboundDate);
           if (inboundDate <= lastDayOfMonth) {
             netQuantity += inbound.quantity;
@@ -84,7 +84,7 @@ export const StockValue = ({ parts }: Props) => {
         });
 
         // Subtract all outbounds up to this month
-        part.outbounds?.forEach((outbound) => {
+        stock.outbounds?.forEach((outbound) => {
           const outboundDate = new Date(outbound.outboundDate);
           if (outboundDate <= lastDayOfMonth) {
             netQuantity -= outbound.quantity;
@@ -92,7 +92,7 @@ export const StockValue = ({ parts }: Props) => {
         });
 
         // Calculate value for this part
-        monthValue += netQuantity * part.unitPrice;
+        monthValue += netQuantity * stock.unitPrice;
       });
 
       monthlyData.push({
@@ -109,7 +109,7 @@ export const StockValue = ({ parts }: Props) => {
     }
 
     return monthlyData;
-  }, [parts, startDate, endDate]);
+  }, [data, startDate, endDate]);
 
   // Calculate statistics
   const statistics = useMemo(() => {
