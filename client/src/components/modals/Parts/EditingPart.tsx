@@ -157,11 +157,17 @@ export const EditingPart = ({ fetchAllParts, part }: EditingProps) => {
                     alt="Preview"
                     className="w-full h-full object-cover"
                   />
-                ) : (
+                ) : !part.image ? (
                   <>
                     <i className="bx bx-image-landscape"></i>
                     <h6>NO IMAGE</h6>
                   </>
+                ) : (
+                  <img
+                    className="h-full w-full object-cover"
+                    src={`${import.meta.env.VITE_API_URL}/uploads/pinImage/${part.image}`}
+                    alt=""
+                  />
                 )}
               </div>
             </div>

@@ -263,6 +263,7 @@ export const PinTable = ({
                             ) : (
                               <>
                                 <img
+                                  className="h-full w-full object-cover"
                                   src={`${import.meta.env.VITE_API_URL}/uploads/pinImage/${part.image}`}
                                   alt=""
                                 />

@@ -1,4 +1,6 @@
 const partService = require("../services/parts.service");
+const fs = require("fs");
+const path = require("path");
 
 const getAllParts = async (req, res) => {
   try {
@@ -100,13 +102,30 @@ const updatePart = async (req, res) => {
       company: req.body.company,
     };
 
-    if (req.file) {
-      data.image = req.file.filename; // save image name or URL to DB
-      console.log("Image name: ", req.file.filename);
-    }
-
     // Check if part exists
     const existingPart = await partService.findById(PartId);
+
+    if (req.file) {
+      // Delete old image if it exists
+      if (existingPart.image) {
+        const oldImagePath = path.join(
+          __dirname,
+          "../../uploads/pinImage",
+          existingPart.image
+        );
+
+        fs.unlink(oldImagePath, (err) => {
+          if (err) {
+            console.error("Failed to delete old image:", err);
+          } else {
+            console.log("Old image deleted:", existingPart.image);
+          }
+        });
+      }
+
+      // Assign new image filename
+      data.image = req.file.filename;
+    }
 
     // console.log("Existing match: ", existingPart);
     if (!existingPart) {
