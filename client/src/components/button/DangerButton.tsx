@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 
 interface buttonProps {
   text: ReactNode;
-  loadingText?: string;
+  loadingText?: ReactNode;
   onClick?: () => void;
   disabled?: boolean;
   isLoading?: boolean;
@@ -23,14 +23,7 @@ export default function DangerButton({
       onClick={onClick}
     >
       <p className="flex justify-center items-center gap-1">
-        {isLoading ? (
-          <>
-            <i className="bx bx-loader-dots bx-spin" />
-            {loadingText}
-          </>
-        ) : (
-          <>{text}</>
-        )}
+        {isLoading ? <>{loadingText}</> : <>{text}</>}
       </p>
     </button>
   );

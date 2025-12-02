@@ -222,7 +222,7 @@ const deletePart = async (req, res) => {
 
 const inboundPart = async (req, res) => {
   try {
-    console.log("Data received in Controller: ", req.body);
+    // console.log("Data received in Controller: ", req.body);
     // Optional: Validate request body first
     if (!req.body.partId || !req.body.quantity || !req.body.inboundDate) {
       // console.log("Please fill in all required fields.");
@@ -271,11 +271,11 @@ const inboundPart = async (req, res) => {
 
 const getAllInbounds = async (req, res) => {
   try {
-    console.log("Fetching all inbounds.");
+    // console.log("Fetching all inbounds.");
 
     const parts = await partService.getAllInbounds();
     if (!parts) {
-      console.log("No inbounds found.");
+      // console.log("No inbounds found.");
       res.status(404).json({
         success: false,
         message: "No inbounds found.",
@@ -298,11 +298,11 @@ const getAllInbounds = async (req, res) => {
 const getInbounds = async (req, res) => {
   try {
     const partId = req.params.id;
-    console.log("Fetching inbounds.");
+    // console.log("Fetching inbounds.");
 
     const parts = await partService.getInbounds(partId);
     if (!parts) {
-      console.log("No inbounds found.");
+      // console.log("No inbounds found.");
       res.status(404).json({
         success: false,
         message: "No inbounds found.",
@@ -380,11 +380,11 @@ const outboundPart = async (req, res) => {
 
 const getAllOutbounds = async (req, res) => {
   try {
-    console.log("Fetching all outbounds.");
+    // console.log("Fetching all outbounds.");
 
     const parts = await partService.getAllOutbounds();
     if (!parts) {
-      console.log("No outbounds found.");
+      // console.log("No outbounds found.");
       res.status(404).json({
         success: false,
         message: "No outbounds found.",
@@ -407,11 +407,11 @@ const getAllOutbounds = async (req, res) => {
 const getOutbounds = async (req, res) => {
   try {
     const partId = req.params.id;
-    console.log("Fetching outbounds.");
+    // console.log("Fetching outbounds.");
 
     const parts = await partService.getOutbounds(partId);
     if (!parts) {
-      console.log("No outbounds found.");
+      // console.log("No outbounds found.");
       res.status(404).json({
         success: false,
         message: "No outbounds found.",

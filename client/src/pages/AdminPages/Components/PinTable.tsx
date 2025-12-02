@@ -15,6 +15,13 @@ import { EditingPart } from "../../../components/modals/Parts/EditingPart";
 import DangerButton from "../../../components/button/DangerButton";
 import { useSearchParams } from "react-router-dom";
 import { ImageModal } from "../../../components/modals/Parts/ImageModal";
+import {
+  computeExcessInsufficient,
+  computeOrderQuantity,
+  computeSecurementRate,
+  computeStocks,
+  computeUrgentRequest,
+} from "../../../helper/table.helper";
 
 type Props = {
   parts: Part[];
@@ -149,25 +156,25 @@ export const PinTable = ({
 
   return (
     <>
-      <table className="min-w-full border-2 border-gray-300">
+      <table className="w-685">
         <thead
-          className="h-full bg-sky-500  sticky top-0 text-neutral-50"
-          style={{ zIndex: 5 }}
+          className="h-15 bg-sky-500 sticky text-neutral-50"
+          style={{ zIndex: 5, top: "-.1px" }}
         >
           <tr>
             <th
-              className="hover:bg-sky-600 transition duration-200 border border-neutral-300 text-center cursor-pointer"
+              className="hover:bg-sky-600 transition duration-200 border border-neutral-300 text-center px-2 py-3 cursor-pointer"
               onClick={handleSortByPartNumber}
             >
-              <div className="h-10 flex justify-center items-center border border-neutral-300">
+              <div className="h-10 flex justify-center items-center">
                 <h5>IMAGE</h5>
               </div>
             </th>
             <th
-              className="hover:bg-sky-600 transition duration-200 border border-neutral-300 text-center cursor-pointer"
+              className="hover:bg-sky-600 transition duration-200 border border-neutral-300 text-center px-2 py-3 cursor-pointer"
               onClick={handleSortByPartNumber}
             >
-              <div className="h-10 flex justify-center items-center border border-neutral-300">
+              <div className="h-10 flex justify-center items-center flex-col">
                 <h5>
                   PIN NUMBER{" "}
                   {sortBy === "partNumber"
@@ -178,21 +185,23 @@ export const PinTable = ({
                 </h5>
               </div>
             </th>
-            <th className="border border-neutral-300 text-center">
-              <div className="h-10 flex justify-center items-center border border-neutral-300">
+            <th className="border border-neutral-300 text-center px-2 py-3">
+              <div className="h-10 flex justify-center items-center flex-col">
                 <h5>SPECIFICATIONS (Description)</h5>
+                <h6>규격(설명)</h6>
               </div>
             </th>
-            <th className="border border-neutral-300 text-center">
-              <div className="h-10 flex justify-center items-center border border-neutral-300">
+            <th className="border border-neutral-300 text-center px-2 py-3">
+              <div className="h-10 flex justify-center items-center flex-col">
                 <h5>CATEGORY</h5>
+                <h6>유형</h6>
               </div>
             </th>
             <th
-              className="hover:bg-sky-600 transition duration-200 border border-neutral-300 text-center cursor-pointer"
+              className="hover:bg-sky-600 transition duration-200 border border-neutral-300 text-center px-2 py-3 cursor-pointer"
               onClick={handleSortByUnitPrice}
             >
-              <div className="h-10 flex justify-center items-center border border-neutral-300">
+              <div className="h-10 flex justify-center items-center">
                 <h5>
                   UNIT PRICE (₩){" "}
                   {sortBy === "unitPrice"
@@ -203,16 +212,17 @@ export const PinTable = ({
                 </h5>
               </div>
             </th>
-            <th className="border border-neutral-300 text-center">
-              <div className="h-10 flex justify-center items-center border border-neutral-300">
+            <th className="border border-neutral-300 text-center px-2 py-3">
+              <div className="h-10 flex justify-center items-center flex-col">
                 <h5>COMPANY</h5>
+                <h6>업체</h6>
               </div>
             </th>
             <th
-              className="hover:bg-sky-600 transition duration-200 border border-neutral-300 text-center cursor-pointer"
+              className="hover:bg-sky-600 transition duration-200 border border-neutral-300 text-center px-2 py-3 cursor-pointer"
               onClick={handleSortByStocks}
             >
-              <div className="h-10 flex justify-center items-center border border-neutral-300">
+              <div className="h-10 flex justify-center items-center">
                 <h5>
                   {" "}
                   CURRENT STOCKS{" "}
@@ -224,9 +234,35 @@ export const PinTable = ({
                 </h5>
               </div>
             </th>
-            <th className="w-30 border border-neutral-300 text-center">
-              <div className="h-10 flex justify-center items-center border border-neutral-300">
+            <th className="w-30 border border-neutral-300 text-center px-2 py-3">
+              <div className="h-10 flex justify-center items-center">
                 <h5>ACTION</h5>
+              </div>
+            </th>
+            <th className="border border-neutral-300 text-center px-2 py-3">
+              <div className="h-10 flex justify-center items-center flex-col">
+                <h5 className="uppercase">Securement rate</h5>
+                <h6>(확보율)</h6>
+              </div>
+            </th>
+            <th className="border border-neutral-300 text-center px-2 py-3">
+              <div className="h-10 flex justify-center items-center flex-col">
+                <h5 className="uppercase">Excess/insufficient quantity</h5>
+                <h6>(과/부족수량)</h6>
+              </div>
+            </th>
+            <th className="border border-neutral-300 text-center px-2 py-3">
+              <div className="h-10 flex justify-center items-center flex-col">
+                <h5 className="uppercase">
+                  Urgent Request (Secure Rate Less than 50%)
+                </h5>
+                <h6>긴급 요청(확보율 50%이하)</h6>
+              </div>
+            </th>
+            <th className="border border-neutral-300 text-center px-2 py-3">
+              <div className="h-10 flex justify-center items-center flex-col">
+                <h5 className="uppercase">Order Quantity (Regular Order)</h5>
+                <h6>발주 수량(정기발주)</h6>
               </div>
             </th>
           </tr>
@@ -236,7 +272,7 @@ export const PinTable = ({
             <>
               <tr className="hover:bg-gray-50">
                 <td
-                  colSpan={7}
+                  colSpan={12}
                   className="text-center border border-neutral-300 px-3 py-2"
                 >
                   <div className="flex justify-center items-center gap-1">
@@ -254,7 +290,7 @@ export const PinTable = ({
                 <>
                   {currentParts.map((part) => (
                     <tr key={part.id} className="hover:bg-gray-50">
-                      <td className="text-center border border-neutral-300 cursor-pointer">
+                      <td className="text-center border border-neutral-300 px-3 py-2">
                         <div className="h-18 flex justify-center items-center">
                           <ImageModal part={part} />
                         </div>
@@ -274,24 +310,26 @@ export const PinTable = ({
                       <td className="text-center border border-neutral-300 px-3 py-2">
                         <h6>{part.company}</h6>
                       </td>
-                      <td className="text-center border border-neutral-300 px-3 py-2">
-                        <h6
-                          className={`${
-                            part.quantity <
-                            getSafetyStock(
-                              part.outbounds!.map((o) => ({
-                                quantity: o.quantity,
-                                date: String(o.outboundDate),
-                              })),
-                              year,
-                              month
-                            )
-                              ? "bg-red-100 text-red-900"
-                              : "bg-emerald-100 text-emerald-800"
-                          } rounded px-1`}
-                        >
-                          <b>{part.quantity}</b>
-                        </h6>
+                      <td
+                        className={`${
+                          computeStocks(part) <
+                          getSafetyStock(
+                            part.outbounds!.map((o) => ({
+                              quantity: o.quantity,
+                              date: String(o.outboundDate),
+                            })),
+                            year,
+                            month
+                          )
+                            ? "bg-red-100 text-red-900"
+                            : "bg-emerald-100 text-emerald-800"
+                        } text-center border border-neutral-300  px-3 py-2`}
+                      >
+                        <div>
+                          <h6 className={`rounded px-1`}>
+                            <b>{computeStocks(part)}</b>
+                          </h6>
+                        </div>
                       </td>
                       <td
                         className=" text-center border border-neutral-300 p-2"
@@ -305,14 +343,40 @@ export const PinTable = ({
                               part={part}
                             />
                             <DangerButton
-                              text={<i className="bx  bxs-trash"></i>}
-                              loadingText=""
+                              text={
+                                <>
+                                  <span className="my-.5">
+                                    <i className="bx  bxs-trash"></i>
+                                  </span>
+                                </>
+                              }
+                              loadingText={
+                                <>
+                                  <span className="my-.5">
+                                    <i className="bx bx-loader-dots bx-spin" />
+                                  </span>
+                                </>
+                              }
                               onClick={() => handleDelete(part.id!)}
                               isLoading={isDeleting === part.id}
                               disabled={isDeleting === part.id}
                             />
                           </div>
                         </div>
+                      </td>
+                      <td className="text-center border border-neutral-300 px-3 py-2">
+                        <h6>{computeSecurementRate(part)}%</h6>
+                      </td>
+                      <td className="text-center border border-neutral-300 px-3 py-2">
+                        <h6>{computeExcessInsufficient(part)}</h6>
+                      </td>
+                      <td className="text-center border border-neutral-300 px-3 py-2">
+                        <h6>{computeUrgentRequest(part)}</h6>
+                      </td>
+                      <td
+                        className={`${computeOrderQuantity(part) > 0 ? "bg-red-100 text-red-900 font-bold" : ""} text-center border border-neutral-300 px-3 py-2`}
+                      >
+                        <h6>{computeOrderQuantity(part)}</h6>
                       </td>
                     </tr>
                   ))}
@@ -321,7 +385,7 @@ export const PinTable = ({
                 <>
                   <tr className="hover:bg-gray-50">
                     <td
-                      colSpan={7}
+                      colSpan={12}
                       className="text-center border border-neutral-300 px-3 py-2"
                     >
                       NO PART AVAILABLE

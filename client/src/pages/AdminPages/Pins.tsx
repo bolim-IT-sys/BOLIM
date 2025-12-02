@@ -82,7 +82,7 @@ export default function Pins() {
           <DownloadPartData parts={displayParts} />
         </div>
       </div>
-      <div className="h-87/100 overflow-auto border-y border-gray-300">
+      <div className="h-87/100 overflow-auto border-2 border-gray-300">
         <PinTable
           parts={displayParts}
           setParts={setParts}

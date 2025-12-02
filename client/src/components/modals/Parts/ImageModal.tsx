@@ -12,10 +12,7 @@ export const ImageModal = ({ part }: EditingProps) => {
 
   return (
     <>
-      <div
-        className="size-18 bg-neutral-200 flex justify-center items-center flex-col rounded"
-        onClick={() => setModalShow(true)}
-      >
+      <div className="size-18 bg-neutral-200 flex justify-center items-center flex-col rounded">
         {!part.image ? (
           <>
             <i className="bx bx-image-landscape"></i>
@@ -24,9 +21,10 @@ export const ImageModal = ({ part }: EditingProps) => {
         ) : (
           <>
             <img
-              className="h-full w-full object-cover"
+              className="h-full w-full object-cover cursor-pointer"
               src={`${import.meta.env.VITE_API_URL}/uploads/pinImage/${part.image}`}
               alt=""
+              onClick={() => setModalShow(true)}
             />
           </>
         )}

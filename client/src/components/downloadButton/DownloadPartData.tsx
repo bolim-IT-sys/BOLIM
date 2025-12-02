@@ -129,15 +129,6 @@ export const DownloadPartData = ({ parts }: ItemDataProp) => {
       const stocksLeft =
         overallInboundsWithCurrentMonth - overallOutboundsWithCurrentMonth;
 
-      console.log(
-        "Inbounds: ",
-        overallInboundsWithCurrentMonth,
-        ", Outbounds: ",
-        overallOutboundsWithCurrentMonth,
-        ", TOTAL: ",
-        stocksLeft
-      );
-
       const lastYearOutbounds = getTotalByYearExcludingCurrentMonth(
         part.outbounds!.map((o) => ({
           quantity: o.quantity,

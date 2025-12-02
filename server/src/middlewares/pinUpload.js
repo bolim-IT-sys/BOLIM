@@ -11,6 +11,6 @@ const storage = multer.diskStorage({
     cb(null, unique + path.extname(file.originalname)); // keep file extension
   },
 });
-console.log("Storing image.");
+// console.log("Storing image.");
 
 exports.upload = multer({ storage });
