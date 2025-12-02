@@ -14,6 +14,7 @@ import { ViewPartStocks } from "../../../components/modals/Parts/ViewPartStocks"
 import { EditingPart } from "../../../components/modals/Parts/EditingPart";
 import DangerButton from "../../../components/button/DangerButton";
 import { useSearchParams } from "react-router-dom";
+import { ImageModal } from "../../../components/modals/Parts/ImageModal";
 
 type Props = {
   parts: Part[];
@@ -145,6 +146,7 @@ export const PinTable = ({
       );
     }
   };
+
   return (
     <>
       <table className="min-w-full border-2 border-gray-300">
@@ -254,22 +256,7 @@ export const PinTable = ({
                     <tr key={part.id} className="hover:bg-gray-50">
                       <td className="text-center border border-neutral-300 cursor-pointer">
                         <div className="h-18 flex justify-center items-center">
-                          <div className="size-18 bg-neutral-200 flex justify-center items-center flex-col rounded">
-                            {!part.image ? (
-                              <>
-                                <i className="bx bx-image-landscape"></i>
-                                <h6>NO IMAGE</h6>
-                              </>
-                            ) : (
-                              <>
-                                <img
-                                  className="h-full w-full object-cover"
-                                  src={`${import.meta.env.VITE_API_URL}/uploads/pinImage/${part.image}`}
-                                  alt=""
-                                />
-                              </>
-                            )}
-                          </div>
+                          <ImageModal part={part} />
                         </div>
                       </td>
                       <td className="text-center border border-neutral-300 px-3 py-2">
