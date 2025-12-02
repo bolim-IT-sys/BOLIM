@@ -156,7 +156,7 @@ export const PinTable = ({
 
   return (
     <>
-      <table className="w-685">
+      <table className="w-600">
         <thead
           className="h-15 bg-sky-500 sticky text-neutral-50"
           style={{ zIndex: 5, top: "-.1px" }}

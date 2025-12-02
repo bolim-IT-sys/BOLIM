@@ -23,6 +23,8 @@ export default function Mainlayout() {
   const sort = searchParams.get("sort") || "";
   const order = searchParams.get("order") || "";
 
+  const [showSideBar, setShowSideBar] = useState(false);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -136,7 +138,11 @@ export default function Mainlayout() {
 
   return (
     <div className="flex justify-center relative" style={{ height: "100dvh" }}>
-      <NavBar user={user!} />
+      <NavBar
+        user={user!}
+        showSideBar={showSideBar}
+        setShowSideBar={setShowSideBar}
+      />
       <div className="flex justify-start w-dvw pt-15 ">
         <SideNavBar />
         <div className="h-full w-9/10 ">
