@@ -158,7 +158,15 @@ const deletePart = async (partsId) => {
       throw new Error("Part not found.");
     }
 
-    // IF USER IS FOUND DELETE
+    // DELETING INBOUNDS AND OUTBOUNDS FOR THIS PART
+    await Inbound.destroy({
+      where: { partId: partsId },
+    });
+    await Outbound.destroy({
+      where: { partId: partsId },
+    });
+
+    // IF USER IS PART DELETE
     await parts.destroy(partsId);
 
     console.log("Part deleted successfully.");

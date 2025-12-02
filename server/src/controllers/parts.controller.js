@@ -203,13 +203,32 @@ const deletePart = async (req, res) => {
       });
     }
 
-    const updatePart = await partService.deletePart(PartId);
+    if (existingPart.image) {
+      // Delete old image if it exists
+      if (existingPart.image) {
+        const oldImagePath = path.join(
+          __dirname,
+          "../../uploads/pinImage",
+          existingPart.image
+        );
+
+        fs.unlink(oldImagePath, (err) => {
+          if (err) {
+            console.error("Failed to delete old image:", err);
+          } else {
+            console.log("Old image deleted:", existingPart.image);
+          }
+        });
+      }
+    }
+
+    const deletePart = await partService.deletePart(PartId);
 
     // Return consistent response structure
     res.status(200).json({
       success: true,
       message: "Part removed successfully!",
-      data: updatePart,
+      data: deletePart,
     });
   } catch (err) {
     // You can add specific error handling here if needed
