@@ -111,7 +111,7 @@ export default function Dashboard() {
 
   return (
     <>
-      <div className=" ">
+      <div className="">
         {/* Header */}
         <div className="mb-3 flex items-center gap-2">
           <h2 className="font-bold text-gray-900">DASHBOARD</h2>
@@ -127,7 +127,7 @@ export default function Dashboard() {
             </select>
           </div>
         </div>
-        <div className="h-full overflow-auto">
+        <div className="h-full overflow-hidden">
           {/* Key Metrics Grid */}
           <KeyMetrics data={data} />
 

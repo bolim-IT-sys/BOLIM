@@ -143,10 +143,10 @@ export default function Mainlayout() {
         showSideBar={showSideBar}
         setShowSideBar={setShowSideBar}
       />
-      <div className="flex justify-start w-dvw pt-15 ">
-        <SideNavBar />
-        <div className="h-full w-9/10 ">
-          <div className="bg-white h-95/100 my-7 mx-5 p-5 rounded-sm">
+      <div className="flex justify-start w-dvw pt-15">
+        <SideNavBar showSideBar={showSideBar} />
+        <div className={`h-full ${showSideBar ? " w-[86dvw]" : "w-[96dvw]"} `}>
+          <div className=" bg-white h-95/100 my-7 mx-5 p-5 rounded-sm">
             <Outlet
               context={{ user, parts, setParts, fetchAllParts, isFetching }}
             />
