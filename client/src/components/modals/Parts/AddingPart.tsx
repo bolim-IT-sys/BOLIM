@@ -11,11 +11,13 @@ import {
 
 interface AddingProps {
   fetchAllParts: () => void;
+  type: string;
 }
 
-export const AddingPart = ({ fetchAllParts }: AddingProps) => {
+export const AddingPart = ({ fetchAllParts, type }: AddingProps) => {
   const [modalShow, setModalShow] = useState<boolean>(false);
   const [formData, setFormData] = useState<AddingPartType>({
+    type: type,
     partNumber: "",
     specs: "",
     category: "",
@@ -31,7 +33,7 @@ export const AddingPart = ({ fetchAllParts }: AddingProps) => {
     setIsLoading(true);
     try {
       const result = await createPart(formData);
-      console.log("Adding part.");
+      // console.log("Adding part.");
 
       if (result.success) {
         setTimeout(
@@ -41,6 +43,7 @@ export const AddingPart = ({ fetchAllParts }: AddingProps) => {
             fetchAllParts();
             setModalShow(false);
             setFormData({
+              type: type,
               partNumber: "",
               specs: "",
               category: "",
@@ -55,7 +58,7 @@ export const AddingPart = ({ fetchAllParts }: AddingProps) => {
         setTimeout(
           () => {
             setIsLoading(false);
-            alert(`Error: ${result.message}`);
+            alert(`${result.message}`);
           },
           import.meta.env.VITE_TIME_OUT
         );
@@ -67,18 +70,45 @@ export const AddingPart = ({ fetchAllParts }: AddingProps) => {
 
   return (
     <>
-      <PrimaryButton text={`ADD PART`} onClick={() => setModalShow(true)} />
+      <PrimaryButton
+        text={`ADD ${
+          type === "pin"
+            ? "PIN"
+            : type === "it"
+              ? "ITEM"
+              : type === "material"
+                ? "MATERIAL"
+                : "INVALID TYPE"
+        }`}
+        onClick={() => setModalShow(true)}
+      />
 
       <Modal
         isOpen={modalShow}
         onClose={() => setModalShow(false)}
-        title={"ADD PART"}
+        title={`ADD ${
+          type === "pin"
+            ? "PIN"
+            : type === "it"
+              ? "ITEM"
+              : type === "material"
+                ? "MATERIAL"
+                : "INVALID TYPE"
+        }`}
         size="md"
         footer={
           <>
             <SuccessButton
               text="ADD"
-              loadingText="ADDING PART"
+              loadingText={`ADDING ${
+                type === "pin"
+                  ? "PIN"
+                  : type === "it"
+                    ? "ITEM"
+                    : type === "material"
+                      ? "MATERIAL"
+                      : "INVALID TYPE"
+              }`}
               onClick={handleSubmit}
               isLoading={isLoading}
               disabled={isLoading}
@@ -89,10 +119,26 @@ export const AddingPart = ({ fetchAllParts }: AddingProps) => {
       >
         <div className="mb-1">
           <label className="block font-medium text-gray-700">
-            <p>PART NUMBER</p>
+            <p>
+              {type === "pin"
+                ? "PIN NUMBER"
+                : type === "it"
+                  ? "ITEM NAME"
+                  : type === "material"
+                    ? "MATERIAL NAME"
+                    : "INVALID TYPE"}
+            </p>
           </label>
           <InputField
-            label="PART NUMBER"
+            label={
+              type === "pin"
+                ? "PIN NUMBER"
+                : type === "it"
+                  ? "ITEM NAME"
+                  : type === "material"
+                    ? "MATERIAL NAME"
+                    : "INVALID TYPE"
+            }
             type="text"
             value={formData.partNumber}
             required={true}

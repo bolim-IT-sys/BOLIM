@@ -73,12 +73,13 @@ const findPartByPartname = async (name) => {
 
 const createPart = async (PartData) => {
   try {
-    const { partNumber, specs, category, unitPrice, company } = PartData;
+    const { type, partNumber, specs, category, unitPrice, company } = PartData;
 
     // Hash password before storing
 
-    console.log("Adding parts.");
+    // console.log("Adding parts.");
     const parts = await Part.create({
+      type: type,
       partNumber: partNumber,
       specs: specs,
       category: category,

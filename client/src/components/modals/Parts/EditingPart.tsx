@@ -12,12 +12,14 @@ import SecondaryButton from "../../button/SecondaryButton";
 interface EditingProps {
   fetchAllParts: () => void;
   part: Part;
+  type: string;
 }
 
-export const EditingPart = ({ fetchAllParts, part }: EditingProps) => {
+export const EditingPart = ({ fetchAllParts, part, type }: EditingProps) => {
   const [modalShow, setModalShow] = useState<boolean>(false);
   const [formData, setFormData] = useState<AddingPartType>({
     image: null,
+    type: part.type,
     partNumber: part.partNumber,
     specs: part.specs,
     category: part.category,
@@ -71,6 +73,7 @@ export const EditingPart = ({ fetchAllParts, part }: EditingProps) => {
             fetchAllParts();
             setModalShow(false);
             setFormData({
+              type: formData.type,
               partNumber: formData.partNumber,
               specs: formData.specs,
               category: formData.category,
@@ -115,7 +118,7 @@ export const EditingPart = ({ fetchAllParts, part }: EditingProps) => {
   return (
     <>
       <SuccessButton
-        text={<i className="bx  bxs-edit"></i>}
+        text={<i className="bx bxs-edit"></i>}
         onClick={() => setModalShow(true)}
       />
 
@@ -123,7 +126,15 @@ export const EditingPart = ({ fetchAllParts, part }: EditingProps) => {
         isOpen={modalShow}
         onClose={() => setModalShow(false)}
         size="md"
-        title={"EDIT PART DETAILS"}
+        title={`EDIT ${
+          type === "pin"
+            ? "PIN"
+            : type === "it"
+              ? "ITEM"
+              : type === "material"
+                ? "MATERIAL"
+                : "INVALID TYPE"
+        } DETAILS `}
         footer={
           <>
             <SuccessButton

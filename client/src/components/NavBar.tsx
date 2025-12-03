@@ -40,7 +40,7 @@ export default function NavBar({
             </div>
             <h4 className="">BOLIM(SPARE PARTS)</h4>
             <div
-              className={`size-9 ${showSideBar ? "bg-sky-500 hover:bg-sky-600 text-neutral-50" : "hover:bg-neutral-200"}  rounded transition duration-200 flex justify-center items-center`}
+              className={`size-9 ${showSideBar ? "bg-sky-600 hover:bg-sky-600 text-neutral-50" : "hover:bg-neutral-200"}  rounded transition duration-200 flex justify-center items-center`}
               onClick={() => setShowSideBar((prev) => !prev)}
             >
               <h3>

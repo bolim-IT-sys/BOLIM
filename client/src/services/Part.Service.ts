@@ -4,6 +4,7 @@ import type { Inbound, Outbound } from "./InboundOutbound.Service";
 export interface Part {
   id?: number;
   image?: File | string | null;
+  type: string;
   partNumber: string;
   specs: string;
   category: string;
@@ -16,6 +17,7 @@ export interface Part {
 
 export interface AddingPartType {
   image?: File | null;
+  type: string;
   partNumber: string;
   specs: string;
   category: string;

@@ -30,6 +30,7 @@ const createPart = async (req, res) => {
   try {
     // Optional: Validate request body first
     if (
+      !req.body.type ||
       !req.body.partNumber ||
       !req.body.specs ||
       !req.body.category ||
@@ -42,6 +43,8 @@ const createPart = async (req, res) => {
       });
     }
 
+    const type = req.body.type;
+
     // Check if user already exists
     const existingPart = await partService.findPartByPartNumber(
       req.body.partNumber
@@ -50,7 +53,15 @@ const createPart = async (req, res) => {
     if (existingPart) {
       return res.status(409).json({
         success: false,
-        message: "Part already exists",
+        message: `${
+          type === "pin"
+            ? "Pin"
+            : type === "it"
+            ? "Item"
+            : type === "material"
+            ? "Material"
+            : "INVALID TYPE"
+        } already exists`,
       });
     }
 
@@ -59,14 +70,32 @@ const createPart = async (req, res) => {
     // Return consistent response structure
     res.status(201).json({
       success: true,
-      message: "Part created successfully",
+      message: `New ${
+        type === "pin"
+          ? "pin"
+          : type === "it"
+          ? "item"
+          : type === "material"
+          ? "material"
+          : "INVALID TYPE"
+      } created successfully.`,
       data: user,
     });
   } catch (err) {
     // You can add specific error handling here if needed
     res.status(500).json({
       success: false,
-      message: err.message || "Part creation failed",
+      message:
+        err.message ||
+        `${
+          type === "pin"
+            ? "Pin"
+            : type === "it"
+            ? "Item"
+            : type === "material"
+            ? "Material"
+            : "INVALID TYPE"
+        } creation failed`,
     });
   }
 };

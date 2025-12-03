@@ -2,20 +2,20 @@ import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
 import { type Part } from "../../services/Part.Service";
 import { AddingPart } from "../../components/modals/Parts/AddingPart";
 import { useOutletContext } from "react-router-dom";
-import { PinTable } from "./Components/PinTable";
+import { DataTable } from "./Components/DataTable";
 import { DataPagination } from "./Components/DataPagination";
 import InputField from "../../components/InputField";
 import { DownloadPartData } from "../../components/downloadButton/DownloadPartData";
 
 interface ContextType {
-  parts: Part[];
-  setParts: Dispatch<SetStateAction<Part[]>>;
+  materials: Part[];
+  setMaterials: Dispatch<SetStateAction<Part[]>>;
   fetchAllParts: () => void;
   isFetching: boolean;
 }
 
 export default function MaterialControl() {
-  const { parts, setParts, fetchAllParts, isFetching } =
+  const { materials, setMaterials, fetchAllParts, isFetching } =
     useOutletContext<ContextType>();
   const [currentParts, setCurrentParts] = useState<Part[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -29,20 +29,20 @@ export default function MaterialControl() {
 
   const [totalPages, setTotalPages] = useState<number>(0);
 
-  const displayParts = searchTerm === "" ? parts : searchedParts;
+  const displayParts = searchTerm === "" ? materials : searchedParts;
 
   useEffect(() => {
     if (searchTerm !== "") {
       setSearchedParts(
-        parts.filter((part) => {
+        materials.filter((item) => {
           const term = searchTerm.toLowerCase();
 
           return (
-            part.partNumber.toLowerCase().includes(term) ||
-            part.specs.toLowerCase().includes(term) ||
-            part.company.toLowerCase().includes(term) ||
-            part.category.toLowerCase().includes(term) ||
-            String(part.unitPrice).toLowerCase().includes(term)
+            item.partNumber.toLowerCase().includes(term) ||
+            item.specs.toLowerCase().includes(term) ||
+            item.company.toLowerCase().includes(term) ||
+            item.category.toLowerCase().includes(term) ||
+            String(item.unitPrice).toLowerCase().includes(term)
           );
         })
       );
@@ -50,16 +50,16 @@ export default function MaterialControl() {
       return;
     }
     // console.log("Search Term: ", searchedParts);
-  }, [searchTerm, parts]);
+  }, [searchTerm, materials]);
 
   useEffect(() => {
     setItemsPerPage(50);
     setCurrentParts(displayParts.slice(indexOfFirstItem, indexOfLastItem));
 
-    setTotalPages(Math.ceil(parts.length / itemsPerPage));
+    setTotalPages(Math.ceil(materials.length / itemsPerPage));
   }, [
     displayParts,
-    parts,
+    materials,
     currentPage,
     indexOfFirstItem,
     indexOfLastItem,
@@ -71,28 +71,29 @@ export default function MaterialControl() {
       <div className="mb-2 flex gap-2">
         <div className="w-7/10">
           <InputField
-            label="Search(part number, specifications, category, unit price, company)"
+            label={`Search(part number, specifications, category, unit price, company)`}
             type="text"
             value={searchTerm}
             onChange={(value: string) => setSearchTerm(value)}
           />
         </div>
         <div className="w-3/10 flex gap-2">
-          <AddingPart fetchAllParts={fetchAllParts} />
+          <AddingPart fetchAllParts={fetchAllParts} type="material" />
           <DownloadPartData parts={displayParts} />
         </div>
       </div>
-      <div className="h-87/100 overflow-auto border-y border-gray-300">
-        <PinTable
-          parts={displayParts}
-          setParts={setParts}
+      <div className="h-87/100 overflow-auto border border-gray-300">
+        <DataTable
+          data={displayParts}
+          setData={setMaterials}
+          type={"material"}
           fetchAllParts={fetchAllParts}
           isFetching={isFetching}
           currentParts={currentParts}
         />
       </div>
       <DataPagination
-        parts={displayParts}
+        data={displayParts}
         indexOfFirstItem={indexOfFirstItem}
         indexOfLastItem={indexOfLastItem}
         currentPage={currentPage}

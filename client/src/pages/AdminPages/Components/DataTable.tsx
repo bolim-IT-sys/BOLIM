@@ -24,16 +24,18 @@ import {
 } from "../../../helper/table.helper";
 
 type Props = {
-  parts: Part[];
-  setParts: Dispatch<SetStateAction<Part[]>>;
+  data: Part[];
+  setData: Dispatch<SetStateAction<Part[]>>;
+  type: string;
   fetchAllParts: () => void;
   isFetching: boolean;
   currentParts: Part[];
 };
 
-export const PinTable = ({
-  parts,
-  setParts,
+export const DataTable = ({
+  data,
+  setData,
+  type,
   fetchAllParts,
   isFetching,
   currentParts,
@@ -53,7 +55,7 @@ export const PinTable = ({
 
   const handleSortByPartNumber = () => {
     const sorted = sortByPartNumber(
-      parts,
+      data,
       sortBy === "partNumber" && sortOrder === "asc" ? "desc" : "asc"
     );
     // console.log("Sorted Parts by Part Number: ", sorted);
@@ -66,7 +68,7 @@ export const PinTable = ({
     setSearchParams(newParams);
 
     setSortBy("partNumber");
-    setParts(sorted);
+    setData(sorted);
     setSortOrder(
       sortBy === "partNumber" && sortOrder === "asc" ? "desc" : "asc"
     );
@@ -74,7 +76,7 @@ export const PinTable = ({
 
   const handleSortByUnitPrice = () => {
     const sorted = sortByPrice(
-      parts,
+      data,
       sortBy === "unitPrice" && sortOrder === "asc" ? "asc" : "desc"
     );
     // console.log("Sorted Parts by Unit Price: ", sorted, " by: ", sortOrder);
@@ -87,7 +89,7 @@ export const PinTable = ({
     setSearchParams(newParams);
 
     setSortBy("unitPrice");
-    setParts(sorted);
+    setData(sorted);
     setSortOrder(
       sortBy === "unitPrice" && sortOrder === "asc" ? "desc" : "asc"
     );
@@ -95,7 +97,7 @@ export const PinTable = ({
 
   const handleSortByStocks = () => {
     const sorted = sortByStocks(
-      parts,
+      data,
       sortBy === "stocks" && sortOrder === "asc" ? "asc" : "desc"
     );
     // console.log("Sorted Parts by QTY: ", sorted);
@@ -108,13 +110,21 @@ export const PinTable = ({
     setSearchParams(newParams);
 
     setSortBy("stocks");
-    setParts(sorted);
+    setData(sorted);
     setSortOrder(sortBy === "stocks" && sortOrder === "asc" ? "desc" : "asc");
   };
 
   const handleDelete = async (partId: number) => {
     const isConfirm = window.confirm(
-      "Are you sure you want to delete this stock? This action cannot be undone."
+      `Are you sure you want to delete this ${
+        type === "pin"
+          ? "pin"
+          : type === "it"
+            ? "item"
+            : type === "material"
+              ? "material"
+              : "INVALID TYPE"
+      }? This action cannot be undone.`
     );
 
     if (!isConfirm) {
@@ -158,7 +168,7 @@ export const PinTable = ({
     <>
       <table className="w-600">
         <thead
-          className="h-15 bg-sky-500 sticky text-neutral-50"
+          className="h-15 bg-sky-600 sticky text-neutral-50"
           style={{ zIndex: 5, top: "-.1px" }}
         >
           <tr>
@@ -176,7 +186,13 @@ export const PinTable = ({
             >
               <div className="h-10 flex justify-center items-center flex-col">
                 <h5>
-                  PIN NUMBER{" "}
+                  {type === "pin"
+                    ? "PIN NUMBER"
+                    : type === "it"
+                      ? "ITEM NAME"
+                      : type === "material"
+                        ? "MATERIAL NAME"
+                        : "INVALID TYPE"}{" "}
                   {sortBy === "partNumber"
                     ? sortOrder === "asc"
                       ? "▲"
@@ -336,11 +352,12 @@ export const PinTable = ({
                         style={{ zIndex: -10 }}
                       >
                         <div className="flex flex-col gap-1">
-                          <ViewPartStocks part={part} setParts={setParts} />
+                          <ViewPartStocks part={part} setParts={setData} />
                           <div className="flex gap-1">
                             <EditingPart
                               fetchAllParts={fetchAllParts}
                               part={part}
+                              type={type}
                             />
                             <DangerButton
                               text={

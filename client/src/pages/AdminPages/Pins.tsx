@@ -2,7 +2,7 @@ import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
 import { type Part } from "../../services/Part.Service";
 import { AddingPart } from "../../components/modals/Parts/AddingPart";
 import { useOutletContext } from "react-router-dom";
-import { PinTable } from "./Components/PinTable";
+import { DataTable } from "./Components/DataTable";
 import { DataPagination } from "./Components/DataPagination";
 import InputField from "../../components/InputField";
 import { DownloadPartData } from "../../components/downloadButton/DownloadPartData";
@@ -78,21 +78,22 @@ export default function Pins() {
           />
         </div>
         <div className="w-3/10 flex gap-2">
-          <AddingPart fetchAllParts={fetchAllParts} />
+          <AddingPart fetchAllParts={fetchAllParts} type="pin" />
           <DownloadPartData parts={displayParts} />
         </div>
       </div>
-      <div className="h-87/100 overflow-auto border-2 border-gray-300">
-        <PinTable
-          parts={displayParts}
-          setParts={setParts}
+      <div className="h-87/100 overflow-auto border border-gray-300">
+        <DataTable
+          data={displayParts}
+          setData={setParts}
+          type={"pin"}
           fetchAllParts={fetchAllParts}
           isFetching={isFetching}
           currentParts={currentParts}
         />
       </div>
       <DataPagination
-        parts={displayParts}
+        data={displayParts}
         indexOfFirstItem={indexOfFirstItem}
         indexOfLastItem={indexOfLastItem}
         currentPage={currentPage}

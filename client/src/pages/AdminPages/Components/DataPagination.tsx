@@ -3,7 +3,7 @@ import PrimaryButton from "../../../components/button/PrimaryButton";
 import type { Part } from "../../../services/Part.Service";
 
 type Props = {
-  parts: Part[];
+  data: Part[];
   indexOfFirstItem: number;
   indexOfLastItem: number;
   currentPage: number;
@@ -14,17 +14,17 @@ type Props = {
 export const DataPagination = ({
   indexOfFirstItem,
   indexOfLastItem,
-  parts,
+  data,
   currentPage,
   setCurrentPage,
   totalPages,
 }: Props) => {
   return (
     <>
-      <div className="flex justify-between items-center p-4 border-t border-gray-300">
+      <div className="flex justify-between items-center p-4">
         <div className="text-sm text-gray-600">
           Showing {indexOfFirstItem + 1} to{" "}
-          {Math.min(indexOfLastItem, parts.length)} of {parts.length} parts
+          {Math.min(indexOfLastItem, data.length)} of {data.length} data
         </div>
 
         <div className="flex gap-2">

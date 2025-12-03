@@ -9,7 +9,7 @@ export default function SideNavBar({ showSideBar }: Props) {
   return (
     <>
       <div
-        className={`bg-sky-500 ${showSideBar ? "w-65" : ""} transition-all duration-200 ease-in-out shadow-md`}
+        className={`bg-sky-600 ${showSideBar ? "w-65" : ""} transition-all duration-200 ease-in-out shadow-md`}
       >
         <div className="flex flex-col justify-start items-start text-neutral-50 gap-1 mt-5.5 mx-3">
           <Link

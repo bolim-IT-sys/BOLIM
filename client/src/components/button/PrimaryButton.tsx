@@ -18,7 +18,7 @@ export default function PrimaryButton({
   return (
     <button
       type="submit"
-      className="bg-sky-500 hover:bg-sky-600 disabled:bg-sky-300 disabled:cursor-no-drop transition duration-200 ease-in-out cursor-pointer text-neutral-50 w-full rounded py-1 px-3"
+      className="bg-sky-600 hover:bg-sky-600 disabled:bg-sky-300 disabled:cursor-no-drop transition duration-200 ease-in-out cursor-pointer text-neutral-50 w-full rounded py-1 px-3"
       disabled={disabled}
       onClick={onClick}
     >

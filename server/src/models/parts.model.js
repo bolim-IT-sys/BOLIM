@@ -12,6 +12,11 @@ const Part = sequelize.define("Part", {
     allowNull: true,
     defaultValue: null,
   },
+  type: {
+    type: DataTypes.STRING(100),
+    allowNull: false,
+    defaultValue: "pin",
+  },
   partNumber: {
     type: DataTypes.STRING(100),
     allowNull: false,

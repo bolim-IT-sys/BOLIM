@@ -17,13 +17,15 @@ import {
 export default function Mainlayout() {
   const [user, setUser] = useState<User>();
   const [parts, setParts] = useState<Part[]>([]);
+  const [ITStocks, setITStocks] = useState<Part[]>([]);
+  const [materials, setMaterials] = useState<Part[]>([]);
   const [isFetching, setIsFetching] = useState(false);
 
   const [searchParams] = useSearchParams();
   const sort = searchParams.get("sort") || "";
   const order = searchParams.get("order") || "";
 
-  const [showSideBar, setShowSideBar] = useState(false);
+  const [showSideBar, setShowSideBar] = useState(true);
 
   const navigate = useNavigate();
 
@@ -81,28 +83,60 @@ export default function Mainlayout() {
             partWithInboundOutbound,
             sort === "partNumber" && order === "asc" ? "asc" : "desc"
           );
-          setParts(sorted);
+
+          const pins = sorted.filter((item) => item.type === "pin");
+          const it = sorted.filter((item) => item.type === "it");
+          const material = sorted.filter((item) => item.type === "material");
+
+          setParts(pins);
+          setITStocks(it);
+          setMaterials(material);
+          console.log(
+            "Fetch IT and Material stocks: ",
+            `${ITStocks}, ${materials}`
+          );
         } else if (sort === "stocks") {
           console.log(`Sorting by stocks and by ${order}`);
           const sorted = sortByStocks(
             partWithInboundOutbound,
             sort === "stocks" && order === "asc" ? "desc" : "asc"
           );
-          setParts(sorted);
+
+          const pins = sorted.filter((item) => item.type === "pin");
+          const it = sorted.filter((item) => item.type === "it");
+          const material = sorted.filter((item) => item.type === "material");
+
+          setParts(pins);
+          setITStocks(it);
+          setMaterials(material);
         } else if (sort === "unitPrice") {
           console.log(`Sorting by unit price and by ${order}`);
           const sorted = sortByPrice(
             partWithInboundOutbound,
             sort === "unitPrice" && order === "asc" ? "desc" : "asc"
           );
-          setParts(sorted);
+
+          const pins = sorted.filter((item) => item.type === "pin");
+          const it = sorted.filter((item) => item.type === "it");
+          const material = sorted.filter((item) => item.type === "material");
+
+          setParts(pins);
+          setITStocks(it);
+          setMaterials(material);
         } else {
           console.log(`Sorting by part number and by ${order}`);
           const sorted = sortByPartNumber(
             partWithInboundOutbound,
             sort === "partNumber" && order === "asc" ? "desc" : "asc"
           );
-          setParts(sorted);
+
+          const pins = sorted.filter((item) => item.type === "pin");
+          const it = sorted.filter((item) => item.type === "it");
+          const material = sorted.filter((item) => item.type === "material");
+
+          setParts(pins);
+          setITStocks(it);
+          setMaterials(material);
         }
 
         // console.log(
@@ -148,7 +182,17 @@ export default function Mainlayout() {
         <div className={`h-full ${showSideBar ? " w-[86dvw]" : "w-[96dvw]"} `}>
           <div className=" bg-white h-95/100 my-7 mx-5 p-5 rounded-sm">
             <Outlet
-              context={{ user, parts, setParts, fetchAllParts, isFetching }}
+              context={{
+                user,
+                parts,
+                setParts,
+                ITStocks,
+                setITStocks,
+                materials,
+                setMaterials,
+                fetchAllParts,
+                isFetching,
+              }}
             />
           </div>
         </div>

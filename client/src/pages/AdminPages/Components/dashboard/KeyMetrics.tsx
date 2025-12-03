@@ -30,7 +30,7 @@ export const KeyMetrics = ({ data }: Props) => {
   return (
     <>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-2">
-        <div className={`bg-sky-500 text-neutral-50 rounded shadow p-6`}>
+        <div className={`bg-sky-600 text-neutral-50 rounded shadow p-6`}>
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-neutral-50">Total Parts</p>
