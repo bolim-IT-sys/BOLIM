@@ -17,7 +17,7 @@ interface ContextType {
 export default function Pins() {
   const { parts, setParts, fetchAllParts, isFetching } =
     useOutletContext<ContextType>();
-  const [currentParts, setCurrentParts] = useState<Part[]>([]);
+  const [currentData, setCurrentData] = useState<Part[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [itemsPerPage, setItemsPerPage] = useState<number>(20);
 
@@ -54,7 +54,7 @@ export default function Pins() {
 
   useEffect(() => {
     setItemsPerPage(50);
-    setCurrentParts(displayParts.slice(indexOfFirstItem, indexOfLastItem));
+    setCurrentData(displayParts.slice(indexOfFirstItem, indexOfLastItem));
 
     setTotalPages(Math.ceil(parts.length / itemsPerPage));
   }, [
@@ -89,7 +89,7 @@ export default function Pins() {
           type={"pin"}
           fetchAllParts={fetchAllParts}
           isFetching={isFetching}
-          currentParts={currentParts}
+          currentData={currentData}
         />
       </div>
       <DataPagination

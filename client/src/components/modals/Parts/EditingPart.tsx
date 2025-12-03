@@ -11,20 +11,20 @@ import SecondaryButton from "../../button/SecondaryButton";
 
 interface EditingProps {
   fetchAllParts: () => void;
-  part: Part;
+  item: Part;
   type: string;
 }
 
-export const EditingPart = ({ fetchAllParts, part, type }: EditingProps) => {
+export const EditingPart = ({ fetchAllParts, item, type }: EditingProps) => {
   const [modalShow, setModalShow] = useState<boolean>(false);
   const [formData, setFormData] = useState<AddingPartType>({
     image: null,
-    type: part.type,
-    partNumber: part.partNumber,
-    specs: part.specs,
-    category: part.category,
-    unitPrice: String(part.unitPrice),
-    company: part.company,
+    type: item.type,
+    partNumber: item.partNumber,
+    specs: item.specs,
+    category: item.category,
+    unitPrice: String(item.unitPrice),
+    company: item.company,
   });
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const handleChange = (field: string, value: string) => {
@@ -32,7 +32,7 @@ export const EditingPart = ({ fetchAllParts, part, type }: EditingProps) => {
   };
   const [preview, setPreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const id = part.id;
+  const id = item.id;
 
   const handleSelectImage = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -107,11 +107,11 @@ export const EditingPart = ({ fetchAllParts, part, type }: EditingProps) => {
   const NoChanges = () => {
     return (
       !formData.image &&
-      part.partNumber === formData.partNumber &&
-      part.specs === formData.specs &&
-      part.category === formData.category &&
-      String(part.unitPrice) === formData.unitPrice &&
-      part.company === formData.company
+      item.partNumber === formData.partNumber &&
+      item.specs === formData.specs &&
+      item.category === formData.category &&
+      String(item.unitPrice) === formData.unitPrice &&
+      item.company === formData.company
     );
   };
 
@@ -168,7 +168,7 @@ export const EditingPart = ({ fetchAllParts, part, type }: EditingProps) => {
                     alt="Preview"
                     className="w-full h-full object-cover"
                   />
-                ) : !part.image ? (
+                ) : !item.image ? (
                   <>
                     <i className="bx bx-image-landscape"></i>
                     <h6>NO IMAGE</h6>
@@ -176,7 +176,7 @@ export const EditingPart = ({ fetchAllParts, part, type }: EditingProps) => {
                 ) : (
                   <img
                     className="h-full w-full object-cover"
-                    src={`${import.meta.env.VITE_API_URL}/uploads/pinImage/${part.image}`}
+                    src={`${import.meta.env.VITE_API_URL}/uploads/pinImage/${item.image}`}
                     alt=""
                   />
                 )}

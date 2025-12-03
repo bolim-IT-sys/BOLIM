@@ -137,6 +137,7 @@ export default function Mainlayout() {
           setParts(pins);
           setITStocks(it);
           setMaterials(material);
+          console.log("data: ", pins);
         }
 
         // console.log(

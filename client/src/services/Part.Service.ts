@@ -11,8 +11,8 @@ export interface Part {
   unitPrice: number;
   company: string;
   quantity: number;
-  inbounds?: Inbound[];
-  outbounds?: Outbound[];
+  inbounds?: Inbound[] | null;
+  outbounds?: Outbound[] | null;
 }
 
 export interface AddingPartType {

@@ -17,6 +17,7 @@ export interface Outbound {
 export interface InboundOutboundType {
   partId: number;
   currentQuantity: number;
+  serialNumber?: string;
   quantity: string;
   inboundDate?: string;
   outboundDate?: string;

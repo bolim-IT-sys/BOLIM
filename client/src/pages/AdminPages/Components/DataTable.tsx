@@ -29,7 +29,7 @@ type Props = {
   type: string;
   fetchAllParts: () => void;
   isFetching: boolean;
-  currentParts: Part[];
+  currentData: Part[];
 };
 
 export const DataTable = ({
@@ -38,7 +38,7 @@ export const DataTable = ({
   type,
   fetchAllParts,
   isFetching,
-  currentParts,
+  currentData,
 }: Props) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const sort = searchParams.get("sort") || "partNumber";
@@ -302,35 +302,35 @@ export const DataTable = ({
             </>
           ) : (
             <>
-              {currentParts.length > 0 ? (
+              {currentData.length > 0 ? (
                 <>
-                  {currentParts.map((part) => (
-                    <tr key={part.id} className="hover:bg-gray-50">
+                  {currentData.map((item) => (
+                    <tr key={item.id} className="hover:bg-gray-50">
                       <td className="text-center border border-neutral-300 px-3 py-2">
                         <div className="h-18 flex justify-center items-center">
-                          <ImageModal part={part} />
+                          <ImageModal part={item} />
                         </div>
                       </td>
                       <td className="text-center border border-neutral-300 px-3 py-2">
-                        <h6>{part.partNumber}</h6>
+                        <h6>{item.partNumber}</h6>
                       </td>
                       <td className="text-center border border-neutral-300 px-3 py-2">
-                        <h6>{part.specs}</h6>
+                        <h6>{item.specs}</h6>
                       </td>
                       <td className="text-center border border-neutral-300 px-3 py-2">
-                        <h6>{part.category}</h6>
+                        <h6>{item.category}</h6>
                       </td>
                       <td className="text-center border border-neutral-300 px-3 py-2">
-                        <h6>{part.unitPrice}</h6>
+                        <h6>{item.unitPrice}</h6>
                       </td>
                       <td className="text-center border border-neutral-300 px-3 py-2">
-                        <h6>{part.company}</h6>
+                        <h6>{item.company}</h6>
                       </td>
                       <td
                         className={`${
-                          computeStocks(part) <
+                          computeStocks(item) <
                           getSafetyStock(
-                            part.outbounds!.map((o) => ({
+                            item.outbounds!.map((o) => ({
                               quantity: o.quantity,
                               date: String(o.outboundDate),
                             })),
@@ -343,7 +343,7 @@ export const DataTable = ({
                       >
                         <div>
                           <h6 className={`rounded px-1`}>
-                            <b>{computeStocks(part)}</b>
+                            <b>{computeStocks(item)}</b>
                           </h6>
                         </div>
                       </td>
@@ -352,11 +352,15 @@ export const DataTable = ({
                         style={{ zIndex: -10 }}
                       >
                         <div className="flex flex-col gap-1">
-                          <ViewPartStocks part={part} setParts={setData} />
+                          <ViewPartStocks
+                            item={item}
+                            setData={setData}
+                            type={type}
+                          />
                           <div className="flex gap-1">
                             <EditingPart
                               fetchAllParts={fetchAllParts}
-                              part={part}
+                              item={item}
                               type={type}
                             />
                             <DangerButton
@@ -374,26 +378,26 @@ export const DataTable = ({
                                   </span>
                                 </>
                               }
-                              onClick={() => handleDelete(part.id!)}
-                              isLoading={isDeleting === part.id}
-                              disabled={isDeleting === part.id}
+                              onClick={() => handleDelete(item.id!)}
+                              isLoading={isDeleting === item.id}
+                              disabled={isDeleting === item.id}
                             />
                           </div>
                         </div>
                       </td>
                       <td className="text-center border border-neutral-300 px-3 py-2">
-                        <h6>{computeSecurementRate(part)}%</h6>
+                        <h6>{computeSecurementRate(item)}%</h6>
                       </td>
                       <td className="text-center border border-neutral-300 px-3 py-2">
-                        <h6>{computeExcessInsufficient(part)}</h6>
+                        <h6>{computeExcessInsufficient(item)}</h6>
                       </td>
                       <td className="text-center border border-neutral-300 px-3 py-2">
-                        <h6>{computeUrgentRequest(part)}</h6>
+                        <h6>{computeUrgentRequest(item)}</h6>
                       </td>
                       <td
-                        className={`${computeOrderQuantity(part) > 0 ? "bg-red-100 text-red-900 font-bold" : ""} text-center border border-neutral-300 px-3 py-2`}
+                        className={`${computeOrderQuantity(item) > 0 ? "bg-red-100 text-red-900 font-bold" : ""} text-center border border-neutral-300 px-3 py-2`}
                       >
-                        <h6>{computeOrderQuantity(part)}</h6>
+                        <h6>{computeOrderQuantity(item)}</h6>
                       </td>
                     </tr>
                   ))}

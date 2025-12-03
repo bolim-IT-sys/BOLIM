@@ -10,9 +10,10 @@ import {
 import type { Dispatch, SetStateAction } from "react";
 
 interface Props {
-  part: Part;
+  item: Part;
+  type: string;
   fetchAllParts: () => void;
-  setParts: Dispatch<SetStateAction<Part[]>>;
+  setData: Dispatch<SetStateAction<Part[]>>;
   formData: InboundOutboundType;
   setFormData: Dispatch<SetStateAction<InboundOutboundType>>;
   fetchTransactions: () => void;
@@ -25,9 +26,10 @@ interface Props {
 }
 
 export const Inbounding = ({
-  part,
+  item,
+  type,
   fetchAllParts,
-  setParts,
+  setData,
   formData,
   setFormData,
   fetchTransactions,
@@ -53,7 +55,7 @@ export const Inbounding = ({
             setInboundShow(false);
             setModalShow(true);
             // UPDATING THE QUANTITY OF THE INBOUNDED PART
-            setParts((prevParts) =>
+            setData((prevParts) =>
               prevParts.map((p) =>
                 p.id === formData.partId
                   ? { ...p, quantity: p.quantity + Number(formData.quantity) }
@@ -63,8 +65,8 @@ export const Inbounding = ({
             // RESETTING FORMDATA AFTER INBOUND
             setFormData((prev) => ({
               ...prev,
-              partId: part.id!,
-              currentQuantity: part.quantity + Number(formData.quantity),
+              partId: item.id!,
+              currentQuantity: item.quantity + Number(formData.quantity),
               quantity: "",
             }));
           },
@@ -103,7 +105,15 @@ export const Inbounding = ({
           setInboundShow(false);
           setModalShow(true);
         }}
-        title={`INBOUND PART (${part.partNumber})`}
+        title={`INBOUND ${
+          type === "pin"
+            ? "PIN"
+            : type === "it"
+              ? "ITEM"
+              : type === "material"
+                ? "MATERIAL"
+                : "INVALID TYPE"
+        } (${item.partNumber})`}
         size="md"
         footer={
           <>
@@ -125,18 +135,36 @@ export const Inbounding = ({
         }
       >
         <div className="text-start">
-          <div className="mb-1">
-            <label className="block font-medium text-gray-700">
-              <p>QUANTITY</p>
-            </label>
-            <InputField
-              label="QUANTITY"
-              type="number"
-              value={formData.quantity}
-              onChange={(value: string) => handleChange("quantity", value)}
-              autoComplete={`quantity`}
-            />
-          </div>
+          {type === "it" ? (
+            <div className="mb-1">
+              <label className="block font-medium text-gray-700">
+                <p>SERIAL NUMBER</p>
+              </label>
+              <InputField
+                label="SERIAL NUMBER"
+                type="text"
+                value={formData.serialNumber!}
+                onChange={(value: string) =>
+                  handleChange("serialNumber", value)
+                }
+                autoComplete={`serialNumber`}
+              />
+            </div>
+          ) : (
+            <div className="mb-1">
+              <label className="block font-medium text-gray-700">
+                <p>QUANTITY</p>
+              </label>
+              <InputField
+                label="QUANTITY"
+                type="number"
+                value={formData.quantity}
+                onChange={(value: string) => handleChange("quantity", value)}
+                autoComplete={`quantity`}
+              />
+            </div>
+          )}
+
           <div className="mb-1">
             <label className="block font-medium text-gray-700">
               <p>INBOUND DATE</p>

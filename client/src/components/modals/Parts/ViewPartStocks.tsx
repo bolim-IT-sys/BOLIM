@@ -24,15 +24,17 @@ import {
 import { useOutletContext } from "react-router-dom";
 
 interface Props {
-  part: Part;
-  setParts: Dispatch<SetStateAction<Part[]>>;
+  item: Part;
+  length: number;
+  setData: Dispatch<SetStateAction<Part[]>>;
+  type: string;
 }
 
 interface ContextType {
   fetchAllParts: () => void;
 }
 
-export const ViewPartStocks = ({ part, setParts }: Props) => {
+export const ViewPartStocks = ({ item, setData, type }: Props) => {
   const { fetchAllParts } = useOutletContext<ContextType>();
 
   const [modalShow, setModalShow] = useState<boolean>(false);
@@ -47,9 +49,10 @@ export const ViewPartStocks = ({ part, setParts }: Props) => {
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [formData, setFormData] = useState<InboundOutboundType>({
-    partId: part.id!,
-    currentQuantity: part.quantity,
-    quantity: "",
+    partId: item.id!,
+    currentQuantity: item.quantity,
+    serialNumber: `${item.partNumber} ${item.inbounds!.length + 1}`,
+    quantity: type === "it" ? "1" : "",
     inboundDate: new Date().toISOString().split("T")[0],
     outboundDate: new Date().toISOString().split("T")[0],
   });
@@ -63,8 +66,8 @@ export const ViewPartStocks = ({ part, setParts }: Props) => {
     try {
       setIsLoading(true);
       const [inResult, outResult] = await Promise.all([
-        fetchInbounds(part.id!),
-        fetchOutbounds(part.id!),
+        fetchInbounds(item.id!),
+        fetchOutbounds(item.id!),
       ]);
 
       if (inResult.success) {
@@ -126,10 +129,10 @@ export const ViewPartStocks = ({ part, setParts }: Props) => {
           <>
             <div className="flex items-center gap-2">
               <h3 className="">
-                {`${part.partNumber}`}:{" "}
+                {`${item.partNumber}`}:{" "}
                 <span
                   className={`${
-                    part.quantity <
+                    item.quantity <
                     getSafetyStock(
                       outbounds.map((o) => ({
                         quantity: o.quantity,
@@ -142,9 +145,9 @@ export const ViewPartStocks = ({ part, setParts }: Props) => {
                       : "bg-emerald-100 text-emerald-800"
                   } rounded px-2`}
                 >
-                  <b>{part.quantity} </b>
+                  <b>{item.quantity} </b>
                   <i className="text-sm">
-                    {part.quantity <
+                    {item.quantity <
                     getSafetyStock(
                       outbounds.map((o) => ({
                         quantity: o.quantity,
@@ -353,9 +356,10 @@ export const ViewPartStocks = ({ part, setParts }: Props) => {
 
       {/* INBOUNDING */}
       <Inbounding
-        part={part}
+        item={item}
+        type={type}
         fetchAllParts={fetchAllParts!}
-        setParts={setParts}
+        setData={setData}
         formData={formData}
         setFormData={setFormData}
         fetchTransactions={fetchTransactions}
@@ -369,9 +373,10 @@ export const ViewPartStocks = ({ part, setParts }: Props) => {
 
       {/* OUTBOUNDING */}
       <Outbounding
-        part={part}
+        item={item}
+        type={type}
         fetchAllParts={fetchAllParts!}
-        setParts={setParts}
+        setData={setData}
         formData={formData}
         setFormData={setFormData}
         fetchTransactions={fetchTransactions}

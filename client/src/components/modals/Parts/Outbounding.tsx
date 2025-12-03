@@ -10,9 +10,10 @@ import {
 import type { Dispatch, SetStateAction } from "react";
 
 interface Props {
-  part: Part;
+  item: Part;
+  type: string;
   fetchAllParts: () => void;
-  setParts: Dispatch<SetStateAction<Part[]>>;
+  setData: Dispatch<SetStateAction<Part[]>>;
   formData: InboundOutboundType;
   setFormData: Dispatch<SetStateAction<InboundOutboundType>>;
   fetchTransactions: () => void;
@@ -25,9 +26,10 @@ interface Props {
 }
 
 export const Outbounding = ({
-  part,
+  item,
+  type,
   fetchAllParts,
-  setParts,
+  setData,
   formData,
   setFormData,
   fetchTransactions,
@@ -53,7 +55,7 @@ export const Outbounding = ({
             fetchTransactions();
             fetchAllParts();
             // UPDATING THE QUANTITY OF THE INBOUNDED PART
-            setParts((prevParts) =>
+            setData((prevParts) =>
               prevParts.map((p) =>
                 p.id === formData.partId
                   ? { ...p, quantity: p.quantity - Number(formData.quantity) }
@@ -63,8 +65,8 @@ export const Outbounding = ({
             // RESETTING FORMDATA AFTER INBOUND
             setFormData((prev) => ({
               ...prev,
-              partId: part.id!,
-              currentQuantity: part.quantity + Number(formData.quantity),
+              partId: item.id!,
+              currentQuantity: item.quantity + Number(formData.quantity),
               quantity: "",
             }));
           },
@@ -103,7 +105,15 @@ export const Outbounding = ({
           setOutboundShow(false);
           setModalShow(true);
         }}
-        title={`OUTBOUND PART (${part.partNumber})`}
+        title={`OUTBOUND ${
+          type === "pin"
+            ? "PIN"
+            : type === "it"
+              ? "ITEM"
+              : type === "material"
+                ? "MATERIAL"
+                : "INVALID TYPE"
+        } (${item.partNumber})`}
         size="md"
         footer={
           <>
