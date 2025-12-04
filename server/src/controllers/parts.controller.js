@@ -317,6 +317,85 @@ const inboundPart = async (req, res) => {
   }
 };
 
+const addingItem = async (req, res) => {
+  try {
+    console.log("data in controller: ", req.body);
+
+    // console.log("Data received in Controller: ", req.body);
+    // Optional: Validate request body first
+    if (
+      !req.body.stockId ||
+      !req.body.serialNumber ||
+      !req.body.PRDate ||
+      !req.body.receivedDate
+    ) {
+      // console.log("Please fill in all required fields.");
+      return res.json({
+        success: false,
+        message: "Please fill in all required fields.",
+      });
+    }
+
+    console.log("data in controller: ", req.body);
+
+    // Check if part exists
+    const isPartExisting = await partService.findItemById(
+      req.body.serialNumber
+    );
+
+    if (isPartExisting) {
+      console.log("Serial Number already exist.");
+      return res.json({
+        success: false,
+        message: "Serial Number already exist.",
+      });
+    }
+
+    const addItem = await partService.addItem(req.body);
+
+    // Return consistent response structure
+    res.status(201).json({
+      success: true,
+      message: "Item added succesfully.",
+      data: addItem,
+    });
+  } catch (err) {
+    // You can add specific error handling here if needed
+    console.error("Error occured: ", err);
+    res.json({
+      success: false,
+      message: err.message || "Adding item failed",
+    });
+  }
+};
+
+const getItem = async (req, res) => {
+  try {
+    const partId = req.params.id;
+    // console.log("Fetching inbounds.");
+
+    const items = await partService.getItems(partId);
+    if (!items) {
+      // console.log("No inbounds found.");
+      res.status(404).json({
+        success: false,
+        message: "No items found.",
+      });
+    } else {
+      // console.log("Part inbounds found: ", parts);
+      res.json({ success: true, data: items });
+    }
+  } catch (err) {
+    // You can add specific error handling here if needed
+    console.log("Error fetching stock items: ", err);
+
+    res.status(500).json({
+      success: false,
+      message: err.message || "Fetching stock items failed",
+    });
+  }
+};
+
 const getAllInbounds = async (req, res) => {
   try {
     // console.log("Fetching all inbounds.");
@@ -485,6 +564,8 @@ module.exports = {
   updatePart,
   deletePart,
   inboundPart,
+  addingItem,
+  getItem,
   getAllInbounds,
   getInbounds,
   outboundPart,

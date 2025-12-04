@@ -82,7 +82,7 @@ export default function MaterialControl() {
           <DownloadPartData parts={displayParts} />
         </div>
       </div>
-      <div className="h-87/100 overflow-auto border border-gray-300">
+      <div className="h-87/100 overflow-scroll border border-gray-300">
         <DataTable
           data={displayParts}
           setData={setMaterials}

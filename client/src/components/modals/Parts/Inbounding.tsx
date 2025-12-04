@@ -4,10 +4,12 @@ import InputField from "../../InputField";
 import { Modal } from "../../Modal";
 import type { Part } from "../../../services/Part.Service";
 import {
+  addingItem,
   inboundPart,
+  type addItemType,
   type InboundOutboundType,
 } from "../../../services/InboundOutbound.Service";
-import type { Dispatch, SetStateAction } from "react";
+import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
 
 interface Props {
   item: Part;
@@ -40,9 +42,32 @@ export const Inbounding = ({
   setModalShow,
   handleChange,
 }: Props) => {
+  const [itemDetails, setItemDetails] = useState<addItemType>({
+    stockId: item.id!,
+    serialNumber: `${item.partNumber} ${item.inbounds!.length + 1}`,
+    PRDate: "",
+    receivedDate: formData.inboundDate!,
+  });
+
+  useEffect(() => {
+    setItemDetails((prev) => ({
+      ...prev,
+      serialNumber: `${item.partNumber} ${item.inbounds!.length + 1}`,
+      receivedDate: formData.inboundDate!,
+      PRDate: prev.PRDate,
+    }));
+  }, [formData, item]);
+
   const handleInbound = async () => {
     setInBounding(true);
     try {
+      if (type === "it") {
+        const addItem = await addingItem(itemDetails);
+
+        if (!addItem.success) {
+          return alert(addItem.message);
+        }
+      }
       const result = await inboundPart(formData);
       // console.log("deploying stock item.");
 
@@ -67,7 +92,8 @@ export const Inbounding = ({
               ...prev,
               partId: item.id!,
               currentQuantity: item.quantity + Number(formData.quantity),
-              quantity: "",
+              serialNumber: `${item.partNumber} ${item.inbounds!.length + 1}`,
+              quantity: "1",
             }));
           },
           import.meta.env.VITE_TIME_OUT
@@ -82,7 +108,7 @@ export const Inbounding = ({
         );
       }
     } catch (error) {
-      console.error("Unexpecter error occured: ", error);
+      alert(`Unexpecter error occured: ${error}`);
     } finally {
       setTimeout(
         () => {
@@ -136,20 +162,36 @@ export const Inbounding = ({
       >
         <div className="text-start">
           {type === "it" ? (
-            <div className="mb-1">
-              <label className="block font-medium text-gray-700">
-                <p>SERIAL NUMBER</p>
-              </label>
-              <InputField
-                label="SERIAL NUMBER"
-                type="text"
-                value={formData.serialNumber!}
-                onChange={(value: string) =>
-                  handleChange("serialNumber", value)
-                }
-                autoComplete={`serialNumber`}
-              />
-            </div>
+            <>
+              <div className="mb-1">
+                <label className="block font-medium text-gray-700">
+                  <p>SERIAL NUMBER</p>
+                </label>
+                <InputField
+                  label="SERIAL NUMBER"
+                  type="text"
+                  value={itemDetails.serialNumber!}
+                  onChange={(value: string) =>
+                    setItemDetails((prev) => ({ ...prev, serialNumber: value }))
+                  }
+                  autoComplete={`serialNumber`}
+                />
+              </div>
+              <div className="mb-1">
+                <label className="block font-medium text-gray-700">
+                  <p>PR DATE</p>
+                </label>
+                <InputField
+                  label="PR DATE"
+                  type="text"
+                  value={itemDetails.PRDate!}
+                  onChange={(value: string) =>
+                    setItemDetails((prev) => ({ ...prev, PRDate: value }))
+                  }
+                  autoComplete={`PRDate`}
+                />
+              </div>
+            </>
           ) : (
             <div className="mb-1">
               <label className="block font-medium text-gray-700">

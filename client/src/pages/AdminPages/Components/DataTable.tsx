@@ -181,7 +181,7 @@ export const DataTable = ({
               </div>
             </th>
             <th
-              className="hover:bg-sky-600 transition duration-200 border border-neutral-300 text-center px-2 py-3 cursor-pointer"
+              className="w-50 hover:bg-sky-600 transition duration-200 border border-neutral-300 text-center px-2 py-3 cursor-pointer"
               onClick={handleSortByPartNumber}
             >
               <div className="h-10 flex justify-center items-center flex-col">
@@ -201,7 +201,7 @@ export const DataTable = ({
                 </h5>
               </div>
             </th>
-            <th className="border border-neutral-300 text-center px-2 py-3">
+            <th className="w-70 border border-neutral-300 text-center px-2 py-3">
               <div className="h-10 flex justify-center items-center flex-col">
                 <h5>SPECIFICATIONS (Description)</h5>
                 <h6>규격(설명)</h6>

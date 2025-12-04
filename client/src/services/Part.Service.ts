@@ -69,7 +69,7 @@ export async function fetchPartData(token: string): Promise<PartResponse> {
 
 export async function fetchParts(): Promise<FetchingPartsResponse> {
   try {
-    const response = await axios.get(`${API_URL}/parts/fetchParts`, {
+    const response = await axios.get(`${API_URL}/parts/fetch-parts`, {
       headers: {
         "Content-Type": "application/json",
       },
@@ -91,11 +91,15 @@ export async function createPart(
   formData: AddingPartType
 ): Promise<PartResponse> {
   try {
-    const response = await axios.post(`${API_URL}/parts/createPart`, formData, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    const response = await axios.post(
+      `${API_URL}/parts/create-part`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
     // console.log("creating user");
     if (response.status === 201) {
       return response.data;
@@ -148,7 +152,7 @@ export async function editPart(
 ): Promise<PartResponse> {
   try {
     const response = await axios.put(
-      `${API_URL}/parts/updatePart/${id}`,
+      `${API_URL}/parts/update-part/${id}`,
       formData
     );
     // console.log("editing user details");
@@ -199,7 +203,7 @@ export async function editPart(
 
 export async function removePart(id: number): Promise<PartResponse> {
   try {
-    const response = await axios.delete(`${API_URL}/parts/deletePart/${id}`, {
+    const response = await axios.delete(`${API_URL}/parts/delete-part/${id}`, {
       headers: {
         "Content-Type": "application/json",
       },

@@ -14,6 +14,18 @@ export interface Outbound {
   outboundDate: Date;
 }
 
+export interface ITStocks {
+  id: number;
+  stockId: number;
+  serialNumber: string;
+  PRDate: Date;
+  receivedDate: Date;
+  deployedDate?: Date;
+  station?: string;
+  department?: string;
+  remarks?: string;
+}
+
 export interface InboundOutboundType {
   partId: number;
   currentQuantity: number;
@@ -21,6 +33,13 @@ export interface InboundOutboundType {
   quantity: string;
   inboundDate?: string;
   outboundDate?: string;
+}
+
+export interface addItemType {
+  stockId: number;
+  serialNumber: string;
+  PRDate: string;
+  receivedDate: string;
 }
 
 export interface InboundOutboundResponse {
@@ -49,7 +68,7 @@ const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000/api";
 
 export async function fetchAllInbounds(): Promise<FetchingInboundsResponse> {
   try {
-    const response = await axios.get(`${API_URL}/parts/fetchAllInbounds`, {
+    const response = await axios.get(`${API_URL}/parts/fetch-all-inbounds`, {
       headers: {
         "Content-Type": "application/json",
       },
@@ -72,13 +91,35 @@ export async function fetchInbounds(
 ): Promise<FetchingInboundsResponse> {
   try {
     const response = await axios.get(
-      `${API_URL}/parts/fetchInbounds/${partId}`,
+      `${API_URL}/parts/fetch-inbounds/${partId}`,
       {
         headers: {
           "Content-Type": "application/json",
         },
       }
     );
+
+    const data = response.data;
+    // console.log("Parts Inbounds Fetched: ", data);
+    return data;
+  } catch (error) {
+    console.log(error);
+    return {
+      success: false,
+      message: "Something went wrong while fetching parts.",
+    };
+  }
+}
+
+export async function fetchITStocks(
+  partId: number
+): Promise<FetchingInboundsResponse> {
+  try {
+    const response = await axios.get(`${API_URL}/parts/fetch-items/${partId}`, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
     const data = response.data;
     // console.log("Parts Inbounds Fetched: ", data);
@@ -147,9 +188,61 @@ export async function inboundPart(
   }
 }
 
+export async function addingItem(
+  formData: addItemType
+): Promise<InboundOutboundResponse> {
+  try {
+    // console.log("data received at service: ", formData);
+    const response = await axios.post(`${API_URL}/parts/add-item`, formData, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    if (response.status === 201) {
+      return response.data;
+    } else {
+      return response.data;
+    }
+  } catch (error) {
+    // Type guard for Axios errors
+    if (axios.isAxiosError(error)) {
+      const axiosError = error as AxiosError<ApiErrorResponse>;
+      // console.error(
+      //   "Error creating part:",
+      //   axiosError.response?.data || axiosError.message
+      // );
+
+      // Check if it's a connection error
+      if (
+        axiosError.code === "ERR_NETWORK" ||
+        axiosError.message.includes("ERR_CONNECTION_REFUSED")
+      ) {
+        return {
+          success: false,
+          message:
+            "Cannot connect to server. Please check if the server is running.",
+        };
+      }
+
+      return {
+        success: false,
+        message: axiosError.response?.data?.message || axiosError.message,
+      };
+    }
+
+    // Handle non-Axios errors
+    // console.error("Error creating user:", error);
+    return {
+      success: false,
+      message:
+        error instanceof Error ? error.message : "An unknown error occurred",
+    };
+  }
+}
+
 export async function fetchAllOutbounds(): Promise<FetchingOutboundsResponse> {
   try {
-    const response = await axios.get(`${API_URL}/parts/fetchAllOutbounds`, {
+    const response = await axios.get(`${API_URL}/parts/fetch-all-outbounds`, {
       headers: {
         "Content-Type": "application/json",
       },
@@ -172,7 +265,7 @@ export async function fetchOutbounds(
 ): Promise<FetchingOutboundsResponse> {
   try {
     const response = await axios.get(
-      `${API_URL}/parts/fetchOutbounds/${partId}`,
+      `${API_URL}/parts/fetch-outbounds/${partId}`,
       {
         headers: {
           "Content-Type": "application/json",

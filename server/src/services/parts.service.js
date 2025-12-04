@@ -1,6 +1,7 @@
 const Part = require("../models/parts.model");
 const Inbound = require("../models/inbound.model");
 const Outbound = require("../models/outbound.model");
+const ITStock = require("../models/itStock.model");
 const sequelize = require("../database");
 
 const getAllParts = async () => {
@@ -19,6 +20,20 @@ const findById = async (id) => {
     return parts;
   } catch (error) {
     console.log("Error Finding Part: ", error);
+    throw error;
+  }
+};
+
+const findItemById = async (serialNumber) => {
+  try {
+    const parts = await ITStock.findOne({
+      where: { serialNumber: serialNumber },
+      raw: true,
+    });
+    // console.log("Part ID confirm: ", parts);
+    return parts;
+  } catch (error) {
+    console.log("Error Finding Item: ", error);
     throw error;
   }
 };
@@ -207,6 +222,45 @@ const inboundPart = async (inboundData) => {
   }
 };
 
+const addItem = async (itemDetails) => {
+  try {
+    const { stockId, serialNumber, PRDate, receivedDate } = itemDetails;
+
+    // Hash password before storing
+    // console.log("Data received in inbounding: ", inboundData);
+
+    // console.log("Inbounding part.");
+    const addItem = await ITStock.create({
+      stockId: stockId,
+      serialNumber: serialNumber,
+      PRDate: PRDate,
+      receivedDate: receivedDate,
+    });
+
+    // Return parts without password
+    return {
+      stockId: addItem.stockId,
+      quantity: addItem.serialNumber,
+    };
+  } catch (error) {
+    throw error;
+  }
+};
+
+const getItems = async (id) => {
+  try {
+    const items = await ITStock.findAll({
+      where: { stockId: id },
+      raw: true,
+    });
+    // console.log("Inbounds fetched: ", inbounds);
+    return items;
+  } catch (error) {
+    console.log("Error Finding Stock Items: ", error);
+    throw error;
+  }
+};
+
 const getAllInbounds = async () => {
   try {
     const inbounds = await Inbound.findAll({});
@@ -290,7 +344,10 @@ module.exports = {
   deletePart,
   find,
   findById,
+  findItemById,
   inboundPart,
+  addItem,
+  getItems,
   getAllInbounds,
   getInbounds,
   outboundPart,
