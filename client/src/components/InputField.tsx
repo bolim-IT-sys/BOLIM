@@ -19,6 +19,8 @@ export default function InputField({
     <div className="caret-pink-500">
       <input
         type={type}
+        id={label}
+        name={label}
         value={value ?? ""}
         placeholder={label}
         aria-label={label}

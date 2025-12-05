@@ -170,7 +170,10 @@ export const Outbounding = ({
           {type === "it" ? (
             <>
               <div className="mb-1">
-                <label className="block font-medium text-gray-700">
+                <label
+                  htmlFor="SERIAL NUMBER"
+                  className="block font-medium text-gray-700"
+                >
                   <p>SERIAL NUMBER</p>
                 </label>
                 <InputField
@@ -184,7 +187,10 @@ export const Outbounding = ({
                 />
               </div>
               <div className="mb-1">
-                <label className="block font-medium text-gray-700">
+                <label
+                  htmlFor="STATION"
+                  className="block font-medium text-gray-700"
+                >
                   <p>STATION</p>
                 </label>
                 <InputField
@@ -196,9 +202,12 @@ export const Outbounding = ({
                   }
                   autoComplete={`station`}
                 />
-              </div>{" "}
+              </div>
               <div className="mb-1">
-                <label className="block font-medium text-gray-700">
+                <label
+                  htmlFor="DEPARTMENT"
+                  className="block font-medium text-gray-700"
+                >
                   <p>DEPARTMENT</p>
                 </label>
                 <InputField
@@ -214,7 +223,10 @@ export const Outbounding = ({
             </>
           ) : (
             <div className="mb-1">
-              <label className="block font-medium text-gray-700">
+              <label
+                htmlFor="QUANTITY"
+                className="block font-medium text-gray-700"
+              >
                 <p>QUANTITY</p>
               </label>
               <InputField
@@ -227,7 +239,10 @@ export const Outbounding = ({
             </div>
           )}
           <div className="mb-1">
-            <label className="block font-medium text-gray-700">
+            <label
+              htmlFor="OUTBOUND DATE"
+              className="block font-medium text-gray-700"
+            >
               <p>OUTBOUND DATE</p>
             </label>
             <InputField

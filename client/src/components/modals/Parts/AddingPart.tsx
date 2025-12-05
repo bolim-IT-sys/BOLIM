@@ -118,7 +118,18 @@ export const AddingPart = ({ fetchAllParts, type }: AddingProps) => {
         }
       >
         <div className="mb-1">
-          <label className="block font-medium text-gray-700">
+          <label
+            htmlFor={
+              type === "pin"
+                ? "PIN NUMBER"
+                : type === "it"
+                  ? "ITEM NAME"
+                  : type === "material"
+                    ? "MATERIAL NAME"
+                    : "INVALID TYPE"
+            }
+            className="block font-medium text-gray-700"
+          >
             <p>
               {type === "pin"
                 ? "PIN NUMBER"
@@ -147,7 +158,10 @@ export const AddingPart = ({ fetchAllParts, type }: AddingProps) => {
           />
         </div>
         <div className="mb-1">
-          <label className="block font-medium text-gray-700">
+          <label
+            htmlFor="SPECIFICATIONS"
+            className="block font-medium text-gray-700"
+          >
             <p>SPECIFICATIONS</p>
           </label>
           <InputField
@@ -159,7 +173,7 @@ export const AddingPart = ({ fetchAllParts, type }: AddingProps) => {
           />
         </div>
         <div className="mb-1">
-          <label className="block font-medium text-gray-700">
+          <label htmlFor="CATEGORY" className="block font-medium text-gray-700">
             <p>CATEGORY</p>
           </label>
           <InputField
@@ -172,7 +186,10 @@ export const AddingPart = ({ fetchAllParts, type }: AddingProps) => {
           />
         </div>
         <div className="mb-1">
-          <label className="block font-medium text-gray-700">
+          <label
+            htmlFor="UNIT PRICE"
+            className="block font-medium text-gray-700"
+          >
             <p>UNIT PRICE</p>
           </label>
           <InputField
@@ -185,7 +202,7 @@ export const AddingPart = ({ fetchAllParts, type }: AddingProps) => {
           />
         </div>
         <div className="mb-1">
-          <label className="block font-medium text-gray-700">
+          <label htmlFor="COMPANY" className="block font-medium text-gray-700">
             <p>COMPANY</p>
           </label>
           <InputField

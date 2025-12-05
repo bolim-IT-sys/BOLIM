@@ -164,7 +164,10 @@ export const Inbounding = ({
           {type === "it" ? (
             <>
               <div className="mb-1">
-                <label className="block font-medium text-gray-700">
+                <label
+                  htmlFor="SERIAL NUMBER"
+                  className="block font-medium text-gray-700"
+                >
                   <p>SERIAL NUMBER</p>
                 </label>
                 <InputField
@@ -178,7 +181,10 @@ export const Inbounding = ({
                 />
               </div>
               <div className="mb-1">
-                <label className="block font-medium text-gray-700">
+                <label
+                  htmlFor="PR DATE"
+                  className="block font-medium text-gray-700"
+                >
                   <p>PR DATE</p>
                 </label>
                 <InputField
@@ -194,7 +200,10 @@ export const Inbounding = ({
             </>
           ) : (
             <div className="mb-1">
-              <label className="block font-medium text-gray-700">
+              <label
+                htmlFor="QUANTITY"
+                className="block font-medium text-gray-700"
+              >
                 <p>QUANTITY</p>
               </label>
               <InputField
@@ -208,7 +217,10 @@ export const Inbounding = ({
           )}
 
           <div className="mb-1">
-            <label className="block font-medium text-gray-700">
+            <label
+              htmlFor="INBOUND DATE"
+              className="block font-medium text-gray-700"
+            >
               <p>INBOUND DATE</p>
             </label>
             <InputField

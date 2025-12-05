@@ -41,7 +41,7 @@ export default function Dashboard() {
     } else {
       setData([]);
     }
-  }, [dataType, parts]);
+  }, [dataType, parts, ITStocks, materials]);
 
   useEffect(() => {
     const dates = getDateRange(dateRange);
@@ -122,6 +122,7 @@ export default function Dashboard() {
           <div className="">
             <select
               className="no-arrow rounded-lg border border-neutral-300 hover:bg-neutral-200 transition duration-350 cursor-pointer px-2 py-2 focus:bg-neutral-50  focus:ring-1 focus:ring-neutral-300 focus:outline-none"
+              name="dataTypeSelect"
               value={dataType}
               onChange={(e) => setDataType(e.target.value)}
             >
@@ -152,11 +153,16 @@ export default function Dashboard() {
               </h2>
               <div className="flex justify-start items-center gap-2 mb-2">
                 <div className="mb-1">
-                  <label className="block font-medium text-gray-700">
+                  <label
+                    htmlFor="dateRangeSelect"
+                    className="block font-medium text-gray-700"
+                  >
                     <p>DATE RANGE:</p>
                   </label>
                   <select
                     className="w-40 no-arrow rounded-lg border border-neutral-300 hover:bg-neutral-200 transition duration-350 cursor-pointer px-2 py-2 focus:bg-neutral-50  focus:ring-1 focus:ring-neutral-300 focus:outline-none"
+                    id="dateRangeSelect"
+                    name="dateRangeSelect"
                     value={dateRange}
                     onChange={(e) => setDateRange(e.target.value)}
                   >
@@ -167,7 +173,10 @@ export default function Dashboard() {
                   </select>
                 </div>
                 <div className="mb-1">
-                  <label className="block font-medium text-gray-700">
+                  <label
+                    htmlFor="START DATE"
+                    className="block font-medium text-gray-700"
+                  >
                     <p>START DATE:</p>
                   </label>
                   <InputField
@@ -183,7 +192,10 @@ export default function Dashboard() {
                   />
                 </div>
                 <div className="mb-1">
-                  <label className="block font-medium text-gray-700">
+                  <label
+                    htmlFor="END DATE"
+                    className="block font-medium text-gray-700"
+                  >
                     <p>END DATE:</p>
                   </label>
                   <InputField

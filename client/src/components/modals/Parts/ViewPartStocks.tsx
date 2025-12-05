@@ -173,6 +173,7 @@ export const ViewPartStocks = ({ item, setData, type }: Props) => {
                 <select
                   className="no-arrow rounded-lg hover:bg-neutral-200 transition duration-350 cursor-pointer px-2 py-.5 focus:bg-neutral-50  focus:ring-1 focus:ring-neutral-300 focus:outline-none"
                   value={month}
+                  id="monthSelect"
                   onChange={(e) => setMonth(Number(e.target.value))}
                 >
                   {months.map((month, index) => (
@@ -185,6 +186,7 @@ export const ViewPartStocks = ({ item, setData, type }: Props) => {
                 <select
                   className="no-arrow rounded-lg hover:bg-neutral-200 transition duration-350 cursor-pointer px-2 py-.5 focus:bg-neutral-50  focus:ring-1 focus:ring-neutral-300 focus:outline-none"
                   value={chosenYear}
+                  id="yearSelect"
                   onChange={(e) => setYear(Number(e.target.value))}
                 >
                   {years.map((year) => (

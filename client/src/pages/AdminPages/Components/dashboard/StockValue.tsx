@@ -178,11 +178,14 @@ export const StockValue = ({ data }: Props) => {
         <div>
           <div className="flex justify-start items-center gap-2 mb-2">
             <div className="mb-1">
-              <label className="block font-medium text-gray-700">
+              <label
+                htmlFor="START-DATE"
+                className="block font-medium text-gray-700"
+              >
                 <p>START DATE:</p>
               </label>
               <InputField
-                label="START DATE"
+                label="START-DATE"
                 type="date"
                 value={startDate!}
                 required={true}
@@ -191,11 +194,14 @@ export const StockValue = ({ data }: Props) => {
               />
             </div>
             <div className="mb-1">
-              <label className="block font-medium text-gray-700">
+              <label
+                htmlFor="END-DATE"
+                className="block font-medium text-gray-700"
+              >
                 <p>END DATE:</p>
               </label>
               <InputField
-                label="END DATE"
+                label="END-DATE"
                 type="date"
                 value={endDate!}
                 required={true}

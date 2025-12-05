@@ -184,7 +184,10 @@ export const EditingPart = ({ fetchAllParts, item, type }: EditingProps) => {
             </div>
           </div>
           <div className="mb-1">
-            <label className="block font-medium text-gray-700">
+            <label
+              htmlFor="PART NUMBER"
+              className="block font-medium text-gray-700"
+            >
               <p>PART NUMBER</p>
             </label>
             <InputField
@@ -197,7 +200,10 @@ export const EditingPart = ({ fetchAllParts, item, type }: EditingProps) => {
             />
           </div>
           <div className="mb-1">
-            <label className="block font-medium text-gray-700">
+            <label
+              htmlFor="SPECIFICATIONS"
+              className="block font-medium text-gray-700"
+            >
               <p>SPECIFICATIONS</p>
             </label>
             <InputField
@@ -210,7 +216,10 @@ export const EditingPart = ({ fetchAllParts, item, type }: EditingProps) => {
             />
           </div>
           <div className="mb-1">
-            <label className="block font-medium text-gray-700">
+            <label
+              htmlFor="CATEGORY"
+              className="block font-medium text-gray-700"
+            >
               <p>CATEGORY</p>
             </label>
             <InputField
@@ -223,7 +232,10 @@ export const EditingPart = ({ fetchAllParts, item, type }: EditingProps) => {
             />
           </div>
           <div className="mb-1">
-            <label className="block font-medium text-gray-700">
+            <label
+              htmlFor="UNIT PRICE"
+              className="block font-medium text-gray-700"
+            >
               <p>UNIT PRICE</p>
             </label>
             <InputField
@@ -236,7 +248,10 @@ export const EditingPart = ({ fetchAllParts, item, type }: EditingProps) => {
             />
           </div>
           <div className="mb-1">
-            <label className="block font-medium text-gray-700">
+            <label
+              htmlFor="COMPANY"
+              className="block font-medium text-gray-700"
+            >
               <p>COMPANY</p>
             </label>
             <InputField

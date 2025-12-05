@@ -21,6 +21,9 @@ app.use(cors());
 // API ROUTES
 app.use("/api/uploads", express.static("uploads"));
 
+const exportRoutes = require("./routes/export.routes.js");
+app.use("/api", exportRoutes);
+
 const authRoutes = require("./routes/auth.routes.js");
 app.use("/api/auth", authRoutes);
 
