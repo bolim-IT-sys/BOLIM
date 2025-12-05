@@ -319,7 +319,7 @@ const inboundPart = async (req, res) => {
 
 const addingItem = async (req, res) => {
   try {
-    console.log("data in controller: ", req.body);
+    // console.log("data in controller: ", req.body);
 
     // console.log("Data received in Controller: ", req.body);
     // Optional: Validate request body first
@@ -336,7 +336,7 @@ const addingItem = async (req, res) => {
       });
     }
 
-    console.log("data in controller: ", req.body);
+    // console.log("data in controller: ", req.body);
 
     // Check if part exists
     const isPartExisting = await partService.findItemBySerialNumber(

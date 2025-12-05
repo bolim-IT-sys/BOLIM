@@ -153,7 +153,7 @@ const updatePart = async (partsId, PartData) => {
 
     await parts.update(updateData);
 
-    console.log("Part updated successfully.");
+    // console.log("Part updated successfully.");
 
     // Return parts without password
     return {

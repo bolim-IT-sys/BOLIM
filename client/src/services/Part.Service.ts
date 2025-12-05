@@ -2,7 +2,7 @@ import axios, { AxiosError } from "axios";
 import type { Inbound, Outbound } from "./InboundOutbound.Service";
 
 export interface Part {
-  id?: number;
+  id: number;
   image?: File | string | null;
   type: string;
   partNumber: string;

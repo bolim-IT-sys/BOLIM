@@ -57,6 +57,8 @@ export const DownloadPartData = ({ parts }: ItemDataProp) => {
     // Prepare data for Excel
     const partsWithDummy = [
       {
+        id: 0,
+        type: "it",
         partNumber: "",
         specs: "",
         category: "",
@@ -186,7 +188,7 @@ export const DownloadPartData = ({ parts }: ItemDataProp) => {
         "Part number": part.partNumber,
         Specifications: part.specs || "N/A",
         Category: part.category,
-        "Unit Price": part.unitPrice,
+        "Unit Price": part.unitPrice.toLocaleString(),
         Company: part.company || "N/A",
 
         // MONTH LIST FOR INBOUND DATA

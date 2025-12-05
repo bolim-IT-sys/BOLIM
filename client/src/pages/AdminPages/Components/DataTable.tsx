@@ -321,7 +321,7 @@ export const DataTable = ({
                         <h6>{item.category}</h6>
                       </td>
                       <td className="text-center border border-neutral-300 px-3 py-2">
-                        <h6>{item.unitPrice}</h6>
+                        <h6>{Number(item.unitPrice).toLocaleString()}</h6>
                       </td>
                       <td className="text-center border border-neutral-300 px-3 py-2">
                         <h6>{item.company}</h6>

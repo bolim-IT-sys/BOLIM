@@ -188,7 +188,7 @@ export const Outbounding = ({
                   <p>STATION</p>
                 </label>
                 <InputField
-                  label="PR DATE"
+                  label="STATION"
                   type="text"
                   value={itemDetails.station!}
                   onChange={(value: string) =>
@@ -202,7 +202,7 @@ export const Outbounding = ({
                   <p>DEPARTMENT</p>
                 </label>
                 <InputField
-                  label="PR DATE"
+                  label="DEPARTMENT"
                   type="text"
                   value={itemDetails.department!}
                   onChange={(value: string) =>

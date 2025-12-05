@@ -361,116 +361,120 @@ export const ViewPartStocks = ({ item, setData, type }: Props) => {
               )}
             </tbody>
           </table>
-          <table className="min-w-full table-fixed border border-gray-300 text-sm">
-            <thead className="bg-sky-100">
-              <tr>
-                <th className="bg-sky-400 border border-neutral-400 px-3 py-2 text-neutral-50 text-center">
-                  <h5>SERIAL NUMBER</h5>
-                </th>
-                <th className="bg-sky-400 border border-neutral-400 px-3 py-2 text-neutral-50 text-center">
-                  <h5>PR DATE</h5>
-                </th>
-                <th className="bg-sky-400 border border-neutral-400 px-3 py-2 text-neutral-50 text-center">
-                  <h5>RECIEVED DATE</h5>
-                </th>
-                <th className="bg-sky-400 border border-neutral-400 px-3 py-2 text-neutral-50 text-center">
-                  <h5>DEPLOYED DATE</h5>
-                </th>
-                <th className="bg-sky-400 border border-neutral-400 px-3 py-2 text-neutral-50 text-center">
-                  <h5>STATION</h5>
-                </th>
-                <th className="bg-sky-400 border border-neutral-400 px-3 py-2 text-neutral-50 text-center">
-                  <h5>DEPARTMENT</h5>
-                </th>
-                <th className="bg-sky-400 border border-neutral-400 px-3 py-2 text-neutral-50 text-center">
-                  <h5>REMARKS</h5>
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {isLoading ? (
+          {type === "it" ? (
+            <table className="min-w-full table-fixed border border-gray-300">
+              <thead className="bg-sky-100">
                 <tr>
-                  <td
-                    colSpan={13}
-                    className="border border-neutral-400 px-3 py-2"
-                  >
-                    <div className="flex justify-center items-center gap-1">
-                      <h5>
-                        <i className="bx bx-loader-dots bx-spin" />
-                      </h5>
-                      <p>Loading</p>
-                    </div>
-                  </td>
+                  <th className="bg-sky-100 border border-neutral-400 px-3 py-2 text-neutral-900 text-center">
+                    <h5>SERIAL NUMBER</h5>
+                  </th>
+                  <th className="bg-sky-100 border border-neutral-400 px-3 py-2 text-neutral-900 text-center">
+                    <h5>PR DATE</h5>
+                  </th>
+                  <th className="bg-sky-100 border border-neutral-400 px-3 py-2 text-neutral-900 text-center">
+                    <h5>RECIEVED DATE</h5>
+                  </th>
+                  <th className="bg-sky-100 border border-neutral-400 px-3 py-2 text-neutral-900 text-center">
+                    <h5>DEPLOYED DATE</h5>
+                  </th>
+                  <th className="bg-sky-100 border border-neutral-400 px-3 py-2 text-neutral-900 text-center">
+                    <h5>STATION</h5>
+                  </th>
+                  <th className="bg-sky-100 border border-neutral-400 px-3 py-2 text-neutral-900 text-center">
+                    <h5>DEPARTMENT</h5>
+                  </th>
+                  <th className="bg-sky-400 border border-neutral-400 px-3 py-2 text-neutral-50 text-center">
+                    <h5>REMARKS</h5>
+                  </th>
                 </tr>
-              ) : (
-                <>
-                  {stockItems.map((item) => (
-                    <tr key={item.id}>
-                      <td className="border border-neutral-400 px-3 py-2">
-                        <div className="flex justify-center items-center flex-col gap-1">
-                          <h6>{item.serialNumber}</h6>
-                        </div>
-                      </td>
-                      <td className="border border-neutral-400 px-3 py-2">
-                        <div className="flex justify-center items-center flex-col gap-1">
-                          <h6>{String(item.PRDate)}</h6>
-                        </div>
-                      </td>
-                      <td className="border border-neutral-400 px-3 py-2">
-                        <div className="flex justify-center items-center flex-col gap-1">
-                          <h6>{String(item.receivedDate)}</h6>
-                        </div>
-                      </td>
-                      <td className="border border-neutral-400 px-3 py-2">
-                        <div
-                          className={`flex justify-center items-center flex-col gap-1 ${
-                            item.deployedDate ? null : "text-neutral-400"
-                          }`}
-                        >
-                          <h6>
-                            {item.deployedDate
-                              ? String(item.deployedDate)
-                              : "N/A"}
-                          </h6>
-                        </div>
-                      </td>
-                      <td className="border border-neutral-400 px-3 py-2">
-                        <div
-                          className={`flex justify-center items-center flex-col gap-1 ${
-                            item.station ? null : "text-neutral-400"
-                          }`}
-                        >
-                          <h6>{item.station ? item.station : "N/A"}</h6>
-                        </div>
-                      </td>
-                      <td className="border border-neutral-400 px-3 py-2">
-                        <div
-                          className={`flex justify-center items-center flex-col gap-1 ${
-                            item.department ? null : "text-neutral-400"
-                          }`}
-                        >
-                          <h6>{item.department ? item.department : "N/A"}</h6>
-                        </div>
-                      </td>
-                      <td className="border border-neutral-400 px-3 py-2">
-                        <div
-                          className={`flex justify-center items-center flex-col gap-1 ${
-                            item.remarks === "available"
-                              ? "text-green-700"
-                              : "text-red-600"
-                          }`}
-                        >
-                          <h6>
-                            {item.remarks ? item.remarks.toUpperCase() : "N/A"}
-                          </h6>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </>
-              )}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {isLoading ? (
+                  <tr>
+                    <td
+                      colSpan={13}
+                      className="border border-neutral-400 px-3 py-2"
+                    >
+                      <div className="flex justify-center items-center gap-1">
+                        <h5>
+                          <i className="bx bx-loader-dots bx-spin" />
+                        </h5>
+                        <p>Loading</p>
+                      </div>
+                    </td>
+                  </tr>
+                ) : (
+                  <>
+                    {stockItems.map((item) => (
+                      <tr key={item.id}>
+                        <td className="border border-neutral-400 px-3 py-2">
+                          <div className="flex justify-center items-center flex-col gap-1">
+                            <h6>{item.serialNumber}</h6>
+                          </div>
+                        </td>
+                        <td className="border border-neutral-400 px-3 py-2">
+                          <div className="flex justify-center items-center flex-col gap-1">
+                            <h6>{String(item.PRDate)}</h6>
+                          </div>
+                        </td>
+                        <td className="border border-neutral-400 px-3 py-2">
+                          <div className="flex justify-center items-center flex-col gap-1">
+                            <h6>{String(item.receivedDate)}</h6>
+                          </div>
+                        </td>
+                        <td className="border border-neutral-400 px-3 py-2">
+                          <div
+                            className={`flex justify-center items-center flex-col gap-1 ${
+                              item.deployedDate ? null : "text-neutral-400"
+                            }`}
+                          >
+                            <h6>
+                              {item.deployedDate
+                                ? String(item.deployedDate)
+                                : "N/A"}
+                            </h6>
+                          </div>
+                        </td>
+                        <td className="border border-neutral-400 px-3 py-2">
+                          <div
+                            className={`flex justify-center items-center flex-col gap-1 ${
+                              item.station ? null : "text-neutral-400"
+                            }`}
+                          >
+                            <h6>{item.station ? item.station : "N/A"}</h6>
+                          </div>
+                        </td>
+                        <td className="border border-neutral-400 px-3 py-2">
+                          <div
+                            className={`flex justify-center items-center flex-col gap-1 ${
+                              item.department ? null : "text-neutral-400"
+                            }`}
+                          >
+                            <h6>{item.department ? item.department : "N/A"}</h6>
+                          </div>
+                        </td>
+                        <td className="border border-neutral-400 px-3 py-2">
+                          <div
+                            className={`flex justify-center items-center flex-col gap-1 ${
+                              item.remarks === "available"
+                                ? "text-green-700"
+                                : "text-red-600"
+                            }`}
+                          >
+                            <h6>
+                              {item.remarks
+                                ? item.remarks.toUpperCase()
+                                : "N/A"}
+                            </h6>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </>
+                )}
+              </tbody>
+            </table>
+          ) : null}
         </div>
       </Modal>
 

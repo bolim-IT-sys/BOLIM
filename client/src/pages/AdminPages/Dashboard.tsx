@@ -17,10 +17,12 @@ import { getDateRange } from "../../helper/date.helper";
 
 interface ContextType {
   parts: Part[];
+  ITStocks: Part[];
+  materials: Part[];
 }
 
 export default function Dashboard() {
-  const { parts } = useOutletContext<ContextType>();
+  const { parts, ITStocks, materials } = useOutletContext<ContextType>();
 
   const [dataType, setDataType] = useState("Pins");
   const [data, setData] = useState<Part[]>([]);
@@ -33,7 +35,9 @@ export default function Dashboard() {
     if (dataType === "Pins") {
       setData(parts);
     } else if (dataType === "ITStocks") {
-      setData([]);
+      setData(ITStocks);
+    } else if (dataType === "MaterialControl") {
+      setData(materials);
     } else {
       setData([]);
     }
