@@ -7,7 +7,7 @@ const getAllParts = async (req, res) => {
     const parts = await partService.getAllParts();
     if (!parts) {
       console.log("No parts found.");
-      res.status(404).json({
+      res.json({
         success: false,
         message: "No parts found.",
       });
@@ -19,7 +19,7 @@ const getAllParts = async (req, res) => {
     // You can add specific error handling here if needed
     console.log("Error fetching parts.");
 
-    res.status(500).json({
+    res.json({
       success: false,
       message: err.message || "Fetching parts failed",
     });
@@ -83,7 +83,7 @@ const createPart = async (req, res) => {
     });
   } catch (err) {
     // You can add specific error handling here if needed
-    res.status(500).json({
+    res.json({
       success: false,
       message:
         err.message ||
@@ -158,7 +158,7 @@ const updatePart = async (req, res) => {
 
     // console.log("Existing match: ", existingPart);
     if (!existingPart) {
-      return res.status(404).json({
+      return res.json({
         success: false,
         message: "Part not found.",
       });
@@ -205,7 +205,7 @@ const updatePart = async (req, res) => {
     });
   } catch (err) {
     // You can add specific error handling here if needed
-    res.status(500).json({
+    res.json({
       success: false,
       message: err.message || "Part update failed",
     });
@@ -226,7 +226,7 @@ const deletePart = async (req, res) => {
     const existingPart = await partService.findById(PartId);
 
     if (!existingPart) {
-      return res.status(404).json({
+      return res.json({
         success: false,
         message: "Part not found.",
       });
@@ -261,7 +261,7 @@ const deletePart = async (req, res) => {
     });
   } catch (err) {
     // You can add specific error handling here if needed
-    res.status(500).json({
+    res.json({
       success: false,
       message: err.message || "Part deletion failed",
     });
@@ -283,7 +283,7 @@ const inboundPart = async (req, res) => {
     const isPartExisting = await partService.findById(req.body.partId);
 
     if (!isPartExisting) {
-      return res.status(404).json({
+      return res.json({
         success: false,
         message: "Part does not exist.",
       });
@@ -310,7 +310,7 @@ const inboundPart = async (req, res) => {
   } catch (err) {
     // You can add specific error handling here if needed
     console.error("Error occured: ", err);
-    res.status(500).json({
+    res.json({
       success: false,
       message: err.message || "Part creation failed",
     });
@@ -339,7 +339,7 @@ const addingItem = async (req, res) => {
     console.log("data in controller: ", req.body);
 
     // Check if part exists
-    const isPartExisting = await partService.findItemById(
+    const isPartExisting = await partService.findItemBySerialNumber(
       req.body.serialNumber
     );
 
@@ -369,6 +369,59 @@ const addingItem = async (req, res) => {
   }
 };
 
+const outboundItem = async (req, res) => {
+  try {
+    const serialNumber = req.params.serialNumber;
+
+    console.log("Data in backend: ", req.body);
+
+    if (
+      !req.body.serialNumber ||
+      !req.body.deployedDate ||
+      !req.body.station ||
+      !req.body.department ||
+      !req.body.remarks
+    ) {
+      return res.json({
+        message: "Please fill in all required fields.",
+      });
+    }
+
+    // Check if part exists
+    const existingItem = await partService.findItemBySerialNumber(serialNumber);
+
+    console.log("Existing match: ", existingItem);
+    if (!existingItem) {
+      return res.json({
+        success: false,
+        message: "Item not found.",
+      });
+    }
+
+    if (existingItem.remarks === "deployed") {
+      return res.json({
+        success: false,
+        message: "Item is already deployed.",
+      });
+    }
+
+    const deployItem = await partService.deployItem(req.body);
+
+    // Return consistent response structure
+    res.status(200).json({
+      success: true,
+      message: "Item deployed successfully",
+      data: deployItem,
+    });
+  } catch (err) {
+    // You can add specific error handling here if needed
+    res.json({
+      success: false,
+      message: err.message || "Item deployment failed",
+    });
+  }
+};
+
 const getItem = async (req, res) => {
   try {
     const partId = req.params.id;
@@ -377,7 +430,7 @@ const getItem = async (req, res) => {
     const items = await partService.getItems(partId);
     if (!items) {
       // console.log("No inbounds found.");
-      res.status(404).json({
+      res.json({
         success: false,
         message: "No items found.",
       });
@@ -389,7 +442,7 @@ const getItem = async (req, res) => {
     // You can add specific error handling here if needed
     console.log("Error fetching stock items: ", err);
 
-    res.status(500).json({
+    res.json({
       success: false,
       message: err.message || "Fetching stock items failed",
     });
@@ -403,7 +456,7 @@ const getAllInbounds = async (req, res) => {
     const parts = await partService.getAllInbounds();
     if (!parts) {
       // console.log("No inbounds found.");
-      res.status(404).json({
+      res.json({
         success: false,
         message: "No inbounds found.",
       });
@@ -415,7 +468,7 @@ const getAllInbounds = async (req, res) => {
     // You can add specific error handling here if needed
     console.log("Error fetching inbounds: ", err);
 
-    res.status(500).json({
+    res.json({
       success: false,
       message: err.message || "Fetching part inbounds failed",
     });
@@ -430,7 +483,7 @@ const getInbounds = async (req, res) => {
     const parts = await partService.getInbounds(partId);
     if (!parts) {
       // console.log("No inbounds found.");
-      res.status(404).json({
+      res.json({
         success: false,
         message: "No inbounds found.",
       });
@@ -442,7 +495,7 @@ const getInbounds = async (req, res) => {
     // You can add specific error handling here if needed
     console.log("Error fetching inbounds: ", err);
 
-    res.status(500).json({
+    res.json({
       success: false,
       message: err.message || "Fetching part inbounds failed",
     });
@@ -464,7 +517,7 @@ const outboundPart = async (req, res) => {
     const isPartExisting = await partService.findById(req.body.partId);
 
     if (!isPartExisting) {
-      return res.status(404).json({
+      return res.json({
         success: false,
         message: "Part does not exist.",
       });
@@ -498,7 +551,7 @@ const outboundPart = async (req, res) => {
   } catch (err) {
     // You can add specific error handling here if needed
     console.error("Error occured: ", err);
-    res.status(500).json({
+    res.json({
       success: false,
       message: err.message || "Part creation failed",
     });
@@ -512,7 +565,7 @@ const getAllOutbounds = async (req, res) => {
     const parts = await partService.getAllOutbounds();
     if (!parts) {
       // console.log("No outbounds found.");
-      res.status(404).json({
+      res.json({
         success: false,
         message: "No outbounds found.",
       });
@@ -524,7 +577,7 @@ const getAllOutbounds = async (req, res) => {
     // You can add specific error handling here if needed
     console.log("Error fetching outbounds: ", err);
 
-    res.status(500).json({
+    res.json({
       success: false,
       message: err.message || "Fetching part outbounds failed",
     });
@@ -539,7 +592,7 @@ const getOutbounds = async (req, res) => {
     const parts = await partService.getOutbounds(partId);
     if (!parts) {
       // console.log("No outbounds found.");
-      res.status(404).json({
+      res.json({
         success: false,
         message: "No outbounds found.",
       });
@@ -551,7 +604,7 @@ const getOutbounds = async (req, res) => {
     // You can add specific error handling here if needed
     console.log("Error fetching outbounds: ", err);
 
-    res.status(500).json({
+    res.json({
       success: false,
       message: err.message || "Fetching part outbounds failed",
     });
@@ -565,6 +618,7 @@ module.exports = {
   deletePart,
   inboundPart,
   addingItem,
+  outboundItem,
   getItem,
   getAllInbounds,
   getInbounds,

@@ -13,6 +13,7 @@ const {
   getAllInbounds,
   addingItem,
   getItem,
+  outboundItem,
 } = require("../controllers/parts.controller");
 
 const router = express.Router();
@@ -26,6 +27,7 @@ router.post("/inbound", inboundPart);
 router.get("/fetch-all-inbounds", getAllInbounds);
 router.get("/fetch-inbounds/:id", getInbounds);
 router.post("/add-item", addingItem);
+router.put("/outbound-item/:serialNumber", outboundItem);
 router.get("/fetch-items/:id", getItem);
 
 router.post("/outbound", outboundPart);

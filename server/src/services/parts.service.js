@@ -24,14 +24,14 @@ const findById = async (id) => {
   }
 };
 
-const findItemById = async (serialNumber) => {
+const findItemBySerialNumber = async (serialNumber) => {
   try {
-    const parts = await ITStock.findOne({
+    const item = await ITStock.findOne({
       where: { serialNumber: serialNumber },
       raw: true,
     });
-    // console.log("Part ID confirm: ", parts);
-    return parts;
+    // console.log("Item found: ", item);
+    return item;
   } catch (error) {
     console.log("Error Finding Item: ", error);
     throw error;
@@ -247,6 +247,49 @@ const addItem = async (itemDetails) => {
   }
 };
 
+const deployItem = async (itemData) => {
+  try {
+    const item = await ITStock.findOne({
+      where: { serialNumber: itemData.serialNumber },
+    });
+
+    console.log("Item found: ", item);
+
+    if (!item) {
+      throw new Error("Item not found.");
+    }
+
+    // prepare the data
+    const updateData = {};
+
+    if (itemData.deployedDate) {
+      updateData.deployedDate = itemData.deployedDate;
+    }
+    if (itemData.station) {
+      updateData.station = itemData.station;
+    }
+    if (itemData.department) {
+      updateData.department = itemData.department;
+    }
+    if (itemData.remarks) {
+      updateData.remarks = itemData.remarks;
+    }
+
+    await item.update(updateData);
+
+    console.log("Item deployed successfully.");
+
+    // Return parts without password
+    return {
+      id: item.id,
+      serialNumber: item.serialNumber,
+    };
+  } catch (error) {
+    console.error("Error deploying item: ", error);
+    throw error;
+  }
+};
+
 const getItems = async (id) => {
   try {
     const items = await ITStock.findAll({
@@ -344,9 +387,10 @@ module.exports = {
   deletePart,
   find,
   findById,
-  findItemById,
+  findItemBySerialNumber,
   inboundPart,
   addItem,
+  deployItem,
   getItems,
   getAllInbounds,
   getInbounds,

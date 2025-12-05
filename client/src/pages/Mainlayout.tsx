@@ -78,7 +78,7 @@ export default function Mainlayout() {
         }));
 
         if (sort === "partNumber") {
-          console.log(`Sorting by part number and by ${order}`);
+          // console.log(`Sorting by part number and by ${order}`);
           const sorted = sortByPartNumber(
             partWithInboundOutbound,
             sort === "partNumber" && order === "asc" ? "asc" : "desc"
@@ -124,7 +124,7 @@ export default function Mainlayout() {
           setITStocks(it);
           setMaterials(material);
         } else {
-          console.log(`Sorting by part number and by ${order}`);
+          // console.log(`Sorting by part number and by ${order}`);
           const sorted = sortByPartNumber(
             partWithInboundOutbound,
             sort === "partNumber" && order === "asc" ? "desc" : "asc"
@@ -137,7 +137,7 @@ export default function Mainlayout() {
           setParts(pins);
           setITStocks(it);
           setMaterials(material);
-          console.log("data: ", pins);
+          // console.log("data: ", pins);
         }
 
         // console.log(

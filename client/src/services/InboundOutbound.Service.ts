@@ -42,6 +42,14 @@ export interface addItemType {
   receivedDate: string;
 }
 
+export interface deployItemType {
+  serialNumber: string;
+  deployedDate: string;
+  station: string;
+  department: string;
+  remarks: string;
+}
+
 export interface InboundOutboundResponse {
   success: boolean;
   message?: string;
@@ -52,6 +60,18 @@ export interface FetchingInboundsResponse {
   success: boolean;
   message?: string;
   data?: Inbound[];
+}
+
+export interface FetchingItemsResponse {
+  success: boolean;
+  message?: string;
+  data?: ITStocks[];
+}
+
+export interface outboundItemResponse {
+  success: boolean;
+  message?: string;
+  data?: ITStocks;
 }
 
 export interface FetchingOutboundsResponse {
@@ -113,7 +133,7 @@ export async function fetchInbounds(
 
 export async function fetchITStocks(
   partId: number
-): Promise<FetchingInboundsResponse> {
+): Promise<FetchingItemsResponse> {
   try {
     const response = await axios.get(`${API_URL}/parts/fetch-items/${partId}`, {
       headers: {
@@ -232,6 +252,57 @@ export async function addingItem(
 
     // Handle non-Axios errors
     // console.error("Error creating user:", error);
+    return {
+      success: false,
+      message:
+        error instanceof Error ? error.message : "An unknown error occurred",
+    };
+  }
+}
+
+export async function outboundItem(
+  formData: deployItemType
+): Promise<outboundItemResponse> {
+  try {
+    const response = await axios.put(
+      `${API_URL}/parts/outbound-item/${formData.serialNumber}`,
+      formData
+    );
+    // console.log("editing user details");
+    if (response.status === 200) {
+      return response.data;
+    } else {
+      return response.data;
+    }
+  } catch (error) {
+    // Type guard for Axios errors
+    if (axios.isAxiosError(error)) {
+      const axiosError = error as AxiosError<ApiErrorResponse>;
+      // console.error(
+      //   "Error creating user:",
+      //   axiosError.response?.data || axiosError.message
+      // );
+
+      // Check if it's a connection error
+      if (
+        axiosError.code === "ERR_NETWORK" ||
+        axiosError.message.includes("ERR_CONNECTION_REFUSED")
+      ) {
+        return {
+          success: false,
+          message:
+            "Cannot connect to server. Please check if the server is running.",
+        };
+      }
+
+      return {
+        success: false,
+        message: axiosError.response?.data?.message || axiosError.message,
+      };
+    }
+
+    // Handle non-Axios errors
+    console.error("Error updating user:", error);
     return {
       success: false,
       message:
