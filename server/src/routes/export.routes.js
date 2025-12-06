@@ -467,7 +467,7 @@ router.post("/export-to-excel", async (req, res) => {
     return res.send(excelBuffer);
   } catch (error) {
     console.error("Export error:", error);
-    res.status(500).json({ error: "Failed to generate Excel" });
+    res.json({ error: "Failed to generate Excel" });
   }
 });
 

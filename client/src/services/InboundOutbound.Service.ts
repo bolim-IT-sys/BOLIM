@@ -94,9 +94,12 @@ export async function fetchAllInbounds(): Promise<FetchingInboundsResponse> {
       },
     });
 
-    const data = response.data;
-    // console.log("Parts Inbounds Fetched: ", data);
-    return data;
+    if (response.status === 200) {
+      // console.log("Parts Inbounds Fetched: ", response.data);
+      return response.data;
+    } else {
+      return response.data;
+    }
   } catch (error) {
     console.log(error);
     return {
@@ -118,32 +121,12 @@ export async function fetchInbounds(
         },
       }
     );
-
-    const data = response.data;
-    // console.log("Parts Inbounds Fetched: ", data);
-    return data;
-  } catch (error) {
-    console.log(error);
-    return {
-      success: false,
-      message: "Something went wrong while fetching parts.",
-    };
-  }
-}
-
-export async function fetchITStocks(
-  partId: number
-): Promise<FetchingItemsResponse> {
-  try {
-    const response = await axios.get(`${API_URL}/parts/fetch-items/${partId}`, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    const data = response.data;
-    // console.log("Parts Inbounds Fetched: ", data);
-    return data;
+    if (response.status === 200) {
+      // console.log("Parts Inbounds Fetched: ", response.data);
+      return response.data;
+    } else {
+      return response.data;
+    }
   } catch (error) {
     console.log(error);
     return {
@@ -204,6 +187,130 @@ export async function inboundPart(
       success: false,
       message:
         error instanceof Error ? error.message : "An unknown error occurred",
+    };
+  }
+}
+
+export async function fetchAllOutbounds(): Promise<FetchingOutboundsResponse> {
+  try {
+    const response = await axios.get(`${API_URL}/parts/fetch-all-outbounds`, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (response.status === 200) {
+      // console.log("Parts Outbounds Fetched: ", response.data);
+      return response.data;
+    } else {
+      return response.data;
+    }
+  } catch (error) {
+    console.log(error);
+    return {
+      success: false,
+      message: "Something went wrong while fetching parts.",
+    };
+  }
+}
+
+export async function fetchOutbounds(
+  partId: number
+): Promise<FetchingOutboundsResponse> {
+  try {
+    const response = await axios.get(
+      `${API_URL}/parts/fetch-outbounds/${partId}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    // console.log("Parts Outbounds Fetched: ", response.data);
+    return response.data;
+  } catch (error) {
+    console.log(error);
+    return {
+      success: false,
+      message: "Something went wrong while fetching parts.",
+    };
+  }
+}
+
+export async function outboundPart(
+  formData: InboundOutboundType
+): Promise<InboundOutboundResponse> {
+  try {
+    const response = await axios.post(`${API_URL}/parts/outbound`, formData, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    // console.log("creating user");
+    if (response.status === 201) {
+      return response.data;
+    }
+
+    return {
+      success: false,
+      message: "Unexpected response status",
+    };
+  } catch (error) {
+    // Type guard for Axios errors
+    if (axios.isAxiosError(error)) {
+      const axiosError = error as AxiosError<ApiErrorResponse>;
+      // console.error(
+      //   "Error creating part:",
+      //   axiosError.response?.data || axiosError.message
+      // );
+
+      // Check if it's a connection error
+      if (
+        axiosError.code === "ERR_NETWORK" ||
+        axiosError.message.includes("ERR_CONNECTION_REFUSED")
+      ) {
+        return {
+          success: false,
+          message:
+            "Cannot connect to server. Please check if the server is running.",
+        };
+      }
+
+      return {
+        success: false,
+        message: axiosError.response?.data?.message || axiosError.message,
+      };
+    }
+
+    // Handle non-Axios errors
+    // console.error("Error creating user:", error);
+    return {
+      success: false,
+      message:
+        error instanceof Error ? error.message : "An unknown error occurred",
+    };
+  }
+}
+
+export async function fetchITStocks(
+  partId: number
+): Promise<FetchingItemsResponse> {
+  try {
+    const response = await axios.get(`${API_URL}/parts/fetch-items/${partId}`, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const data = response.data;
+    // console.log("Parts Inbounds Fetched: ", data);
+    return data;
+  } catch (error) {
+    console.log(error);
+    return {
+      success: false,
+      message: "Something went wrong while fetching parts.",
     };
   }
 }
@@ -303,106 +410,6 @@ export async function outboundItem(
 
     // Handle non-Axios errors
     console.error("Error updating user:", error);
-    return {
-      success: false,
-      message:
-        error instanceof Error ? error.message : "An unknown error occurred",
-    };
-  }
-}
-
-export async function fetchAllOutbounds(): Promise<FetchingOutboundsResponse> {
-  try {
-    const response = await axios.get(`${API_URL}/parts/fetch-all-outbounds`, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    const data = response.data;
-    // console.log("Parts Outbounds Fetched: ", data);
-    return data;
-  } catch (error) {
-    console.log(error);
-    return {
-      success: false,
-      message: "Something went wrong while fetching parts.",
-    };
-  }
-}
-
-export async function fetchOutbounds(
-  partId: number
-): Promise<FetchingOutboundsResponse> {
-  try {
-    const response = await axios.get(
-      `${API_URL}/parts/fetch-outbounds/${partId}`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-
-    const data = response.data;
-    // console.log("Parts Outbounds Fetched: ", data);
-    return data;
-  } catch (error) {
-    console.log(error);
-    return {
-      success: false,
-      message: "Something went wrong while fetching parts.",
-    };
-  }
-}
-
-export async function outboundPart(
-  formData: InboundOutboundType
-): Promise<InboundOutboundResponse> {
-  try {
-    const response = await axios.post(`${API_URL}/parts/outbound`, formData, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    // console.log("creating user");
-    if (response.status === 201) {
-      return response.data;
-    }
-
-    return {
-      success: false,
-      message: "Unexpected response status",
-    };
-  } catch (error) {
-    // Type guard for Axios errors
-    if (axios.isAxiosError(error)) {
-      const axiosError = error as AxiosError<ApiErrorResponse>;
-      // console.error(
-      //   "Error creating part:",
-      //   axiosError.response?.data || axiosError.message
-      // );
-
-      // Check if it's a connection error
-      if (
-        axiosError.code === "ERR_NETWORK" ||
-        axiosError.message.includes("ERR_CONNECTION_REFUSED")
-      ) {
-        return {
-          success: false,
-          message:
-            "Cannot connect to server. Please check if the server is running.",
-        };
-      }
-
-      return {
-        success: false,
-        message: axiosError.response?.data?.message || axiosError.message,
-      };
-    }
-
-    // Handle non-Axios errors
-    // console.error("Error creating user:", error);
     return {
       success: false,
       message:

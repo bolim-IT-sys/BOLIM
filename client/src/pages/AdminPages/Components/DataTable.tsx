@@ -37,7 +37,6 @@ export const DataTable = ({
   setData,
   type,
   fetchAllParts,
-  isFetching,
   currentData,
 }: Props) => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -133,13 +132,23 @@ export const DataTable = ({
 
     try {
       setIsDeleting(partId);
-      console.log("removing stock");
+      // console.log("removing stock");
       const result = await removePart(partId);
 
       if (result.success) {
         setTimeout(
           () => {
-            alert(result.message);
+            alert(
+              ` ${
+                type === "pin"
+                  ? "Pin"
+                  : type === "it"
+                    ? "Item"
+                    : type === "material"
+                      ? "Material"
+                      : "INVALID TYPE"
+              } deleted successfully.`
+            );
             fetchAllParts();
           },
           import.meta.env.VITE_TIME_OUT
@@ -284,136 +293,116 @@ export const DataTable = ({
           </tr>
         </thead>
         <tbody>
-          {isFetching ? (
+          {currentData.length > 0 ? (
+            <>
+              {currentData.map((item) => (
+                <tr key={item.id} className="hover:bg-gray-50">
+                  <td className="text-center border border-neutral-300 px-3 py-2">
+                    <div className="h-18 flex justify-center items-center">
+                      <ImageModal part={item} />
+                    </div>
+                  </td>
+                  <td className="text-center border border-neutral-300 px-3 py-2">
+                    <h6>{item.partNumber}</h6>
+                  </td>
+                  <td className="text-center border border-neutral-300 px-3 py-2">
+                    <h6>{item.specs}</h6>
+                  </td>
+                  <td className="text-center border border-neutral-300 px-3 py-2">
+                    <h6>{item.category}</h6>
+                  </td>
+                  <td className="text-center border border-neutral-300 px-3 py-2">
+                    <h6>{Number(item.unitPrice).toLocaleString()}</h6>
+                  </td>
+                  <td className="text-center border border-neutral-300 px-3 py-2">
+                    <h6>{item.company}</h6>
+                  </td>
+                  <td
+                    className={`${
+                      computeStocks(item) <
+                      getSafetyStock(
+                        item.outbounds!.map((o) => ({
+                          quantity: o.quantity,
+                          date: String(o.outboundDate),
+                        })),
+                        year,
+                        month
+                      )
+                        ? "bg-red-100 text-red-900"
+                        : "bg-emerald-100 text-emerald-800"
+                    } text-center border border-neutral-300  px-3 py-2`}
+                  >
+                    <div>
+                      <h6 className={`rounded px-1`}>
+                        <b>{computeStocks(item)}</b>
+                      </h6>
+                    </div>
+                  </td>
+                  <td
+                    className=" text-center border border-neutral-300 p-2"
+                    style={{ zIndex: -10 }}
+                  >
+                    <div className="flex flex-col gap-1">
+                      <ViewPartStocks
+                        item={item}
+                        setData={setData}
+                        type={type}
+                      />
+                      <div className="flex gap-1">
+                        <EditingPart
+                          fetchAllParts={fetchAllParts}
+                          item={item}
+                          type={type}
+                        />
+                        <DangerButton
+                          text={
+                            <>
+                              <span className="my-.5">
+                                <i className="bx  bxs-trash"></i>
+                              </span>
+                            </>
+                          }
+                          loadingText={
+                            <>
+                              <span className="my-.5">
+                                <i className="bx bx-loader-dots bx-spin" />
+                              </span>
+                            </>
+                          }
+                          onClick={() => handleDelete(item.id!)}
+                          isLoading={isDeleting === item.id}
+                          disabled={isDeleting === item.id}
+                        />
+                      </div>
+                    </div>
+                  </td>
+                  <td className="text-center border border-neutral-300 px-3 py-2">
+                    <h6>{computeSecurementRate(item)}%</h6>
+                  </td>
+                  <td className="text-center border border-neutral-300 px-3 py-2">
+                    <h6>{computeExcessInsufficient(item)}</h6>
+                  </td>
+                  <td className="text-center border border-neutral-300 px-3 py-2">
+                    <h6>{computeUrgentRequest(item)}</h6>
+                  </td>
+                  <td
+                    className={`${computeOrderQuantity(item) > 0 ? "bg-red-100 text-red-900 font-bold" : ""} text-center border border-neutral-300 px-3 py-2`}
+                  >
+                    <h6>{computeOrderQuantity(item)}</h6>
+                  </td>
+                </tr>
+              ))}
+            </>
+          ) : (
             <>
               <tr className="hover:bg-gray-50">
                 <td
                   colSpan={12}
                   className="text-center border border-neutral-300 px-3 py-2"
                 >
-                  <div className="flex justify-center items-center gap-1">
-                    <h4>
-                      <i className="bx bx-loader-dots bx-spin" />
-                    </h4>
-                    <h5 className="">LOADING PARTS DATA</h5>
-                  </div>
+                  NO PART AVAILABLE
                 </td>
               </tr>
-            </>
-          ) : (
-            <>
-              {currentData.length > 0 ? (
-                <>
-                  {currentData.map((item) => (
-                    <tr key={item.id} className="hover:bg-gray-50">
-                      <td className="text-center border border-neutral-300 px-3 py-2">
-                        <div className="h-18 flex justify-center items-center">
-                          <ImageModal part={item} />
-                        </div>
-                      </td>
-                      <td className="text-center border border-neutral-300 px-3 py-2">
-                        <h6>{item.partNumber}</h6>
-                      </td>
-                      <td className="text-center border border-neutral-300 px-3 py-2">
-                        <h6>{item.specs}</h6>
-                      </td>
-                      <td className="text-center border border-neutral-300 px-3 py-2">
-                        <h6>{item.category}</h6>
-                      </td>
-                      <td className="text-center border border-neutral-300 px-3 py-2">
-                        <h6>{Number(item.unitPrice).toLocaleString()}</h6>
-                      </td>
-                      <td className="text-center border border-neutral-300 px-3 py-2">
-                        <h6>{item.company}</h6>
-                      </td>
-                      <td
-                        className={`${
-                          computeStocks(item) <
-                          getSafetyStock(
-                            item.outbounds!.map((o) => ({
-                              quantity: o.quantity,
-                              date: String(o.outboundDate),
-                            })),
-                            year,
-                            month
-                          )
-                            ? "bg-red-100 text-red-900"
-                            : "bg-emerald-100 text-emerald-800"
-                        } text-center border border-neutral-300  px-3 py-2`}
-                      >
-                        <div>
-                          <h6 className={`rounded px-1`}>
-                            <b>{computeStocks(item)}</b>
-                          </h6>
-                        </div>
-                      </td>
-                      <td
-                        className=" text-center border border-neutral-300 p-2"
-                        style={{ zIndex: -10 }}
-                      >
-                        <div className="flex flex-col gap-1">
-                          <ViewPartStocks
-                            item={item}
-                            setData={setData}
-                            type={type}
-                          />
-                          <div className="flex gap-1">
-                            <EditingPart
-                              fetchAllParts={fetchAllParts}
-                              item={item}
-                              type={type}
-                            />
-                            <DangerButton
-                              text={
-                                <>
-                                  <span className="my-.5">
-                                    <i className="bx  bxs-trash"></i>
-                                  </span>
-                                </>
-                              }
-                              loadingText={
-                                <>
-                                  <span className="my-.5">
-                                    <i className="bx bx-loader-dots bx-spin" />
-                                  </span>
-                                </>
-                              }
-                              onClick={() => handleDelete(item.id!)}
-                              isLoading={isDeleting === item.id}
-                              disabled={isDeleting === item.id}
-                            />
-                          </div>
-                        </div>
-                      </td>
-                      <td className="text-center border border-neutral-300 px-3 py-2">
-                        <h6>{computeSecurementRate(item)}%</h6>
-                      </td>
-                      <td className="text-center border border-neutral-300 px-3 py-2">
-                        <h6>{computeExcessInsufficient(item)}</h6>
-                      </td>
-                      <td className="text-center border border-neutral-300 px-3 py-2">
-                        <h6>{computeUrgentRequest(item)}</h6>
-                      </td>
-                      <td
-                        className={`${computeOrderQuantity(item) > 0 ? "bg-red-100 text-red-900 font-bold" : ""} text-center border border-neutral-300 px-3 py-2`}
-                      >
-                        <h6>{computeOrderQuantity(item)}</h6>
-                      </td>
-                    </tr>
-                  ))}
-                </>
-              ) : (
-                <>
-                  <tr className="hover:bg-gray-50">
-                    <td
-                      colSpan={12}
-                      className="text-center border border-neutral-300 px-3 py-2"
-                    >
-                      NO PART AVAILABLE
-                    </td>
-                  </tr>
-                </>
-              )}
             </>
           )}
         </tbody>

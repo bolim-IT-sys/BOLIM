@@ -53,6 +53,7 @@ export const EditingPart = ({ fetchAllParts, item, type }: EditingProps) => {
 
       const fd = new FormData();
 
+      fd.append("type", formData.type);
       fd.append("partNumber", formData.partNumber);
       fd.append("specs", formData.specs);
       fd.append("category", formData.category);

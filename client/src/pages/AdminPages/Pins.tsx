@@ -6,6 +6,7 @@ import { DataTable } from "./Components/DataTable";
 import { DataPagination } from "./Components/DataPagination";
 import InputField from "../../components/InputField";
 import { DownloadPartData } from "../../components/downloadButton/DownloadPartData";
+import { DataTableLoader } from "../../components/loaders/DataTableLoader";
 
 interface ContextType {
   parts: Part[];
@@ -82,7 +83,12 @@ export default function Pins() {
           <DownloadPartData parts={displayParts} />
         </div>
       </div>
-      <div className="h-87/100 overflow-scroll border border-gray-300">
+      {/* <div className="h-87/100 w-full overflow-hidden border border-gray-300 relative"></div> */}
+      <div
+        className={`h-87/100 w-full ${isFetching ? "overflow-hidden" : "overflow-auto"} border border-gray-300 relative`}
+      >
+        {isFetching ? <DataTableLoader /> : null}
+
         <DataTable
           data={displayParts}
           setData={setParts}

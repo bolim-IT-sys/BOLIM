@@ -13,7 +13,7 @@ const getAllParts = async (req, res) => {
       });
     } else {
       // console.log("Parts found: ", parts);
-      res.json({ success: true, data: parts });
+      res.status(200).json({ success: true, data: parts });
     }
   } catch (err) {
     // You can add specific error handling here if needed
@@ -21,7 +21,7 @@ const getAllParts = async (req, res) => {
 
     res.json({
       success: false,
-      message: err.message || "Fetching parts failed",
+      message: err.message || "Fetching parts failed.",
     });
   }
 };
@@ -38,7 +38,7 @@ const createPart = async (req, res) => {
       !req.body.company
     ) {
       // console.log("Please fill in all required fields.");
-      return res.status(400).json({
+      return res.json({
         message: "Please fill in all required fields.",
       });
     }
@@ -51,7 +51,7 @@ const createPart = async (req, res) => {
     );
 
     if (existingPart) {
-      return res.status(409).json({
+      return res.json({
         success: false,
         message: `${
           type === "pin"
@@ -61,7 +61,7 @@ const createPart = async (req, res) => {
             : type === "material"
             ? "Material"
             : "INVALID TYPE"
-        } already exists`,
+        } already exists.`,
       });
     }
 
@@ -112,16 +112,19 @@ const updatePart = async (req, res) => {
     // const PartId = req.params.id;
 
     if (
+      !req.body.type ||
       !req.body.partNumber ||
       !req.body.specs ||
       !req.body.category ||
       !req.body.unitPrice ||
       !req.body.company
     ) {
-      return res.status(400).json({
+      return res.json({
         message: "Please fill in all required fields.",
       });
     }
+
+    const type = req.body.type;
 
     const data = {
       partNumber: req.body.partNumber,
@@ -160,7 +163,15 @@ const updatePart = async (req, res) => {
     if (!existingPart) {
       return res.json({
         success: false,
-        message: "Part not found.",
+        message: `${
+          type === "pin"
+            ? "Pin"
+            : type === "it"
+            ? "Item"
+            : type === "material"
+            ? "Material"
+            : "INVALID TYPE"
+        } not found.`,
       });
     }
 
@@ -174,7 +185,7 @@ const updatePart = async (req, res) => {
       data.company === existingPart.company
     ) {
       console.log("No changes made.");
-      return res.status(409).json({
+      return res.json({
         success: false,
         message: "No changes made.",
       });
@@ -187,10 +198,18 @@ const updatePart = async (req, res) => {
       );
 
       if (userWithSamePartNumber) {
-        console.log("Matching part number: ", userWithSamePartNumber);
-        return res.status(409).json({
+        // console.log("Matching part number: ", userWithSamePartNumber);
+        return res.json({
           success: false,
-          message: "Part number already taken.",
+          message: `${
+            type === "pin"
+              ? "Pin number"
+              : type === "it"
+              ? "Item name"
+              : type === "material"
+              ? "Material name"
+              : "INVALID TYPE"
+          } already taken.`,
         });
       }
       console.log("No match found.");
@@ -200,14 +219,32 @@ const updatePart = async (req, res) => {
     // Return consistent response structure
     res.status(200).json({
       success: true,
-      message: "Part updated successfully",
+      message: `${
+        type === "pin"
+          ? "Pin"
+          : type === "it"
+          ? "Item"
+          : type === "material"
+          ? "Material"
+          : "INVALID TYPE"
+      } updated successfully.`,
       data: updatePart,
     });
   } catch (err) {
     // You can add specific error handling here if needed
     res.json({
       success: false,
-      message: err.message || "Part update failed",
+      message:
+        err.message ||
+        `${
+          type === "pin"
+            ? "Pin"
+            : type === "it"
+            ? "Item"
+            : type === "material"
+            ? "Material"
+            : "INVALID TYPE"
+        } update failed.`,
     });
   }
 };
@@ -218,7 +255,7 @@ const deletePart = async (req, res) => {
 
     // Optional: Validate request body first
     if (!PartId) {
-      return res.status(400).json({
+      return res.json({
         message: "PartId is required",
       });
     }
@@ -274,7 +311,7 @@ const inboundPart = async (req, res) => {
     // Optional: Validate request body first
     if (!req.body.partId || !req.body.quantity || !req.body.inboundDate) {
       // console.log("Please fill in all required fields.");
-      return res.status(400).json({
+      return res.json({
         message: "Please fill in all required fields.",
       });
     }
@@ -313,6 +350,168 @@ const inboundPart = async (req, res) => {
     res.json({
       success: false,
       message: err.message || "Part creation failed",
+    });
+  }
+};
+
+const getAllInbounds = async (req, res) => {
+  try {
+    // console.log("Fetching all inbounds.");
+
+    const parts = await partService.getAllInbounds();
+    if (!parts) {
+      // console.log("No inbounds found.");
+      res.json({
+        success: false,
+        message: "No inbounds found.",
+      });
+    } else {
+      // console.log("Part inbounds found: ", parts);
+      res.status(200).json({ success: true, data: parts });
+    }
+  } catch (err) {
+    // You can add specific error handling here if needed
+    console.log("Error fetching inbounds: ", err);
+
+    res.json({
+      success: false,
+      message: err.message || "Fetching part inbounds failed",
+    });
+  }
+};
+
+const getInbounds = async (req, res) => {
+  try {
+    const partId = req.params.id;
+    // console.log("Fetching inbounds.");
+
+    const parts = await partService.getInbounds(partId);
+    if (!parts) {
+      // console.log("No inbounds found.");
+      res.json({
+        success: false,
+        message: "No inbounds found.",
+      });
+    } else {
+      // console.log("Part inbounds found: ", parts);
+      res.status(200).json({ success: true, data: parts });
+    }
+  } catch (err) {
+    // You can add specific error handling here if needed
+    console.log("Error fetching inbounds: ", err);
+
+    res.json({
+      success: false,
+      message: err.message || "Fetching part inbounds failed",
+    });
+  }
+};
+
+const outboundPart = async (req, res) => {
+  try {
+    // console.log("Data received in Controller: ", req.body);
+    // Optional: Validate request body first
+    if (!req.body.partId || !req.body.quantity || !req.body.outboundDate) {
+      // console.log("Please fill in all required fields.");
+      return res.json({
+        message: "Please fill in all required fields.",
+      });
+    }
+
+    // Check if part exists
+    const isPartExisting = await partService.findById(req.body.partId);
+
+    if (!isPartExisting) {
+      return res.json({
+        success: false,
+        message: "Part does not exist.",
+      });
+    }
+
+    const updateData = {
+      quantity: isPartExisting.quantity - Number(req.body.quantity),
+    };
+
+    if (updateData.quantity < 0) {
+      return res.json({
+        success: false,
+        message: "Part stock is insufficient.",
+      });
+    }
+
+    const outbound = await partService.outboundPart(req.body);
+
+    const updatePartQty = await partService.updatePart(
+      req.body.partId,
+      updateData
+    );
+
+    // Return consistent response structure
+    res.status(201).json({
+      success: true,
+      message: "Part outbound successful.",
+      data: outbound,
+      updatePartQty,
+    });
+  } catch (err) {
+    // You can add specific error handling here if needed
+    console.error("Error occured: ", err);
+    res.json({
+      success: false,
+      message: err.message || "Part creation failed",
+    });
+  }
+};
+
+const getAllOutbounds = async (req, res) => {
+  try {
+    // console.log("Fetching all outbounds.");
+
+    const parts = await partService.getAllOutbounds();
+    if (!parts) {
+      // console.log("No outbounds found.");
+      res.json({
+        success: false,
+        message: "No outbounds found.",
+      });
+    } else {
+      // console.log("Part outbounds found: ", parts);
+      res.status(200).json({ success: true, data: parts });
+    }
+  } catch (err) {
+    // You can add specific error handling here if needed
+    console.log("Error fetching outbounds: ", err);
+
+    res.json({
+      success: false,
+      message: err.message || "Fetching part outbounds failed",
+    });
+  }
+};
+
+const getOutbounds = async (req, res) => {
+  try {
+    const partId = req.params.id;
+    // console.log("Fetching outbounds.");
+
+    const parts = await partService.getOutbounds(partId);
+    if (!parts) {
+      // console.log("No outbounds found.");
+      res.json({
+        success: false,
+        message: "No outbounds found.",
+      });
+    } else {
+      // console.log("Part outbounds found: ", parts);
+      res.json({ success: true, data: parts });
+    }
+  } catch (err) {
+    // You can add specific error handling here if needed
+    console.log("Error fetching outbounds: ", err);
+
+    res.json({
+      success: false,
+      message: err.message || "Fetching part outbounds failed",
     });
   }
 };
@@ -445,168 +644,6 @@ const getItem = async (req, res) => {
     res.json({
       success: false,
       message: err.message || "Fetching stock items failed",
-    });
-  }
-};
-
-const getAllInbounds = async (req, res) => {
-  try {
-    // console.log("Fetching all inbounds.");
-
-    const parts = await partService.getAllInbounds();
-    if (!parts) {
-      // console.log("No inbounds found.");
-      res.json({
-        success: false,
-        message: "No inbounds found.",
-      });
-    } else {
-      // console.log("Part inbounds found: ", parts);
-      res.json({ success: true, data: parts });
-    }
-  } catch (err) {
-    // You can add specific error handling here if needed
-    console.log("Error fetching inbounds: ", err);
-
-    res.json({
-      success: false,
-      message: err.message || "Fetching part inbounds failed",
-    });
-  }
-};
-
-const getInbounds = async (req, res) => {
-  try {
-    const partId = req.params.id;
-    // console.log("Fetching inbounds.");
-
-    const parts = await partService.getInbounds(partId);
-    if (!parts) {
-      // console.log("No inbounds found.");
-      res.json({
-        success: false,
-        message: "No inbounds found.",
-      });
-    } else {
-      // console.log("Part inbounds found: ", parts);
-      res.json({ success: true, data: parts });
-    }
-  } catch (err) {
-    // You can add specific error handling here if needed
-    console.log("Error fetching inbounds: ", err);
-
-    res.json({
-      success: false,
-      message: err.message || "Fetching part inbounds failed",
-    });
-  }
-};
-
-const outboundPart = async (req, res) => {
-  try {
-    // console.log("Data received in Controller: ", req.body);
-    // Optional: Validate request body first
-    if (!req.body.partId || !req.body.quantity || !req.body.outboundDate) {
-      // console.log("Please fill in all required fields.");
-      return res.status(400).json({
-        message: "Please fill in all required fields.",
-      });
-    }
-
-    // Check if part exists
-    const isPartExisting = await partService.findById(req.body.partId);
-
-    if (!isPartExisting) {
-      return res.json({
-        success: false,
-        message: "Part does not exist.",
-      });
-    }
-
-    const updateData = {
-      quantity: isPartExisting.quantity - Number(req.body.quantity),
-    };
-
-    if (updateData.quantity < 0) {
-      return res.status(409).json({
-        success: false,
-        message: "Part stock is insufficient.",
-      });
-    }
-
-    const outbound = await partService.outboundPart(req.body);
-
-    const updatePartQty = await partService.updatePart(
-      req.body.partId,
-      updateData
-    );
-
-    // Return consistent response structure
-    res.status(201).json({
-      success: true,
-      message: "Part outbound successful.",
-      data: outbound,
-      updatePartQty,
-    });
-  } catch (err) {
-    // You can add specific error handling here if needed
-    console.error("Error occured: ", err);
-    res.json({
-      success: false,
-      message: err.message || "Part creation failed",
-    });
-  }
-};
-
-const getAllOutbounds = async (req, res) => {
-  try {
-    // console.log("Fetching all outbounds.");
-
-    const parts = await partService.getAllOutbounds();
-    if (!parts) {
-      // console.log("No outbounds found.");
-      res.json({
-        success: false,
-        message: "No outbounds found.",
-      });
-    } else {
-      // console.log("Part outbounds found: ", parts);
-      res.json({ success: true, data: parts });
-    }
-  } catch (err) {
-    // You can add specific error handling here if needed
-    console.log("Error fetching outbounds: ", err);
-
-    res.json({
-      success: false,
-      message: err.message || "Fetching part outbounds failed",
-    });
-  }
-};
-
-const getOutbounds = async (req, res) => {
-  try {
-    const partId = req.params.id;
-    // console.log("Fetching outbounds.");
-
-    const parts = await partService.getOutbounds(partId);
-    if (!parts) {
-      // console.log("No outbounds found.");
-      res.json({
-        success: false,
-        message: "No outbounds found.",
-      });
-    } else {
-      // console.log("Part outbounds found: ", parts);
-      res.json({ success: true, data: parts });
-    }
-  } catch (err) {
-    // You can add specific error handling here if needed
-    console.log("Error fetching outbounds: ", err);
-
-    res.json({
-      success: false,
-      message: err.message || "Fetching part outbounds failed",
     });
   }
 };

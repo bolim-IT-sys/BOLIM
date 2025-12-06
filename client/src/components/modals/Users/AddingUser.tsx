@@ -60,18 +60,18 @@ export const AddingUser = ({ fetchAllUsers }: AddingProps) => {
       <Modal
         isOpen={modalShow}
         onClose={() => setModalShow(false)}
-        title={"Create user"}
+        title={"CREATE NEW USER"}
         size="md"
         footer={
           <>
             <SuccessButton
-              text="Add User"
-              loadingText="Adding User"
+              text="ADD USER"
+              loadingText="ADDING USER"
               onClick={handleSubmit}
               isLoading={isLoading}
               disabled={isLoading}
             />
-            <SecondaryButton text="Close" onClick={() => setModalShow(false)} />
+            <SecondaryButton text="CLOSE" onClick={() => setModalShow(false)} />
           </>
         }
       >

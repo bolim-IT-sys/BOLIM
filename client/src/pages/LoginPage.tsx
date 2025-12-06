@@ -84,6 +84,7 @@ export default function LoginPage() {
             value={formData.username}
             required={true}
             onChange={(value: string) => handleChange("username", value)}
+            autoComplete={`username`}
           />
         </div>
         <div className="mb-3">
@@ -93,6 +94,7 @@ export default function LoginPage() {
             value={formData.password}
             required={true}
             onChange={(value: string) => handleChange("password", value)}
+            autoComplete={`current-password`}
           />
         </div>
         <PrimaryButton
