@@ -91,10 +91,10 @@ export default function Mainlayout() {
           setParts(pins);
           setITStocks(it);
           setMaterials(material);
-          console.log(
-            "Fetch IT and Material stocks: ",
-            `${ITStocks}, ${materials}`
-          );
+          // console.log(
+          //   "Fetch IT and Material stocks: ",
+          //   `${ITStocks}, ${materials}`
+          // );
         } else if (sort === "stocks") {
           console.log(`Sorting by stocks and by ${order}`);
           const sorted = sortByStocks(
@@ -155,6 +155,7 @@ export default function Mainlayout() {
   };
 
   const loadParts = async () => {
+    // console.log("fetching parts");
     try {
       setIsFetching(true);
       await fetchAllParts();
@@ -170,7 +171,7 @@ export default function Mainlayout() {
 
   useEffect(() => {
     loadParts();
-  }, []);
+  }, [navigate]);
 
   return (
     <div className="relative" style={{ height: "100dvh" }}>
