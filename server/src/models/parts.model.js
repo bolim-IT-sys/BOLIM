@@ -7,6 +7,16 @@ const Part = sequelize.define("Part", {
     primaryKey: true,
     autoIncrement: true,
   },
+  image: {
+    type: DataTypes.STRING(100),
+    allowNull: true,
+    defaultValue: null,
+  },
+  type: {
+    type: DataTypes.STRING(100),
+    allowNull: false,
+    defaultValue: "pin",
+  },
   partNumber: {
     type: DataTypes.STRING(100),
     allowNull: false,

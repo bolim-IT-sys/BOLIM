@@ -1,6 +1,7 @@
 const Part = require("../models/parts.model");
 const Inbound = require("../models/inbound.model");
 const Outbound = require("../models/outbound.model");
+const ITStock = require("../models/itStock.model");
 const sequelize = require("../database");
 
 const getAllParts = async () => {
@@ -19,6 +20,20 @@ const findById = async (id) => {
     return parts;
   } catch (error) {
     console.log("Error Finding Part: ", error);
+    throw error;
+  }
+};
+
+const findItemBySerialNumber = async (serialNumber) => {
+  try {
+    const item = await ITStock.findOne({
+      where: { serialNumber: serialNumber },
+      raw: true,
+    });
+    // console.log("Item found: ", item);
+    return item;
+  } catch (error) {
+    console.log("Error Finding Item: ", error);
     throw error;
   }
 };
@@ -73,12 +88,13 @@ const findPartByPartname = async (name) => {
 
 const createPart = async (PartData) => {
   try {
-    const { partNumber, specs, category, unitPrice, company } = PartData;
+    const { type, partNumber, specs, category, unitPrice, company } = PartData;
 
     // Hash password before storing
 
-    console.log("Adding parts.");
+    // console.log("Adding parts.");
     const parts = await Part.create({
+      type: type,
       partNumber: partNumber,
       specs: specs,
       category: category,
@@ -131,9 +147,13 @@ const updatePart = async (partsId, PartData) => {
       updateData.quantity = PartData.quantity;
     }
 
+    if (PartData.image) {
+      updateData.image = PartData.image;
+    }
+
     await parts.update(updateData);
 
-    console.log("Part updated successfully.");
+    // console.log("Part updated successfully.");
 
     // Return parts without password
     return {
@@ -154,7 +174,15 @@ const deletePart = async (partsId) => {
       throw new Error("Part not found.");
     }
 
-    // IF USER IS FOUND DELETE
+    // DELETING INBOUNDS AND OUTBOUNDS FOR THIS PART
+    await Inbound.destroy({
+      where: { partId: partsId },
+    });
+    await Outbound.destroy({
+      where: { partId: partsId },
+    });
+
+    // IF USER IS PART DELETE
     await parts.destroy(partsId);
 
     console.log("Part deleted successfully.");
@@ -190,6 +218,88 @@ const inboundPart = async (inboundData) => {
       quantity: inbound.quantity,
     };
   } catch (error) {
+    throw error;
+  }
+};
+
+const addItem = async (itemDetails) => {
+  try {
+    const { stockId, serialNumber, PRDate, receivedDate } = itemDetails;
+
+    // Hash password before storing
+    // console.log("Data received in inbounding: ", inboundData);
+
+    // console.log("Inbounding part.");
+    const addItem = await ITStock.create({
+      stockId: stockId,
+      serialNumber: serialNumber,
+      PRDate: PRDate,
+      receivedDate: receivedDate,
+    });
+
+    // Return parts without password
+    return {
+      stockId: addItem.stockId,
+      quantity: addItem.serialNumber,
+    };
+  } catch (error) {
+    throw error;
+  }
+};
+
+const deployItem = async (itemData) => {
+  try {
+    const item = await ITStock.findOne({
+      where: { serialNumber: itemData.serialNumber },
+    });
+
+    console.log("Item found: ", item);
+
+    if (!item) {
+      throw new Error("Item not found.");
+    }
+
+    // prepare the data
+    const updateData = {};
+
+    if (itemData.deployedDate) {
+      updateData.deployedDate = itemData.deployedDate;
+    }
+    if (itemData.station) {
+      updateData.station = itemData.station;
+    }
+    if (itemData.department) {
+      updateData.department = itemData.department;
+    }
+    if (itemData.remarks) {
+      updateData.remarks = itemData.remarks;
+    }
+
+    await item.update(updateData);
+
+    console.log("Item deployed successfully.");
+
+    // Return parts without password
+    return {
+      id: item.id,
+      serialNumber: item.serialNumber,
+    };
+  } catch (error) {
+    console.error("Error deploying item: ", error);
+    throw error;
+  }
+};
+
+const getItems = async (id) => {
+  try {
+    const items = await ITStock.findAll({
+      where: { stockId: id },
+      raw: true,
+    });
+    // console.log("Inbounds fetched: ", inbounds);
+    return items;
+  } catch (error) {
+    console.log("Error Finding Stock Items: ", error);
     throw error;
   }
 };
@@ -277,7 +387,11 @@ module.exports = {
   deletePart,
   find,
   findById,
+  findItemBySerialNumber,
   inboundPart,
+  addItem,
+  deployItem,
+  getItems,
   getAllInbounds,
   getInbounds,
   outboundPart,

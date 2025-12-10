@@ -18,7 +18,7 @@ const createUser = async (req, res) => {
   try {
     // Optional: Validate request body first
     if (!req.body.username || !req.body.password) {
-      return res.status(400).json({
+      return res.json({
         message: "Username and password are required",
       });
     }
@@ -29,7 +29,7 @@ const createUser = async (req, res) => {
     );
 
     if (existingUser) {
-      return res.status(409).json({
+      return res.json({
         success: false,
         message: "User already exists",
       });
@@ -45,7 +45,7 @@ const createUser = async (req, res) => {
     });
   } catch (err) {
     // You can add specific error handling here if needed
-    res.status(500).json({
+    res.json({
       success: false,
       message: err.message || "User creation failed",
     });
@@ -58,7 +58,7 @@ const updateUser = async (req, res) => {
 
     // Optional: Validate request body first
     if (!req.body.username) {
-      return res.status(400).json({
+      return res.json({
         message: "Username and password are required",
       });
     }
@@ -82,7 +82,7 @@ const updateUser = async (req, res) => {
       if (userWithSameUsername) {
         console.log("Matching user name: ", userWithSameUsername);
 
-        return res.status(409).json({
+        return res.json({
           success: false,
           message: "Username already taken.",
         });
@@ -100,7 +100,7 @@ const updateUser = async (req, res) => {
     });
   } catch (err) {
     // You can add specific error handling here if needed
-    res.status(500).json({
+    res.json({
       success: false,
       message: err.message || "User update failed",
     });
@@ -113,7 +113,7 @@ const deleteUser = async (req, res) => {
 
     // Optional: Validate request body first
     if (!userId) {
-      return res.status(400).json({
+      return res.json({
         message: "userId is required",
       });
     }
@@ -137,7 +137,7 @@ const deleteUser = async (req, res) => {
     });
   } catch (err) {
     // You can add specific error handling here if needed
-    res.status(500).json({
+    res.json({
       success: false,
       message: err.message || "User deletion failed",
     });

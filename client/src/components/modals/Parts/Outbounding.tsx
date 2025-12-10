@@ -4,15 +4,18 @@ import InputField from "../../InputField";
 import { Modal } from "../../Modal";
 import type { Part } from "../../../services/Part.Service";
 import {
+  outboundItem,
   outboundPart,
+  type deployItemType,
   type InboundOutboundType,
 } from "../../../services/InboundOutbound.Service";
-import type { Dispatch, SetStateAction } from "react";
+import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
 
 interface Props {
-  part: Part;
+  item: Part;
+  type: string;
   fetchAllParts: () => void;
-  setParts: Dispatch<SetStateAction<Part[]>>;
+  setData: Dispatch<SetStateAction<Part[]>>;
   formData: InboundOutboundType;
   setFormData: Dispatch<SetStateAction<InboundOutboundType>>;
   fetchTransactions: () => void;
@@ -25,9 +28,10 @@ interface Props {
 }
 
 export const Outbounding = ({
-  part,
+  item,
+  type,
   fetchAllParts,
-  setParts,
+  setData,
   formData,
   setFormData,
   fetchTransactions,
@@ -38,9 +42,33 @@ export const Outbounding = ({
   setModalShow,
   handleChange,
 }: Props) => {
+  const [itemDetails, setItemDetails] = useState<deployItemType>({
+    serialNumber: ``,
+    deployedDate: formData.outboundDate!,
+    station: "",
+    department: "",
+    remarks: "deployed",
+  });
+
+  useEffect(() => {
+    setItemDetails((prev) => ({
+      ...prev,
+      deployedDate: formData.outboundDate!,
+      station: prev.station,
+      department: prev.department,
+    }));
+  }, [formData, item]);
+
   const handleOutbound = async () => {
     setOutBounding(true);
     try {
+      if (type === "it") {
+        const deployItem = await outboundItem(itemDetails);
+
+        if (!deployItem.success) {
+          return alert(deployItem.message);
+        }
+      }
       const result = await outboundPart(formData);
       // console.log("deploying stock item.");
 
@@ -53,7 +81,7 @@ export const Outbounding = ({
             fetchTransactions();
             fetchAllParts();
             // UPDATING THE QUANTITY OF THE INBOUNDED PART
-            setParts((prevParts) =>
+            setData((prevParts) =>
               prevParts.map((p) =>
                 p.id === formData.partId
                   ? { ...p, quantity: p.quantity - Number(formData.quantity) }
@@ -63,9 +91,15 @@ export const Outbounding = ({
             // RESETTING FORMDATA AFTER INBOUND
             setFormData((prev) => ({
               ...prev,
-              partId: part.id!,
-              currentQuantity: part.quantity + Number(formData.quantity),
-              quantity: "",
+              partId: item.id!,
+              currentQuantity: item.quantity + Number(formData.quantity),
+              quantity: "1",
+            }));
+            setItemDetails((prev) => ({
+              ...prev,
+              partId: item.id!,
+              currentQuantity: item.quantity + Number(formData.quantity),
+              quantity: "1",
             }));
           },
           import.meta.env.VITE_TIME_OUT
@@ -103,7 +137,15 @@ export const Outbounding = ({
           setOutboundShow(false);
           setModalShow(true);
         }}
-        title={`OUTBOUND PART (${part.partNumber})`}
+        title={`OUTBOUND ${
+          type === "pin"
+            ? "PIN"
+            : type === "it"
+              ? "ITEM"
+              : type === "material"
+                ? "MATERIAL"
+                : "INVALID TYPE"
+        } (${item.partNumber})`}
         size="md"
         footer={
           <>
@@ -125,20 +167,82 @@ export const Outbounding = ({
         }
       >
         <div className="text-start">
+          {type === "it" ? (
+            <>
+              <div className="mb-1">
+                <label
+                  htmlFor="SERIAL NUMBER"
+                  className="block font-medium text-gray-700"
+                >
+                  <p>SERIAL NUMBER</p>
+                </label>
+                <InputField
+                  label="SERIAL NUMBER"
+                  type="text"
+                  value={itemDetails.serialNumber!}
+                  onChange={(value: string) =>
+                    setItemDetails((prev) => ({ ...prev, serialNumber: value }))
+                  }
+                  autoComplete={`serialNumber`}
+                />
+              </div>
+              <div className="mb-1">
+                <label
+                  htmlFor="STATION"
+                  className="block font-medium text-gray-700"
+                >
+                  <p>STATION</p>
+                </label>
+                <InputField
+                  label="STATION"
+                  type="text"
+                  value={itemDetails.station!}
+                  onChange={(value: string) =>
+                    setItemDetails((prev) => ({ ...prev, station: value }))
+                  }
+                  autoComplete={`station`}
+                />
+              </div>
+              <div className="mb-1">
+                <label
+                  htmlFor="DEPARTMENT"
+                  className="block font-medium text-gray-700"
+                >
+                  <p>DEPARTMENT</p>
+                </label>
+                <InputField
+                  label="DEPARTMENT"
+                  type="text"
+                  value={itemDetails.department!}
+                  onChange={(value: string) =>
+                    setItemDetails((prev) => ({ ...prev, department: value }))
+                  }
+                  autoComplete={`department`}
+                />
+              </div>
+            </>
+          ) : (
+            <div className="mb-1">
+              <label
+                htmlFor="QUANTITY"
+                className="block font-medium text-gray-700"
+              >
+                <p>QUANTITY</p>
+              </label>
+              <InputField
+                label="QUANTITY"
+                type="number"
+                value={formData.quantity}
+                onChange={(value: string) => handleChange("quantity", value)}
+                autoComplete={`quantity`}
+              />
+            </div>
+          )}
           <div className="mb-1">
-            <label className="block font-medium text-gray-700">
-              <p>QUANTITY</p>
-            </label>
-            <InputField
-              label="QUANTITY"
-              type="number"
-              value={formData.quantity}
-              onChange={(value: string) => handleChange("quantity", value)}
-              autoComplete={`quantity`}
-            />
-          </div>
-          <div className="mb-1">
-            <label className="block font-medium text-gray-700">
+            <label
+              htmlFor="OUTBOUND DATE"
+              className="block font-medium text-gray-700"
+            >
               <p>OUTBOUND DATE</p>
             </label>
             <InputField

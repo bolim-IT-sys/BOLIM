@@ -1,4 +1,5 @@
 const express = require("express");
+const { upload } = require("../middlewares/pinUpload");
 const {
   getAllParts,
   createPart,
@@ -10,21 +11,27 @@ const {
   getOutbounds,
   getAllOutbounds,
   getAllInbounds,
+  addingItem,
+  getItem,
+  outboundItem,
 } = require("../controllers/parts.controller");
 
 const router = express.Router();
 
-router.get("/fetchParts", getAllParts);
-router.post("/createPart", createPart);
-router.put("/updatePart/:id", updatePart);
-router.delete("/deletePart/:id", deletePart);
+router.get("/fetch-parts", getAllParts);
+router.post("/create-part", createPart);
+router.put("/update-part/:id", upload.single("image"), updatePart);
+router.delete("/delete-part/:id", deletePart);
 
 router.post("/inbound", inboundPart);
-router.get("/fetchAllInbounds", getAllInbounds);
-router.get("/fetchInbounds/:id", getInbounds);
+router.get("/fetch-all-inbounds", getAllInbounds);
+router.get("/fetch-inbounds/:id", getInbounds);
+router.post("/add-item", addingItem);
+router.put("/outbound-item/:serialNumber", outboundItem);
+router.get("/fetch-items/:id", getItem);
 
 router.post("/outbound", outboundPart);
-router.get("/fetchAllOutbounds", getAllOutbounds);
-router.get("/fetchOutbounds/:id", getOutbounds);
+router.get("/fetch-all-outbounds", getAllOutbounds);
+router.get("/fetch-outbounds/:id", getOutbounds);
 
 module.exports = router;

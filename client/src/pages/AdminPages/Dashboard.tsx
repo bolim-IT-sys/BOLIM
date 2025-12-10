@@ -13,36 +13,44 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+import { getDateRange } from "../../helper/date.helper";
 
 interface ContextType {
   parts: Part[];
+  ITStocks: Part[];
+  materials: Part[];
 }
 
 export default function Dashboard() {
-  const { parts } = useOutletContext<ContextType>();
+  const { parts, ITStocks, materials } = useOutletContext<ContextType>();
 
+  const [dataType, setDataType] = useState("Pins");
+  const [data, setData] = useState<Part[]>([]);
+
+  const [dateRange, setDateRange] = useState("week");
   const [startDate, setStartDate] = useState<string>();
   const [endDate, setEndDate] = useState<string>();
 
   useEffect(() => {
-    const today = new Date();
+    if (dataType === "Pins") {
+      setData(parts);
+    } else if (dataType === "ITStocks") {
+      setData(ITStocks);
+    } else if (dataType === "MaterialControl") {
+      setData(materials);
+    } else {
+      setData([]);
+    }
+  }, [dataType, parts, ITStocks, materials]);
 
-    // Calculate Monday of current week
-    const day = today.getDay(); // 0 = Sunday, 1 = Monday, ...
-    const diffToMonday = day === 0 ? -6 : 1 - day;
+  useEffect(() => {
+    const dates = getDateRange(dateRange);
 
-    const start = new Date(today);
-    start.setDate(today.getDate() + diffToMonday + 1);
-    start.setHours(0, 0, 0, 0);
-
-    // End of week = start + 6 days (Sunday)
-    const end = new Date(start);
-    end.setDate(start.getDate() + 5);
-    end.setHours(23, 59, 59, 999);
-
-    setStartDate(start.toISOString().split("T")[0]);
-    setEndDate(end.toISOString().split("T")[0]);
-  }, []);
+    if (dates) {
+      setStartDate(dates.start.toISOString().split("T")[0]);
+      setEndDate(dates.end.toISOString().split("T")[0]);
+    }
+  }, [dateRange]);
 
   const filteredAndRankedParts = useMemo(() => {
     if (!startDate || !endDate) {
@@ -54,9 +62,9 @@ export default function Dashboard() {
     const end = new Date(endDate);
     end.setHours(23, 59, 59, 999);
 
-    const processedParts = parts.map((part) => {
+    const processedParts = data.map((stock) => {
       // console.log("Filtering parts...", part.partNumber);
-      const filteredOutbounds = part.outbounds!.filter((outbound) => {
+      const filteredOutbounds = stock.outbounds!.filter((outbound) => {
         const date = new Date(outbound.outboundDate);
         date.setHours(0, 0, 0, 0); // Normalize to start of day
         return date >= start && date <= end;
@@ -74,7 +82,7 @@ export default function Dashboard() {
       );
 
       return {
-        ...part,
+        ...stock,
         filteredOutbounds,
         totalOutbound,
         outboundCount: filteredOutbounds.length,
@@ -88,7 +96,7 @@ export default function Dashboard() {
 
     // Sort by total outbound (usage) descending
     return partsWithBoth.sort((a, b) => b.totalOutbound - a.totalOutbound);
-  }, [parts, startDate, endDate]);
+  }, [data, startDate, endDate]);
 
   const chartData = useMemo(() => {
     return filteredAndRankedParts.map((part, index) => ({
@@ -107,50 +115,102 @@ export default function Dashboard() {
 
   return (
     <>
-      <div className=" ">
+      <div className="">
         {/* Header */}
-        <div className="mb-3">
+        <div className="mb-3 flex items-center gap-2">
           <h2 className="font-bold text-gray-900">DASHBOARD</h2>
-        </div>
-        <div className="h-full overflow-auto">
-          {/* Key Metrics Grid */}
-          <KeyMetrics parts={parts} />
-
-          {/* Two Column Layout */}
-          <div className="flex justify-start items-center gap-2">
-            <div className="mb-1">
-              <label className="block font-medium text-gray-700">
-                <p>START DATE:</p>
-              </label>
-              <InputField
-                label="START DATE"
-                type="date"
-                value={startDate!}
-                required={true}
-                onChange={(value: string) => setStartDate(value)}
-                autoComplete={`Previous date`}
-              />
-            </div>
-            <div className="mb-1">
-              <label className="block font-medium text-gray-700">
-                <p>END DATE:</p>
-              </label>
-              <InputField
-                label="END DATE"
-                type="date"
-                value={endDate!}
-                required={true}
-                onChange={(value: string) => setEndDate(value)}
-                autoComplete={`Previous date`}
-              />
-            </div>
+          <div className="">
+            <select
+              className="no-arrow rounded-lg border border-neutral-300 hover:bg-neutral-200 transition duration-350 cursor-pointer px-2 py-2 focus:bg-neutral-50  focus:ring-1 focus:ring-neutral-300 focus:outline-none"
+              name="dataTypeSelect"
+              value={dataType}
+              onChange={(e) => setDataType(e.target.value)}
+            >
+              <option value={`Pins`}>Pins</option>
+              <option value={`ITStocks`}>IT Stocks</option>
+              <option value={`MaterialControl`}>Material Control</option>
+            </select>
           </div>
+        </div>
+        <div className="h-full overflow-hidden">
+          {/* Key Metrics Grid */}
+          <KeyMetrics data={data} />
+
+          {/* BAR CHART */}
+
           <div>
             <div className="bg-white rounded-xl shadow-lg">
-              <h2 className="text-xl font-bold text-gray-800 mb-3 flex items-center gap-2">
-                <i className="bx  bxs-chart-bar-columns"></i> Parts Usage
-                Overview
+              <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+                <i className="bx  bxs-chart-bar-columns"></i>{" "}
+                {dataType === "Pins"
+                  ? "Pins "
+                  : dataType === "ITStocks"
+                    ? "IT Stocks "
+                    : dataType === "MaterialControl"
+                      ? "Material Control "
+                      : "Part "}
+                Usage Overview
               </h2>
+              <div className="flex justify-start items-center gap-2 mb-2">
+                <div className="mb-1">
+                  <label
+                    htmlFor="dateRangeSelect"
+                    className="block font-medium text-gray-700"
+                  >
+                    <p>DATE RANGE:</p>
+                  </label>
+                  <select
+                    className="w-40 no-arrow rounded-lg border border-neutral-300 hover:bg-neutral-200 transition duration-350 cursor-pointer px-2 py-2 focus:bg-neutral-50  focus:ring-1 focus:ring-neutral-300 focus:outline-none"
+                    id="dateRangeSelect"
+                    name="dateRangeSelect"
+                    value={dateRange}
+                    onChange={(e) => setDateRange(e.target.value)}
+                  >
+                    <option value={`week`}>This Week</option>
+                    <option value={`month`}>This Month</option>
+                    <option value={`year`}>This Year</option>
+                    <option value={`custom`}>Custom</option>
+                  </select>
+                </div>
+                <div className="mb-1">
+                  <label
+                    htmlFor="START DATE"
+                    className="block font-medium text-gray-700"
+                  >
+                    <p>START DATE:</p>
+                  </label>
+                  <InputField
+                    label="START DATE"
+                    type="date"
+                    value={startDate!}
+                    required={true}
+                    onChange={(value: string) => {
+                      setStartDate(value);
+                      setDateRange("custom");
+                    }}
+                    autoComplete={`Previous date`}
+                  />
+                </div>
+                <div className="mb-1">
+                  <label
+                    htmlFor="END DATE"
+                    className="block font-medium text-gray-700"
+                  >
+                    <p>END DATE:</p>
+                  </label>
+                  <InputField
+                    label="END DATE"
+                    type="date"
+                    value={endDate!}
+                    required={true}
+                    onChange={(value: string) => {
+                      setEndDate(value);
+                      setDateRange("custom");
+                    }}
+                    autoComplete={`Previous date`}
+                  />
+                </div>
+              </div>
 
               {filteredAndRankedParts.length > 0 ? (
                 <ResponsiveContainer width="100%" height={430}>

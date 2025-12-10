@@ -2,18 +2,22 @@ import axios, { AxiosError } from "axios";
 import type { Inbound, Outbound } from "./InboundOutbound.Service";
 
 export interface Part {
-  id?: number;
+  id: number;
+  image?: File | string | null;
+  type: string;
   partNumber: string;
   specs: string;
   category: string;
   unitPrice: number;
   company: string;
   quantity: number;
-  inbounds?: Inbound[];
-  outbounds?: Outbound[];
+  inbounds?: Inbound[] | null;
+  outbounds?: Outbound[] | null;
 }
 
 export interface AddingPartType {
+  image?: File | null;
+  type: string;
   partNumber: string;
   specs: string;
   category: string;
@@ -39,41 +43,20 @@ interface ApiErrorResponse {
 }
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000/api";
 
-export async function fetchPartData(token: string): Promise<PartResponse> {
-  try {
-    const response = await axios.post(
-      `${API_URL}/auth/token-verification`,
-      {},
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-    const data = response.data;
-    // console.log("Part data: ", data);
-    return data;
-  } catch (error) {
-    console.log(error);
-    return {
-      success: false,
-      message: "Unexpected error occured, try again later.",
-    };
-  }
-}
-
 export async function fetchParts(): Promise<FetchingPartsResponse> {
   try {
-    const response = await axios.get(`${API_URL}/parts/fetchParts`, {
+    const response = await axios.get(`${API_URL}/parts/fetch-parts`, {
       headers: {
         "Content-Type": "application/json",
       },
     });
 
-    const data = response.data;
-    // console.log("Parts Fetched: ", data);
-    return data;
+    if (response.status === 200) {
+      // console.log("Parts Fetched: ", data);
+      return response.data;
+    } else {
+      return response.data;
+    }
   } catch (error) {
     console.log(error);
     return {
@@ -87,20 +70,21 @@ export async function createPart(
   formData: AddingPartType
 ): Promise<PartResponse> {
   try {
-    const response = await axios.post(`${API_URL}/parts/createPart`, formData, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    const response = await axios.post(
+      `${API_URL}/parts/create-part`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
     // console.log("creating user");
     if (response.status === 201) {
       return response.data;
+    } else {
+      return response.data;
     }
-
-    return {
-      success: false,
-      message: "Unexpected response status",
-    };
   } catch (error) {
     // Type guard for Axios errors
     if (axios.isAxiosError(error)) {
@@ -140,27 +124,19 @@ export async function createPart(
 
 export async function editPart(
   id: number,
-  formData: AddingPartType
+  formData: FormData | AddingPartType
 ): Promise<PartResponse> {
   try {
     const response = await axios.put(
-      `${API_URL}/parts/updatePart/${id}`,
-      formData,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
+      `${API_URL}/parts/update-part/${id}`,
+      formData
     );
     // console.log("editing user details");
     if (response.status === 200) {
       return response.data;
+    } else {
+      return response.data;
     }
-
-    return {
-      success: false,
-      message: "Unexpected response status",
-    };
   } catch (error) {
     // Type guard for Axios errors
     if (axios.isAxiosError(error)) {
@@ -200,20 +176,16 @@ export async function editPart(
 
 export async function removePart(id: number): Promise<PartResponse> {
   try {
-    const response = await axios.delete(`${API_URL}/parts/deletePart/${id}`, {
+    const response = await axios.delete(`${API_URL}/parts/delete-part/${id}`, {
       headers: {
         "Content-Type": "application/json",
       },
     });
-    console.log("deleting user details");
     if (response.status === 200) {
       return response.data;
+    } else {
+      return response.data;
     }
-
-    return {
-      success: false,
-      message: "Unexpected response status",
-    };
   } catch (error) {
     // Type guard for Axios errors
     if (axios.isAxiosError(error)) {

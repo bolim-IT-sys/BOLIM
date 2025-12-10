@@ -11,7 +11,7 @@ const login = async (req, res) => {
 
     // Validate input
     if (!username || !password) {
-      return res.status(400).json({
+      return res.json({
         success: false,
         message: "Username and password are required",
       });
@@ -20,7 +20,7 @@ const login = async (req, res) => {
     // Find user
     const user = await userService.find(username);
     if (!user) {
-      return res.status(401).json({
+      return res.json({
         success: false,
         message: "Invalid credentials",
       });
@@ -34,7 +34,7 @@ const login = async (req, res) => {
     // Check if passwordHash exists
     if (!user.password) {
       console.error("User found but passwordHash is missing!");
-      return res.status(500).json({
+      return res.json({
         success: false,
         message: "Account configuration error",
       });
@@ -43,7 +43,7 @@ const login = async (req, res) => {
     // Verify password
     const isValidPassword = await bcrypt.compare(password, user.password);
     if (!isValidPassword) {
-      return res.status(401).json({
+      return res.json({
         success: false,
         message: "Invalid credentials",
       });
@@ -67,7 +67,7 @@ const login = async (req, res) => {
     });
   } catch (error) {
     console.error("Login error:", error);
-    return res.status(500).json({
+    return res.json({
       success: false,
       message: "Internal server error",
     });
@@ -82,7 +82,7 @@ const authenticateToken = async (req, res) => {
     // console.log("Token: ", token);
 
     if (!token) {
-      return res.status(401).json({ message: "Access token required" });
+      return res.json({ message: "Access token required" });
     }
 
     // VERIFICATION AND DECODING OF TOKEN
@@ -96,7 +96,7 @@ const authenticateToken = async (req, res) => {
     const user = await userService.findById(userId);
 
     if (!user) {
-      return res.status(404).json({ error: "User not found" });
+      return res.json({ error: "User not found" });
     }
 
     const { password, ...userWithoutPassword } = user;
@@ -113,13 +113,13 @@ const authenticateToken = async (req, res) => {
     });
   } catch (error) {
     if (error.name === "JsonWebTokenError") {
-      return res.status(401).json({ error: "Invalid Token" });
+      return res.json({ error: "Invalid Token" });
     }
     if (error.name === "TokenExpiredError") {
-      return res.status(401).json({ error: "Token Expired" });
+      return res.json({ error: "Token Expired" });
     }
     console.error("Token Verification Error: ", error);
-    res.status(500).json({ error: "Server Error" });
+    res.json({ error: "Server Error" });
   }
 };
 

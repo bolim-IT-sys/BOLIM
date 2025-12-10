@@ -5,13 +5,21 @@ import { useNavigate } from "react-router-dom";
 import { Dropdown, DropdownItem } from "./Dropdown";
 import DangerButton from "./button/DangerButton";
 import logo from "/bolimlogo.png";
+import type { Dispatch, SetStateAction } from "react";
 
 interface NavbarProps {
   user: User;
   fetchAllUsers?: () => void;
+  showSideBar: boolean;
+  setShowSideBar: Dispatch<SetStateAction<boolean>>;
 }
 
-export default function NavBar({ user, fetchAllUsers }: NavbarProps) {
+export default function NavBar({
+  user,
+  fetchAllUsers,
+  showSideBar,
+  setShowSideBar,
+}: NavbarProps) {
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -22,7 +30,7 @@ export default function NavBar({ user, fetchAllUsers }: NavbarProps) {
   return (
     <>
       <div
-        className="bg-neutral-50 absolute py-3 top-0 shadow-md"
+        className="bg-neutral-50 absolute py-3 top-0 shadow-md z-50"
         style={{ width: "100%" }}
       >
         <div className="flex justify-between items-center mx-3">
@@ -31,6 +39,14 @@ export default function NavBar({ user, fetchAllUsers }: NavbarProps) {
               <img className="w-full" src={logo} alt="navLogo" />
             </div>
             <h4 className="">BOLIM(SPARE PARTS)</h4>
+            <div
+              className={`size-9 ${showSideBar ? "bg-sky-600 hover:bg-sky-600 text-neutral-50" : "hover:bg-neutral-200"}  rounded transition duration-200 flex justify-center items-center`}
+              onClick={() => setShowSideBar((prev) => !prev)}
+            >
+              <h3>
+                <i className="bx mt-2 bx-menu"></i>
+              </h3>
+            </div>
           </div>
           <div>
             <Dropdown

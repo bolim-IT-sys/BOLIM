@@ -2,10 +2,11 @@ import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
 import { type Part } from "../../services/Part.Service";
 import { AddingPart } from "../../components/modals/Parts/AddingPart";
 import { useOutletContext } from "react-router-dom";
-import { PartsTable } from "./Components/PartsTable";
-import { PartsPagination } from "./Components/PartsPagination";
+import { DataTable } from "./Components/DataTable";
+import { DataPagination } from "./Components/DataPagination";
 import InputField from "../../components/InputField";
 import { DownloadPartData } from "../../components/downloadButton/DownloadPartData";
+import { DataTableLoader } from "../../components/loaders/DataTableLoader";
 
 interface ContextType {
   parts: Part[];
@@ -17,7 +18,7 @@ interface ContextType {
 export default function Pins() {
   const { parts, setParts, fetchAllParts, isFetching } =
     useOutletContext<ContextType>();
-  const [currentParts, setCurrentParts] = useState<Part[]>([]);
+  const [currentData, setCurrentData] = useState<Part[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [itemsPerPage, setItemsPerPage] = useState<number>(20);
 
@@ -54,7 +55,7 @@ export default function Pins() {
 
   useEffect(() => {
     setItemsPerPage(50);
-    setCurrentParts(displayParts.slice(indexOfFirstItem, indexOfLastItem));
+    setCurrentData(displayParts.slice(indexOfFirstItem, indexOfLastItem));
 
     setTotalPages(Math.ceil(parts.length / itemsPerPage));
   }, [
@@ -78,21 +79,26 @@ export default function Pins() {
           />
         </div>
         <div className="w-3/10 flex gap-2">
-          <AddingPart fetchAllParts={fetchAllParts} />
+          <AddingPart fetchAllParts={fetchAllParts} type="pin" />
           <DownloadPartData parts={displayParts} />
         </div>
       </div>
-      <div className="h-87/100 overflow-auto border-y border-gray-300">
-        <PartsTable
-          parts={displayParts}
-          setParts={setParts}
+      {/* <div className="h-87/100 w-full overflow-hidden border border-gray-300 relative"></div> */}
+      <div
+        className={`h-87/100 w-10/10 ${isFetching ? "overflow-hidden" : "overflow-auto"} border border-gray-300 relative`}
+      >
+        {isFetching ? <DataTableLoader /> : null}
+
+        <DataTable
+          data={displayParts}
+          setData={setParts}
+          type={"pin"}
           fetchAllParts={fetchAllParts}
-          isFetching={isFetching}
-          currentParts={currentParts}
+          currentData={currentData}
         />
       </div>
-      <PartsPagination
-        parts={displayParts}
+      <DataPagination
+        data={displayParts}
         indexOfFirstItem={indexOfFirstItem}
         indexOfLastItem={indexOfLastItem}
         currentPage={currentPage}

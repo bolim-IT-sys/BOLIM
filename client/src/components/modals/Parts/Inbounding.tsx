@@ -4,15 +4,18 @@ import InputField from "../../InputField";
 import { Modal } from "../../Modal";
 import type { Part } from "../../../services/Part.Service";
 import {
+  addingItem,
   inboundPart,
+  type addItemType,
   type InboundOutboundType,
 } from "../../../services/InboundOutbound.Service";
-import type { Dispatch, SetStateAction } from "react";
+import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
 
 interface Props {
-  part: Part;
+  item: Part;
+  type: string;
   fetchAllParts: () => void;
-  setParts: Dispatch<SetStateAction<Part[]>>;
+  setData: Dispatch<SetStateAction<Part[]>>;
   formData: InboundOutboundType;
   setFormData: Dispatch<SetStateAction<InboundOutboundType>>;
   fetchTransactions: () => void;
@@ -25,9 +28,10 @@ interface Props {
 }
 
 export const Inbounding = ({
-  part,
+  item,
+  type,
   fetchAllParts,
-  setParts,
+  setData,
   formData,
   setFormData,
   fetchTransactions,
@@ -38,9 +42,32 @@ export const Inbounding = ({
   setModalShow,
   handleChange,
 }: Props) => {
+  const [itemDetails, setItemDetails] = useState<addItemType>({
+    stockId: item.id!,
+    serialNumber: `${item.partNumber} ${item.inbounds!.length + 1}`,
+    PRDate: "",
+    receivedDate: formData.inboundDate!,
+  });
+
+  useEffect(() => {
+    setItemDetails((prev) => ({
+      ...prev,
+      serialNumber: `${item.partNumber} ${item.inbounds!.length + 1}`,
+      receivedDate: formData.inboundDate!,
+      PRDate: prev.PRDate,
+    }));
+  }, [formData, item]);
+
   const handleInbound = async () => {
     setInBounding(true);
     try {
+      if (type === "it") {
+        const addItem = await addingItem(itemDetails);
+
+        if (!addItem.success) {
+          return alert(addItem.message);
+        }
+      }
       const result = await inboundPart(formData);
       // console.log("deploying stock item.");
 
@@ -53,7 +80,7 @@ export const Inbounding = ({
             setInboundShow(false);
             setModalShow(true);
             // UPDATING THE QUANTITY OF THE INBOUNDED PART
-            setParts((prevParts) =>
+            setData((prevParts) =>
               prevParts.map((p) =>
                 p.id === formData.partId
                   ? { ...p, quantity: p.quantity + Number(formData.quantity) }
@@ -63,9 +90,10 @@ export const Inbounding = ({
             // RESETTING FORMDATA AFTER INBOUND
             setFormData((prev) => ({
               ...prev,
-              partId: part.id!,
-              currentQuantity: part.quantity + Number(formData.quantity),
-              quantity: "",
+              partId: item.id!,
+              currentQuantity: item.quantity + Number(formData.quantity),
+              serialNumber: `${item.partNumber} ${item.inbounds!.length + 1}`,
+              quantity: "1",
             }));
           },
           import.meta.env.VITE_TIME_OUT
@@ -80,7 +108,7 @@ export const Inbounding = ({
         );
       }
     } catch (error) {
-      console.error("Unexpecter error occured: ", error);
+      alert(`Unexpecter error occured: ${error}`);
     } finally {
       setTimeout(
         () => {
@@ -103,7 +131,15 @@ export const Inbounding = ({
           setInboundShow(false);
           setModalShow(true);
         }}
-        title={`INBOUND PART (${part.partNumber})`}
+        title={`INBOUND ${
+          type === "pin"
+            ? "PIN"
+            : type === "it"
+              ? "ITEM"
+              : type === "material"
+                ? "MATERIAL"
+                : "INVALID TYPE"
+        } (${item.partNumber})`}
         size="md"
         footer={
           <>
@@ -125,20 +161,66 @@ export const Inbounding = ({
         }
       >
         <div className="text-start">
+          {type === "it" ? (
+            <>
+              <div className="mb-1">
+                <label
+                  htmlFor="SERIAL NUMBER"
+                  className="block font-medium text-gray-700"
+                >
+                  <p>SERIAL NUMBER</p>
+                </label>
+                <InputField
+                  label="SERIAL NUMBER"
+                  type="text"
+                  value={itemDetails.serialNumber!}
+                  onChange={(value: string) =>
+                    setItemDetails((prev) => ({ ...prev, serialNumber: value }))
+                  }
+                  autoComplete={`serialNumber`}
+                />
+              </div>
+              <div className="mb-1">
+                <label
+                  htmlFor="PR DATE"
+                  className="block font-medium text-gray-700"
+                >
+                  <p>PR DATE</p>
+                </label>
+                <InputField
+                  label="PR DATE"
+                  type="text"
+                  value={itemDetails.PRDate!}
+                  onChange={(value: string) =>
+                    setItemDetails((prev) => ({ ...prev, PRDate: value }))
+                  }
+                  autoComplete={`PRDate`}
+                />
+              </div>
+            </>
+          ) : (
+            <div className="mb-1">
+              <label
+                htmlFor="QUANTITY"
+                className="block font-medium text-gray-700"
+              >
+                <p>QUANTITY</p>
+              </label>
+              <InputField
+                label="QUANTITY"
+                type="number"
+                value={formData.quantity}
+                onChange={(value: string) => handleChange("quantity", value)}
+                autoComplete={`quantity`}
+              />
+            </div>
+          )}
+
           <div className="mb-1">
-            <label className="block font-medium text-gray-700">
-              <p>QUANTITY</p>
-            </label>
-            <InputField
-              label="QUANTITY"
-              type="number"
-              value={formData.quantity}
-              onChange={(value: string) => handleChange("quantity", value)}
-              autoComplete={`quantity`}
-            />
-          </div>
-          <div className="mb-1">
-            <label className="block font-medium text-gray-700">
+            <label
+              htmlFor="INBOUND DATE"
+              className="block font-medium text-gray-700"
+            >
               <p>INBOUND DATE</p>
             </label>
             <InputField
