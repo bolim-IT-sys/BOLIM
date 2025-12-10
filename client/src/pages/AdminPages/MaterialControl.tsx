@@ -92,7 +92,6 @@ export default function MaterialControl() {
           setData={setMaterials}
           type={"material"}
           fetchAllParts={fetchAllParts}
-          isFetching={isFetching}
           currentData={currentData}
         />
       </div>
