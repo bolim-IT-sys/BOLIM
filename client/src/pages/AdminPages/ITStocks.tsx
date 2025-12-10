@@ -92,7 +92,6 @@ export default function ITStocks() {
           setData={setITStocks}
           type={"it"}
           fetchAllParts={fetchAllParts}
-          isFetching={isFetching}
           currentData={currentData}
         />
       </div>

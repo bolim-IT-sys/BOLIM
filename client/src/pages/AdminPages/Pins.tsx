@@ -85,7 +85,7 @@ export default function Pins() {
       </div>
       {/* <div className="h-87/100 w-full overflow-hidden border border-gray-300 relative"></div> */}
       <div
-        className={`h-87/100 w-full ${isFetching ? "overflow-hidden" : "overflow-auto"} border border-gray-300 relative`}
+        className={`h-87/100 w-10/10 ${isFetching ? "overflow-hidden" : "overflow-auto"} border border-gray-300 relative`}
       >
         {isFetching ? <DataTableLoader /> : null}
 
@@ -94,7 +94,6 @@ export default function Pins() {
           setData={setParts}
           type={"pin"}
           fetchAllParts={fetchAllParts}
-          isFetching={isFetching}
           currentData={currentData}
         />
       </div>

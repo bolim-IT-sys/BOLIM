@@ -28,7 +28,6 @@ type Props = {
   setData: Dispatch<SetStateAction<Part[]>>;
   type: string;
   fetchAllParts: () => void;
-  isFetching: boolean;
   currentData: Part[];
 };
 
@@ -174,8 +173,8 @@ export const DataTable = ({
   };
 
   return (
-    <>
-      <table className="w-600">
+    <div className="w-150">
+      <table className={`h-full w-600`}>
         <thead
           className="h-15 bg-sky-600 sticky text-neutral-50"
           style={{ zIndex: 5, top: "-.1px" }}
@@ -407,6 +406,6 @@ export const DataTable = ({
           )}
         </tbody>
       </table>
-    </>
+    </div>
   );
 };

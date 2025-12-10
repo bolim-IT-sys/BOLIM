@@ -3,6 +3,8 @@
 @import "tailwindcss";
 
 :root {
+  width: 100dvw !important;
+
   --primary_color: #ffff81;
   --secondary_color: #dbe8ec;
   /* --secondary_color: #f3f3f3; */

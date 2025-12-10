@@ -173,16 +173,18 @@ export default function Mainlayout() {
   }, []);
 
   return (
-    <div className="flex justify-center relative" style={{ height: "100dvh" }}>
+    <div className="relative" style={{ height: "100dvh" }}>
       <NavBar
         user={user!}
         showSideBar={showSideBar}
         setShowSideBar={setShowSideBar}
       />
-      <div className="flex justify-start w-dvw pt-15">
-        <SideNavBar showSideBar={showSideBar} />
-        <div className={`h-full ${showSideBar ? " w-[86dvw]" : "w-[96dvw]"} `}>
-          <div className=" bg-white h-95/100 my-7 mx-5 p-5 rounded-sm">
+      <div className="flex justify-start h-dvh w-dvw pt-15 overflow-hidden">
+        <div>
+          <SideNavBar showSideBar={showSideBar} />
+        </div>
+        <div className={`w-10/10`}>
+          <div className="bg-white h-95/100 my-7 mx-5 p-5 rounded-sm">
             <Outlet
               context={{
                 user,
