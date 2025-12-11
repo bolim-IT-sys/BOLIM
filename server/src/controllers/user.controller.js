@@ -1,16 +1,26 @@
 const userService = require("../services/user.service");
-const jwt = require("jsonwebtoken");
-const bcrypt = require("bcrypt");
-
-const JWT_SECRET = process.env.JWT_SECRET;
-const JWT_EXPIRES_IN = "24h";
 
 const getAllUsers = async (req, res, next) => {
   try {
     const users = await userService.getAllUsers();
-    res.json({ success: true, data: users });
+    if (!users) {
+      console.log("No users found.");
+      res.json({
+        success: false,
+        message: "No users found.",
+      });
+    } else {
+      console.log("users found: ", users);
+      res.status(200).json({ success: true, data: users });
+    }
   } catch (err) {
-    next(err);
+    // You can add specific error handling here if needed
+    console.log("Error fetching users.");
+
+    res.json({
+      success: false,
+      message: err.message || "Fetching users failed.",
+    });
   }
 };
 
@@ -19,7 +29,7 @@ const createUser = async (req, res) => {
     // Optional: Validate request body first
     if (!req.body.username || !req.body.password) {
       return res.json({
-        message: "Username and password are required",
+        message: "Username and password are required.",
       });
     }
 
@@ -56,13 +66,6 @@ const updateUser = async (req, res) => {
   try {
     const userId = req.params.id;
 
-    // Optional: Validate request body first
-    if (!req.body.username) {
-      return res.json({
-        message: "Username and password are required",
-      });
-    }
-
     // Check if user exists
     const existingUser = await userService.findById(userId);
 
@@ -74,7 +77,7 @@ const updateUser = async (req, res) => {
     }
 
     //checking if the username is already taken
-    if (req.body.username) {
+    if (req.body.username && userId != existingUser.id) {
       const userWithSameUsername = await userService.findUserByUsername(
         req.body.username
       );

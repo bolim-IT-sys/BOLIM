@@ -1,5 +1,4 @@
-import { AddingUser } from "./modals/Users/AddingUser";
-import type { User } from "../services/userService";
+import type { User } from "../services/User.Service";
 import { logout } from "../services/authService";
 import { useNavigate } from "react-router-dom";
 import { Dropdown, DropdownItem } from "./Dropdown";
@@ -16,7 +15,6 @@ interface NavbarProps {
 
 export default function NavBar({
   user,
-  fetchAllUsers,
   showSideBar,
   setShowSideBar,
 }: NavbarProps) {
@@ -57,9 +55,6 @@ export default function NavBar({
                 </h4>
               }
             >
-              <DropdownItem>
-                <AddingUser fetchAllUsers={fetchAllUsers!} />
-              </DropdownItem>
               <DropdownItem>
                 <DangerButton text="Logout" onClick={handleLogout} />
               </DropdownItem>

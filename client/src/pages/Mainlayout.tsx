@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { fetchUserData, type User } from "../services/userService";
+import { fetchUserData, type User } from "../services/User.Service";
 import { useNavigate, Outlet, useSearchParams } from "react-router-dom";
 import NavBar from "../components/NavBar";
 import SideNavBar from "../components/SideNavBar";

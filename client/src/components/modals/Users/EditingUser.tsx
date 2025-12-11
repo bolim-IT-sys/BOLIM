@@ -1,20 +1,27 @@
 import { useState } from "react";
-import { type UserAuth } from "../../../services/authService";
 import InputField from "../../InputField";
 import { Modal } from "../../Modal";
-import { editUser, type User } from "../../../services/userService";
-import PrimaryButton from "../../button/PrimaryButton";
+import SuccessButton from "../../button/SuccessButton";
+import SecondaryButton from "../../button/SecondaryButton";
+import {
+  editUser,
+  type CreateUserType,
+  type User,
+} from "../../../services/User.Service";
 
 interface EditingProps {
-  fetchAllUsers: () => void;
   user: User;
+  fetchAllUsers: () => void;
 }
 
-export const EditingUser = ({ fetchAllUsers, user }: EditingProps) => {
+export const EditingUser = ({ user, fetchAllUsers }: EditingProps) => {
   const [modalShow, setModalShow] = useState<boolean>(false);
-  const [formData, setFormData] = useState<UserAuth>({
+  const [formData, setFormData] = useState<CreateUserType>({
     username: user.username,
     password: "",
+    pins: user.pins,
+    it_stocks: user.it_stocks,
+    materials: user.materials,
   });
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const handleChange = (field: string, value: string) => {
@@ -25,16 +32,24 @@ export const EditingUser = ({ fetchAllUsers, user }: EditingProps) => {
   const handleSubmit = async () => {
     setIsLoading(true);
     try {
+      if (!id) return;
+
       const result = await editUser(id, formData);
-      // console.log("creating user");
+      // console.log("creating part");
 
       if (result.success) {
         setTimeout(
           () => {
-            setIsLoading(false);
             alert(result.message);
             fetchAllUsers();
             setModalShow(false);
+            setFormData({
+              username: user.username,
+              password: "",
+              pins: user.pins,
+              it_stocks: user.it_stocks,
+              materials: user.materials,
+            });
           },
           import.meta.env.VITE_TIME_OUT
         );
@@ -42,7 +57,6 @@ export const EditingUser = ({ fetchAllUsers, user }: EditingProps) => {
       } else {
         setTimeout(
           () => {
-            setIsLoading(false);
             alert(`${result.message}`);
           },
           import.meta.env.VITE_TIME_OUT
@@ -50,65 +64,158 @@ export const EditingUser = ({ fetchAllUsers, user }: EditingProps) => {
       }
     } catch (error) {
       console.error("Unexpecter error occured: ", error);
+    } finally {
+      setTimeout(
+        () => {
+          setIsLoading(false);
+        },
+        import.meta.env.VITE_TIME_OUT
+      );
     }
+  };
+
+  const NoChanges = () => {
+    return (
+      user.username === formData.username &&
+      user.pins === formData.pins &&
+      user.it_stocks === formData.it_stocks &&
+      user.materials === formData.materials
+    );
   };
 
   return (
     <>
-      <PrimaryButton text={"Edit"} onClick={() => setModalShow(true)} />
+      <SuccessButton
+        text={
+          <>
+            <i className="bx bxs-edit"></i> EDIT
+          </>
+        }
+        onClick={() => setModalShow(true)}
+      />
 
       <Modal
         isOpen={modalShow}
         onClose={() => setModalShow(false)}
         size="md"
-        title={"Edit user details"}
+        title={`EDIT USER DETAILS `}
         footer={
           <>
-            <button
-              className={` transition duration-200 ease-in-out ${isLoading ? "cursor-progress" : "bg-emerald-500 hover:bg-emerald-600 cursor-pointer"} disabled:cursor-no-drop disabled:bg-emerald-400 text-neutral-50 w-full rounded py-1`}
-              type="submit"
+            <SuccessButton
+              text="SAVE"
+              loadingText="SAVING CHANGES"
               onClick={handleSubmit}
-              disabled={isLoading || user.username === formData.username}
-            >
-              <p className="flex justify-center items-center gap-1">
-                {isLoading ? (
-                  <>
-                    <i className="bx bx-loader-dots bx-spin" />
-                    Saving
-                  </>
-                ) : (
-                  <>Save Changes</>
-                )}
-              </p>
-            </button>
-            <button
-              className="bg-neutral-400 hover:bg-neutral-500 transition duration-200 ease-in-out cursor-pointer text-neutral-50 w-full rounded py-1 "
-              onClick={() => setModalShow(false)}
-            >
-              <p>Close</p>
-            </button>
+              isLoading={isLoading}
+              disabled={isLoading || NoChanges()}
+            />
+            <SecondaryButton text="CLOSE" onClick={() => setModalShow(false)} />
           </>
         }
       >
-        <div className="mb-3">
-          <InputField
-            label="Username"
-            type="text"
-            value={formData.username}
-            required={true}
-            onChange={(value: string) => handleChange("username", value)}
-            autoComplete={`username`}
-          />
-        </div>
-        <div className="mb-3">
-          <InputField
-            label="Password"
-            type="password"
-            value={formData.password}
-            required={true}
-            onChange={(value: string) => handleChange("password", value)}
-            autoComplete={`username`}
-          />
+        <div className="text-start">
+          <div className="mb-1">
+            <label
+              htmlFor="USERNAME"
+              className="block font-medium text-gray-700"
+            >
+              <p>USERNAME</p>
+            </label>
+            <InputField
+              label="USERNAME"
+              type="text"
+              value={formData.username}
+              required={true}
+              onChange={(value: string) => handleChange("username", value)}
+              autoComplete={`new-username`}
+            />
+          </div>
+          <div className="mb-1">
+            <label
+              htmlFor="PASSWORD"
+              className="block font-medium text-gray-700"
+            >
+              <p>PASSWORD</p>
+            </label>
+            <InputField
+              label="PASSWORD"
+              type="password"
+              value={formData.password}
+              required={true}
+              onChange={(value: string) => handleChange("password", value)}
+              autoComplete={`new-password`}
+            />
+          </div>
+          <div className="flex justify-between">
+            <div className="mb-1">
+              <label
+                htmlFor="pin_admin"
+                className="block font-medium text-gray-700"
+              >
+                <p>PINS:</p>
+              </label>
+              <select
+                className="w-40 no-arrow rounded-lg border border-neutral-300 hover:bg-neutral-200 transition duration-350 cursor-pointer px-2 py-2 focus:bg-neutral-50  focus:ring-1 focus:ring-neutral-300 focus:outline-none"
+                id="pin_admin"
+                name="pin_admin"
+                value={formData.pins}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    pins: Number(e.target.value),
+                  }))
+                }
+              >
+                <option value={0}>NOT ADMIN</option>
+                <option value={1}>ADMIN</option>
+              </select>
+            </div>
+            <div className="mb-1">
+              <label
+                htmlFor="it_admin"
+                className="block font-medium text-gray-700"
+              >
+                <p>IT STOCKS:</p>
+              </label>
+              <select
+                className="w-40 no-arrow rounded-lg border border-neutral-300 hover:bg-neutral-200 transition duration-350 cursor-pointer px-2 py-2 focus:bg-neutral-50  focus:ring-1 focus:ring-neutral-300 focus:outline-none"
+                id="it_admin"
+                name="it_admin"
+                value={formData.it_stocks}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    it_stocks: Number(e.target.value),
+                  }))
+                }
+              >
+                <option value={0}>NOT ADMIN</option>
+                <option value={1}>ADMIN</option>
+              </select>
+            </div>
+            <div className="mb-1">
+              <label
+                htmlFor="material_admin"
+                className="block font-medium text-gray-700"
+              >
+                <p>MATERIALS:</p>
+              </label>
+              <select
+                className="w-40 no-arrow rounded-lg border border-neutral-300 hover:bg-neutral-200 transition duration-350 cursor-pointer px-2 py-2 focus:bg-neutral-50  focus:ring-1 focus:ring-neutral-300 focus:outline-none"
+                id="material_admin"
+                name="material_admin"
+                value={formData.materials}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    materials: Number(e.target.value),
+                  }))
+                }
+              >
+                <option value={0}>NOT ADMIN</option>
+                <option value={1}>ADMIN</option>
+              </select>
+            </div>
+          </div>
         </div>
       </Modal>
     </>

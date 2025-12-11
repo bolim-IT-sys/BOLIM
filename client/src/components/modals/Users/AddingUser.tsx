@@ -1,11 +1,13 @@
 import { useState } from "react";
-import { type UserAuth } from "../../../services/authService";
-import { createUser } from "../../../services/userService";
+import {
+  createUser,
+  type CreateUserType,
+} from "../../../services/User.Service";
 import InputField from "../../InputField";
 import { Modal } from "../../Modal";
-import LightButton from "../../button/LightButton";
 import SuccessButton from "../../button/SuccessButton";
 import SecondaryButton from "../../button/SecondaryButton";
+import PrimaryButton from "../../button/PrimaryButton";
 
 interface AddingProps {
   fetchAllUsers: () => void;
@@ -13,9 +15,12 @@ interface AddingProps {
 
 export const AddingUser = ({ fetchAllUsers }: AddingProps) => {
   const [modalShow, setModalShow] = useState<boolean>(false);
-  const [formData, setFormData] = useState<UserAuth>({
+  const [formData, setFormData] = useState<CreateUserType>({
     username: "",
     password: "",
+    pins: 0,
+    it_stocks: 0,
+    materials: 0,
   });
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const handleChange = (field: string, value: string) => {
@@ -43,7 +48,7 @@ export const AddingUser = ({ fetchAllUsers }: AddingProps) => {
         setTimeout(
           () => {
             setIsLoading(false);
-            alert(`Error: ${result.message}`);
+            alert(`${result.message}`);
           },
           import.meta.env.VITE_TIME_OUT
         );
@@ -55,7 +60,7 @@ export const AddingUser = ({ fetchAllUsers }: AddingProps) => {
 
   return (
     <>
-      <LightButton text="Add user" onClick={() => setModalShow(true)} />
+      <PrimaryButton text="ADD USER" onClick={() => setModalShow(true)} />
 
       <Modal
         isOpen={modalShow}
@@ -69,7 +74,11 @@ export const AddingUser = ({ fetchAllUsers }: AddingProps) => {
               loadingText="ADDING USER"
               onClick={handleSubmit}
               isLoading={isLoading}
-              disabled={isLoading}
+              disabled={
+                formData.username === "" ||
+                formData.password === "" ||
+                isLoading
+              }
             />
             <SecondaryButton text="CLOSE" onClick={() => setModalShow(false)} />
           </>
@@ -94,6 +103,77 @@ export const AddingUser = ({ fetchAllUsers }: AddingProps) => {
             onChange={(value: string) => handleChange("password", value)}
             autoComplete={`username`}
           />
+        </div>
+        <div className="flex justify-between">
+          <div className="mb-1">
+            <label
+              htmlFor="pin_admin"
+              className="block font-medium text-gray-700"
+            >
+              <p>PINS:</p>
+            </label>
+            <select
+              className="w-40 no-arrow rounded-lg border border-neutral-300 hover:bg-neutral-200 transition duration-350 cursor-pointer px-2 py-2 focus:bg-neutral-50  focus:ring-1 focus:ring-neutral-300 focus:outline-none"
+              id="pin_admin"
+              name="pin_admin"
+              value={formData.pins}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  pins: Number(e.target.value),
+                }))
+              }
+            >
+              <option value={0}>NOT ADMIN</option>
+              <option value={1}>ADMIN</option>
+            </select>
+          </div>
+          <div className="mb-1">
+            <label
+              htmlFor="it_admin"
+              className="block font-medium text-gray-700"
+            >
+              <p>IT STOCKS:</p>
+            </label>
+            <select
+              className="w-40 no-arrow rounded-lg border border-neutral-300 hover:bg-neutral-200 transition duration-350 cursor-pointer px-2 py-2 focus:bg-neutral-50  focus:ring-1 focus:ring-neutral-300 focus:outline-none"
+              id="it_admin"
+              name="it_admin"
+              value={formData.it_stocks}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  it_stocks: Number(e.target.value),
+                }))
+              }
+            >
+              <option value={0}>NOT ADMIN</option>
+              <option value={1}>ADMIN</option>
+            </select>
+          </div>
+          <div className="mb-1">
+            <label
+              htmlFor="material_admin"
+              className="block font-medium text-gray-700"
+            >
+              <p>MATERIALS:</p>
+            </label>
+            <select
+              className="w-40 no-arrow rounded-lg border border-neutral-300 hover:bg-neutral-200 transition duration-350 cursor-pointer px-2 py-2 focus:bg-neutral-50  focus:ring-1 focus:ring-neutral-300 focus:outline-none"
+              id="material_admin"
+              name="material_admin"
+              value={formData.materials}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  materials: Number(e.target.value),
+                }))
+              }
+            >
+              <option value={0}>NOT ADMIN</option>
+              <option value={1}>ADMIN</option>
+            </select>
+          </div>
         </div>
       </Modal>
     </>

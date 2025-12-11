@@ -8,6 +8,8 @@ import {
 import Mainlayout from "./pages/Mainlayout";
 
 import LoginPage from "./pages/LoginPage";
+
+import Dashboard from "./pages/AdminPages/Dashboard";
 import Pins from "./pages/AdminPages/Pins";
 import ITStocks from "./pages/AdminPages/ITStocks";
 import MaterialControl from "./pages/AdminPages/MaterialControl";
@@ -29,6 +31,8 @@ export default function App() {
             path="/stocks/meterial-control"
             element={<MaterialControl />}
           />
+
+          <Route path="/users" element={<Users />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/login" />} />

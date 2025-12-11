@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "../services/authService";
 import InputField from "../components/InputField";
-import { fetchUserData } from "../services/userService";
+import { fetchUserData } from "../services/User.Service";
 import PrimaryButton from "../components/button/PrimaryButton";
 
 export default function LoginPage() {

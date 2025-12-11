@@ -1,11 +1,20 @@
 import axios, { AxiosError } from "axios";
-import type { UserAuth } from "./authService";
 
 export interface User {
   id: number;
   username: string;
   password?: string | null | BigInteger;
-  isAdmin?: number;
+  pins: number;
+  it_stocks: number;
+  materials: number;
+}
+
+export interface CreateUserType {
+  username: string;
+  password: string;
+  pins: number;
+  it_stocks: number;
+  materials: number;
 }
 
 export interface UserResponse {
@@ -52,15 +61,18 @@ export async function fetchUserData(token: string): Promise<UserResponse> {
 
 export async function fetchUsers(): Promise<FetchingUsersResponse> {
   try {
-    const response = await axios.get(`${API_URL}/users/fetchUsers`, {
+    const response = await axios.get(`${API_URL}/users/fetch-users`, {
       headers: {
         "Content-Type": "application/json",
       },
     });
+    // console.log("Users Fetched: ", response.data);
 
-    const data = response.data;
-    // console.log("Users Fetched: ", data);
-    return data;
+    if (response.status === 200) {
+      return response.data;
+    } else {
+      return response.data;
+    }
   } catch (error) {
     console.log(error);
     return {
@@ -70,26 +82,25 @@ export async function fetchUsers(): Promise<FetchingUsersResponse> {
   }
 }
 
-export async function createUser(formData: UserAuth): Promise<UserResponse> {
+export async function createUser(
+  formData: CreateUserType
+): Promise<UserResponse> {
   try {
-    const response = await axios.post(`${API_URL}/users/createUser`, formData, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    const response = await axios.post(
+      `${API_URL}/users/create-user`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
     // console.log("creating user");
     if (response.status === 201) {
-      return {
-        success: true,
-        message: "User created successfully",
-        data: response.data.data, // Access the nested data from your API response
-      };
+      return response.data;
+    } else {
+      return response.data;
     }
-
-    return {
-      success: false,
-      message: "Unexpected response status",
-    };
   } catch (error) {
     // Type guard for Axios errors
     if (axios.isAxiosError(error)) {
@@ -129,11 +140,11 @@ export async function createUser(formData: UserAuth): Promise<UserResponse> {
 
 export async function editUser(
   id: number,
-  formData: UserAuth
+  formData: CreateUserType
 ): Promise<UserResponse> {
   try {
     const response = await axios.put(
-      `${API_URL}/users/updateUser/${id}`,
+      `${API_URL}/users/update-user/${id}`,
       formData,
       {
         headers: {
@@ -143,17 +154,10 @@ export async function editUser(
     );
     // console.log("editing user details");
     if (response.status === 200) {
-      return {
-        success: true,
-        message: "User updated successfully",
-        data: response.data.data, // Access the nested data from your API response
-      };
+      return response.data;
+    } else {
+      return response.data;
     }
-
-    return {
-      success: false,
-      message: "Unexpected response status",
-    };
   } catch (error) {
     // Type guard for Axios errors
     if (axios.isAxiosError(error)) {
@@ -193,7 +197,7 @@ export async function editUser(
 
 export async function removeUser(id: number): Promise<UserResponse> {
   try {
-    const response = await axios.delete(`${API_URL}/users/deleteUser/${id}`, {
+    const response = await axios.delete(`${API_URL}/users/delete-user/${id}`, {
       headers: {
         "Content-Type": "application/json",
       },

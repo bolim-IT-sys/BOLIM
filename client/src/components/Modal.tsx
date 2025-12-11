@@ -77,7 +77,11 @@ const Modal = ({
             </div>
             {/* MODAL BODY */}
             <div className="pt-3 mb-3">{children}</div>
-            {footer && <div className="flex flex-col gap-2">{footer}</div>}
+            {footer && (
+              <div className="flex flex-col gap-2 border-t border-neutral-300 pt-1">
+                {footer}
+              </div>
+            )}
           </div>
         </div>
       </div>

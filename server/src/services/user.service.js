@@ -4,9 +4,9 @@ const bcrypt = require("bcrypt");
 const getAllUsers = async () => {
   return await User.findAll({
     attributes: { exclude: ["password"] },
-    where: {
-      isAdmin: 0, // Don't return passwords
-    },
+    // where: {
+    //   isAdmin: 0, // Don't return passwords
+    // },
   });
 };
 
@@ -52,7 +52,7 @@ const findUserByUsername = async (username) => {
 
 const createUser = async (userData) => {
   try {
-    const { username, password } = userData;
+    const { username, password, pins, it_stocks, materials } = userData;
 
     // Hash password before storing
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -61,6 +61,9 @@ const createUser = async (userData) => {
     const user = await User.create({
       username: username,
       password: hashedPassword,
+      pins: pins,
+      it_stocks: it_stocks,
+      materials: materials,
     });
 
     // Return user without password
@@ -91,6 +94,18 @@ const updateUser = async (userId, userData) => {
     if (userData.password) {
       const hashedPassword = await bcrypt.hash(userData.password, 10);
       updateData.password = hashedPassword;
+    }
+
+    if (userData.pins) {
+      updateData.pins = userData.pins;
+    }
+
+    if (userData.it_stocks) {
+      updateData.pins = userData.it_stocks;
+    }
+
+    if (userData.materials) {
+      updateData.pins = userData.materials;
     }
 
     await user.update(updateData);
