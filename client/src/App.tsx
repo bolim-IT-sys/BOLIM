@@ -13,7 +13,8 @@ import Dashboard from "./pages/AdminPages/Dashboard";
 import Pins from "./pages/AdminPages/Pins";
 import ITStocks from "./pages/AdminPages/ITStocks";
 import MaterialControl from "./pages/AdminPages/MaterialControl";
-import Dashboard from "./pages/AdminPages/Dashboard";
+import Users from "./pages/AdminPages/Users";
+
 import "./styles/index.css";
 import "boxicons/css/boxicons.min.css";
 
