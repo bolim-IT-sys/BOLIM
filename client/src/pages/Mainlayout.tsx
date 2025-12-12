@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { fetchUserData, type User } from "../services/User.Service";
 import { useNavigate, Outlet, useSearchParams } from "react-router-dom";
 import NavBar from "../components/NavBar";
@@ -29,7 +29,7 @@ export default function Mainlayout() {
 
   const navigate = useNavigate();
 
-  const fetchUserDetails = async () => {
+  const fetchUserDetails = useCallback(async () => {
     try {
       const token = sessionStorage.getItem("token");
       if (!token) {
@@ -50,13 +50,13 @@ export default function Mainlayout() {
     } catch (error) {
       console.log(error);
     }
-  };
+  }, [navigate]);
 
   useEffect(() => {
     fetchUserDetails();
-  }, [navigate]);
+  }, [fetchUserDetails, navigate]);
 
-  const fetchAllParts = async () => {
+  const fetchAllParts = useCallback(async () => {
     try {
       // setIsFetching(true);
       const [inResult, outResult, result] = await Promise.all([
@@ -153,9 +153,10 @@ export default function Mainlayout() {
     } catch (err) {
       console.log("Unexpected error occured: ", err);
     }
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  const loadParts = async () => {
+  const loadParts = useCallback(async () => {
     // console.log("fetching parts");
     try {
       setIsFetching(true);
@@ -168,11 +169,11 @@ export default function Mainlayout() {
         import.meta.env.VITE_TIME_OUT
       );
     }
-  };
+  }, [fetchAllParts]);
 
   useEffect(() => {
     loadParts();
-  }, [navigate]);
+  }, [loadParts, navigate]);
 
   return (
     <div className="relative" style={{ height: "100dvh" }}>
@@ -183,7 +184,7 @@ export default function Mainlayout() {
       />
       <div className="flex justify-start h-dvh w-dvw pt-15 overflow-hidden">
         <div>
-          <SideNavBar user={user} showSideBar={showSideBar} />
+          <SideNavBar user={user!} showSideBar={showSideBar} />
         </div>
         <div className={`w-10/10`}>
           <div className="bg-white h-95/100 my-7 mx-5 p-5 rounded-sm">

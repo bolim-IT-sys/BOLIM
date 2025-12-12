@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useLocation, useOutletContext } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import type { User } from "../services/User.Service";
 
 type Props = {
@@ -8,7 +8,6 @@ type Props = {
 };
 
 export default function SideNavBar({ user, showSideBar }: Props) {
-  // const { user } = useOutletContext<ContextType>();
   const [isHidden, setIsHidden] = useState(showSideBar);
   const [isShowing, setIsShowing] = useState(showSideBar);
   const location = useLocation();
