@@ -10,7 +10,7 @@ const getAllUsers = async (req, res, next) => {
         message: "No users found.",
       });
     } else {
-      console.log("users found: ", users);
+      // console.log("users found: ", users);
       res.status(200).json({ success: true, data: users });
     }
   } catch (err) {
@@ -77,20 +77,23 @@ const updateUser = async (req, res) => {
     }
 
     //checking if the username is already taken
-    if (req.body.username && userId != existingUser.id) {
+    if (req.body.username) {
       const userWithSameUsername = await userService.findUserByUsername(
         req.body.username
       );
 
       if (userWithSameUsername) {
-        console.log("Matching user name: ", userWithSameUsername);
-
-        return res.json({
-          success: false,
-          message: "Username already taken.",
-        });
+        console.log("Matching user name: ", userWithSameUsername.username);
+        console.log(`${userId} !== ${userWithSameUsername.id}`);
+        console.log(userId !== userWithSameUsername.id);
+        if (Number(userId) !== userWithSameUsername.id) {
+          return res.json({
+            success: false,
+            message: "Username already taken.",
+          });
+        }
       }
-      console.log("No match found.");
+      // console.log("No match found.");
     }
 
     const updateUser = await userService.updateUser(userId, req.body);

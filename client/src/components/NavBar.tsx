@@ -1,10 +1,11 @@
 import type { User } from "../services/User.Service";
 import { logout } from "../services/authService";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Dropdown, DropdownItem } from "./Dropdown";
 import DangerButton from "./button/DangerButton";
 import logo from "/bolimlogo.png";
 import type { Dispatch, SetStateAction } from "react";
+import LightButton from "./button/LightButton";
 
 interface NavbarProps {
   user: User;
@@ -55,6 +56,11 @@ export default function NavBar({
                 </h4>
               }
             >
+              <DropdownItem>
+                <Link to={`/profile`}>
+                  <LightButton text="Account" />
+                </Link>{" "}
+              </DropdownItem>
               <DropdownItem>
                 <DangerButton text="Logout" onClick={handleLogout} />
               </DropdownItem>

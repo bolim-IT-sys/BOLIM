@@ -204,17 +204,10 @@ export async function removeUser(id: number): Promise<UserResponse> {
     });
     console.log("deleting user details");
     if (response.status === 200) {
-      return {
-        success: true,
-        message: "User deleted successfully",
-        data: response.data.data, // Access the nested data from your API response
-      };
+      return response.data;
+    } else {
+      return response.data;
     }
-
-    return {
-      success: false,
-      message: "Unexpected response status",
-    };
   } catch (error) {
     // Type guard for Axios errors
     if (axios.isAxiosError(error)) {

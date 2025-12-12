@@ -29,29 +29,30 @@ export default function Mainlayout() {
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchUserDetails = async () => {
-      try {
-        const token = sessionStorage.getItem("token");
-        if (!token) {
-          console.log("No token found...");
-          alert("Invalid Session, logging out...");
-          navigate("/login");
-          return;
-        }
-        const result = await fetchUserData(token!);
-        if (result.success) {
-          setUser(result.data);
-          // console.log(result.data);
-        } else {
-          console.log("error occured.");
-          alert("Invalid Session, logging out...");
-          navigate("/login");
-        }
-      } catch (error) {
-        console.log(error);
+  const fetchUserDetails = async () => {
+    try {
+      const token = sessionStorage.getItem("token");
+      if (!token) {
+        console.log("No token found...");
+        alert("Invalid Session, logging out...");
+        navigate("/login");
+        return;
       }
-    };
+      const result = await fetchUserData(token!);
+      if (result.success) {
+        setUser(result.data);
+        // console.log("User details: ", result.data);
+      } else {
+        console.log("error occured.");
+        alert("Invalid Session, logging out...");
+        navigate("/login");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
     fetchUserDetails();
   }, [navigate]);
 
@@ -182,12 +183,13 @@ export default function Mainlayout() {
       />
       <div className="flex justify-start h-dvh w-dvw pt-15 overflow-hidden">
         <div>
-          <SideNavBar showSideBar={showSideBar} />
+          <SideNavBar user={user} showSideBar={showSideBar} />
         </div>
         <div className={`w-10/10`}>
           <div className="bg-white h-95/100 my-7 mx-5 p-5 rounded-sm">
             <Outlet
               context={{
+                fetchUserDetails,
                 user,
                 parts,
                 setParts,

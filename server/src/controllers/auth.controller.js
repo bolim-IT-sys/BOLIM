@@ -108,7 +108,9 @@ const authenticateToken = async (req, res) => {
       data: {
         id: user.id,
         username: user.username,
-        isAdmin: user.isAdmin,
+        pins: user.pins,
+        it_stocks: user.it_stocks,
+        materials: user.it_stocks,
       },
     });
   } catch (error) {

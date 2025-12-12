@@ -1,14 +1,19 @@
 import { useEffect, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useOutletContext } from "react-router-dom";
+import type { User } from "../services/User.Service";
 
 type Props = {
+  user: User;
   showSideBar: boolean;
 };
 
-export default function SideNavBar({ showSideBar }: Props) {
+export default function SideNavBar({ user, showSideBar }: Props) {
+  // const { user } = useOutletContext<ContextType>();
   const [isHidden, setIsHidden] = useState(showSideBar);
   const [isShowing, setIsShowing] = useState(showSideBar);
   const location = useLocation();
+
+  const isSuperAdmin = user?.pins && user?.it_stocks && user?.materials;
 
   useEffect(() => {
     if (showSideBar) {
@@ -77,19 +82,23 @@ export default function SideNavBar({ showSideBar }: Props) {
               Material Control
             </h4>
           </Link>
-          <Link
-            className={`relativce p-2 flex items-center ${location.pathname === "/users" ? "bg-neutral-50 text-neutral-800" : "hover:hover:bg-cyan-400"} transition duration-150 w-full rounded cursor-pointer`}
-            to="/users"
-          >
-            <h3 className="flex justify-center items-center mx-2 my-1">
-              <i className="bx bx-community mt-2"></i>
-            </h3>
-            <h4
-              className={`absolute start-15 font-bold ${isShowing ? "opacity-100" : "opacity-0"} ${isHidden ? "pointer-events-none" : ""} transition-all duration-250 ease-in-out`}
-            >
-              Users
-            </h4>
-          </Link>
+          {isSuperAdmin ? (
+            <>
+              <Link
+                className={`relativce p-2 flex items-center ${location.pathname === "/users" ? "bg-neutral-50 text-neutral-800" : "hover:hover:bg-cyan-400"} transition duration-150 w-full rounded cursor-pointer`}
+                to="/users"
+              >
+                <h3 className="flex justify-center items-center mx-2 my-1">
+                  <i className="bx bx-community mt-2"></i>
+                </h3>
+                <h4
+                  className={`absolute start-15 font-bold ${isShowing ? "opacity-100" : "opacity-0"} ${isHidden ? "pointer-events-none" : ""} transition-all duration-250 ease-in-out`}
+                >
+                  Users
+                </h4>
+              </Link>
+            </>
+          ) : null}
         </div>
       </div>
     </>

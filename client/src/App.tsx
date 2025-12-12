@@ -14,6 +14,7 @@ import Pins from "./pages/AdminPages/Pins";
 import ITStocks from "./pages/AdminPages/ITStocks";
 import MaterialControl from "./pages/AdminPages/MaterialControl";
 import Users from "./pages/AdminPages/Users";
+import Profile from "./pages/AdminPages/Profile";
 
 import "./styles/index.css";
 import "boxicons/css/boxicons.min.css";
@@ -34,6 +35,7 @@ export default function App() {
           />
 
           <Route path="/users" element={<Users />} />
+          <Route path="/profile" element={<Profile />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/login" />} />

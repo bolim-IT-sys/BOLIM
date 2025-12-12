@@ -4,12 +4,13 @@ import InputField from "../../components/InputField";
 import { DataTableLoader } from "../../components/loaders/DataTableLoader";
 import DangerButton from "../../components/button/DangerButton";
 import { AddingUser } from "../../components/modals/Users/AddingUser";
-import { fetchUsers, type User } from "../../services/User.Service";
+import { fetchUsers, removeUser, type User } from "../../services/User.Service";
 import { EditingUser } from "../../components/modals/Users/EditingUser";
 
 export default function Users() {
   const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(0);
   const [currentData, setCurrentData] = useState<User[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [itemsPerPage, setItemsPerPage] = useState<number>(20);
@@ -77,6 +78,48 @@ export default function Users() {
     indexOfLastItem,
     itemsPerPage,
   ]);
+
+  const handleDelete = async (id: number) => {
+    const isConfirm = window.confirm(
+      `Are you sure you want to remove this user? This action cannot be undone.`
+    );
+
+    if (!isConfirm) {
+      return;
+    }
+
+    try {
+      setIsDeleting(id);
+      // console.log("removing stock");
+      const result = await removeUser(id);
+
+      if (result.success) {
+        setTimeout(
+          () => {
+            alert(`User removed successfully.`);
+            fetchAllUsers();
+          },
+          import.meta.env.VITE_TIME_OUT
+        );
+      } else {
+        setTimeout(
+          () => {
+            alert(result.message);
+          },
+          import.meta.env.VITE_TIME_OUT
+        );
+      }
+    } catch (error) {
+      console.error("Error occured: ", error);
+    } finally {
+      setTimeout(
+        () => {
+          setIsDeleting(0);
+        },
+        import.meta.env.VITE_TIME_OUT
+      );
+    }
+  };
 
   return (
     <>
@@ -177,6 +220,9 @@ export default function Users() {
                             </span>
                           </>
                         }
+                        onClick={() => handleDelete(user.id)}
+                        disabled={isDeleting === user.id}
+                        isLoading={isDeleting === user.id}
                       />
                     </div>
                   </td>

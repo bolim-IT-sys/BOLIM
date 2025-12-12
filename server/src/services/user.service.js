@@ -4,9 +4,7 @@ const bcrypt = require("bcrypt");
 const getAllUsers = async () => {
   return await User.findAll({
     attributes: { exclude: ["password"] },
-    // where: {
-    //   isAdmin: 0, // Don't return passwords
-    // },
+    order: [["username", "ASC"]],
   });
 };
 
@@ -43,7 +41,7 @@ const findUserByUsername = async (username) => {
     const user = await User.findOne({
       where: { username: username },
     });
-    console.log("Checking username: ", username);
+    console.log("Checking username: ", username, user);
     return user;
   } catch (error) {
     throw error;
@@ -85,7 +83,11 @@ const updateUser = async (userId, userData) => {
     }
 
     // prepare the data
-    const updateData = {};
+    const updateData = {
+      pins: userData.pins,
+      it_stocks: userData.it_stocks,
+      materials: userData.materials,
+    };
 
     if (userData.username) {
       updateData.username = userData.username;
@@ -96,21 +98,9 @@ const updateUser = async (userId, userData) => {
       updateData.password = hashedPassword;
     }
 
-    if (userData.pins) {
-      updateData.pins = userData.pins;
-    }
-
-    if (userData.it_stocks) {
-      updateData.pins = userData.it_stocks;
-    }
-
-    if (userData.materials) {
-      updateData.pins = userData.materials;
-    }
-
     await user.update(updateData);
 
-    console.log("User updated successfully.");
+    // console.log("User updated successfully.");
 
     // Return user without password
     return {

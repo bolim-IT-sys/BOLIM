@@ -8,13 +8,19 @@ import {
   type CreateUserType,
   type User,
 } from "../../../services/User.Service";
+import { useOutletContext } from "react-router-dom";
 
 interface EditingProps {
   user: User;
   fetchAllUsers: () => void;
 }
 
+interface ContextType {
+  fetchUserDetails: () => void;
+}
+
 export const EditingUser = ({ user, fetchAllUsers }: EditingProps) => {
+  const { fetchUserDetails } = useOutletContext<ContextType>();
   const [modalShow, setModalShow] = useState<boolean>(false);
   const [formData, setFormData] = useState<CreateUserType>({
     username: user.username,
@@ -42,13 +48,14 @@ export const EditingUser = ({ user, fetchAllUsers }: EditingProps) => {
           () => {
             alert(result.message);
             fetchAllUsers();
+            fetchUserDetails();
             setModalShow(false);
             setFormData({
-              username: user.username,
+              username: formData.username,
               password: "",
-              pins: user.pins,
-              it_stocks: user.it_stocks,
-              materials: user.materials,
+              pins: formData.pins,
+              it_stocks: formData.it_stocks,
+              materials: formData.materials,
             });
           },
           import.meta.env.VITE_TIME_OUT
@@ -76,10 +83,11 @@ export const EditingUser = ({ user, fetchAllUsers }: EditingProps) => {
 
   const NoChanges = () => {
     return (
-      user.username === formData.username &&
-      user.pins === formData.pins &&
-      user.it_stocks === formData.it_stocks &&
-      user.materials === formData.materials
+      formData.username === "" ||
+      (user.username === formData.username &&
+        user.pins === formData.pins &&
+        user.it_stocks === formData.it_stocks &&
+        user.materials === formData.materials)
     );
   };
 
@@ -98,7 +106,7 @@ export const EditingUser = ({ user, fetchAllUsers }: EditingProps) => {
         isOpen={modalShow}
         onClose={() => setModalShow(false)}
         size="md"
-        title={`EDIT USER DETAILS `}
+        title={`EDIT ${user.username.toLocaleUpperCase()} DETAILS `}
         footer={
           <>
             <SuccessButton
