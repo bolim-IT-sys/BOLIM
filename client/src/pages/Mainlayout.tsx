@@ -182,9 +182,13 @@ export default function Mainlayout() {
         showSideBar={showSideBar}
         setShowSideBar={setShowSideBar}
       />
-      <div className="flex justify-start h-dvh w-dvw pt-15 overflow-hidden">
+      <div className="relative flex justify-start h-dvh w-dvw pt-15 overflow-hidden">
         <div>
-          <SideNavBar user={user!} showSideBar={showSideBar} />
+          <SideNavBar
+            user={user!}
+            showSideBar={showSideBar}
+            setShowSideBar={setShowSideBar}
+          />
         </div>
         <div className={`w-10/10`}>
           <div className="bg-white h-95/100 my-7 mx-5 p-5 rounded-sm">

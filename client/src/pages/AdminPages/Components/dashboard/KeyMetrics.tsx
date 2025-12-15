@@ -29,7 +29,7 @@ export const KeyMetrics = ({ data }: Props) => {
   const outOfStockParts = data.filter((stock) => stock.quantity === 0);
   return (
     <>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-2">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2 mb-2">
         <div className={`bg-sky-600 text-neutral-50 rounded shadow p-6`}>
           <div className="flex items-center justify-between">
             <div>
