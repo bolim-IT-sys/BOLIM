@@ -115,172 +115,183 @@ export default function Dashboard() {
 
   return (
     <>
-      <div className="">
-        {/* Header */}
-        <div className="mb-3 flex items-center gap-2">
-          <h2 className="font-bold text-gray-900">DASHBOARD</h2>
-          <div className="">
-            <select
-              className="no-arrow rounded-lg border border-neutral-300 hover:bg-neutral-200 transition duration-350 cursor-pointer px-2 py-2 focus:bg-neutral-50  focus:ring-1 focus:ring-neutral-300 focus:outline-none"
-              name="dataTypeSelect"
-              value={dataType}
-              onChange={(e) => setDataType(e.target.value)}
-            >
-              <option value={`Pins`}>Pins</option>
-              <option value={`ITStocks`}>IT Stocks</option>
-              <option value={`MaterialControl`}>Material Control</option>
-            </select>
-          </div>
-        </div>
-        <div className="h-full overflow-hidden">
-          {/* Key Metrics Grid */}
-          <KeyMetrics data={data} />
-
-          {/* BAR CHART */}
-
-          <div>
-            <div className="bg-white rounded-xl shadow-lg">
-              <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
-                <i className="bx  bxs-chart-bar-columns"></i>{" "}
-                {dataType === "Pins"
-                  ? "Pins "
-                  : dataType === "ITStocks"
-                    ? "IT Stocks "
-                    : dataType === "MaterialControl"
-                      ? "Material Control "
-                      : "Part "}
-                Usage Overview
-              </h2>
-              <div className="flex justify-start items-center gap-2 mb-2">
-                <div className="mb-1">
-                  <label
-                    htmlFor="dateRangeSelect"
-                    className="block font-medium text-gray-700"
-                  >
-                    <p>DATE RANGE:</p>
-                  </label>
-                  <select
-                    className="w-40 no-arrow rounded-lg border border-neutral-300 hover:bg-neutral-200 transition duration-350 cursor-pointer px-2 py-2 focus:bg-neutral-50  focus:ring-1 focus:ring-neutral-300 focus:outline-none"
-                    id="dateRangeSelect"
-                    name="dateRangeSelect"
-                    value={dateRange}
-                    onChange={(e) => setDateRange(e.target.value)}
-                  >
-                    <option value={`week`}>This Week</option>
-                    <option value={`month`}>This Month</option>
-                    <option value={`year`}>This Year</option>
-                    <option value={`custom`}>Custom</option>
-                  </select>
-                </div>
-                <div className="mb-1">
-                  <label
-                    htmlFor="START DATE"
-                    className="block font-medium text-gray-700"
-                  >
-                    <p>START DATE:</p>
-                  </label>
-                  <InputField
-                    label="START DATE"
-                    type="date"
-                    value={startDate!}
-                    required={true}
-                    onChange={(value: string) => {
-                      setStartDate(value);
-                      setDateRange("custom");
-                    }}
-                    autoComplete={`Previous date`}
-                  />
-                </div>
-                <div className="mb-1">
-                  <label
-                    htmlFor="END DATE"
-                    className="block font-medium text-gray-700"
-                  >
-                    <p>END DATE:</p>
-                  </label>
-                  <InputField
-                    label="END DATE"
-                    type="date"
-                    value={endDate!}
-                    required={true}
-                    onChange={(value: string) => {
-                      setEndDate(value);
-                      setDateRange("custom");
-                    }}
-                    autoComplete={`Previous date`}
-                  />
-                </div>
-              </div>
-
-              {filteredAndRankedParts.length > 0 ? (
-                <ResponsiveContainer width="100%" height={430}>
-                  <BarChart
-                    data={chartData}
-                    margin={{ top: 0, right: 30, left: 0, bottom: 0 }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis
-                      dataKey="name"
-                      angle={-40}
-                      textAnchor="end"
-                      height={80}
-                      interval={0}
-                      style={{ fontSize: "12px" }}
-                    />
-                    <YAxis />
-                    <Tooltip
-                      content={({ active, payload }) => {
-                        if (active && payload && payload.length) {
-                          return (
-                            <div className="bg-white p-4 rounded-lg shadow-lg border border-gray-200">
-                              <p className="font-bold text-gray-800 mb-1">
-                                {payload[0].payload.name}
-                              </p>
-                              <p className="text-sm text-gray-600 mb-1">
-                                {payload[0].payload.fullName}
-                              </p>
-                              <p className="text-sm text-gray-600 mb-2">
-                                {payload[0].payload.company}
-                              </p>
-                              <p className="text-sm text-gray-600 mb-1">
-                                Rank: #{payload[0].payload.rank}
-                              </p>
-                              <p className="text-sm text-red-600">
-                                Outbound: {payload[0].payload.outbound}
-                              </p>
-                              <p className="text-sm text-blue-600">
-                                Current Stock: {payload[0].payload.stock}
-                              </p>
-                            </div>
-                          );
-                        }
-                        return null;
-                      }}
-                    />
-                    <Legend />
-                    <Bar dataKey="outbound" fill="#ef4444" name="Outbound" />
-                    <Bar dataKey="stock" fill="#3b82f6" name="Current Stock" />
-                  </BarChart>
-                </ResponsiveContainer>
-              ) : (
-                <div className="text-center py-12" style={{ height: 430 }}>
-                  <h1 className="text-neutral-500">
-                    <i className="bx  bxs-package"></i>
-                  </h1>
-                  <h3 className="text-xl font-semibold text-gray-600 mb-2">
-                    No Data Available
-                  </h3>
-                  <p className="text-gray-500">
-                    No parts have both inbound and outbound transactions within
-                    the selected date range.
-                  </p>
-                </div>
-              )}
+      <div className="h-full overflow-y-auto">
+        <div className="">
+          {/* Header */}
+          <div className="mb-3 flex items-center gap-2">
+            <h2 className="font-bold text-gray-900">DASHBOARD</h2>
+            <div className="">
+              <select
+                className="w-full md:w-max no-arrow rounded-lg border border-neutral-300 hover:bg-neutral-200 transition duration-350 cursor-pointer px-2 py-2 focus:bg-neutral-50  focus:ring-1 focus:ring-neutral-300 focus:outline-none"
+                name="dataTypeSelect"
+                value={dataType}
+                onChange={(e) => setDataType(e.target.value)}
+              >
+                <option value={`Pins`}>Pins</option>
+                <option value={`ITStocks`}>IT Stocks</option>
+                <option value={`MaterialControl`}>Material Control</option>
+              </select>
             </div>
           </div>
+          <div className="h-full overflow-hidden">
+            {/* Key Metrics Grid */}
+            <KeyMetrics data={data} />
 
-          {/* Alert Section */}
-          {/* {(lowStockParts.length > 0 || outOfStockParts.length > 0) && (
+            {/* BAR CHART */}
+
+            <div>
+              <div className="bg-white rounded-xl shadow-lg">
+                <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+                  {dataType === "Pins"
+                    ? "Pins "
+                    : dataType === "ITStocks"
+                      ? "IT Stocks "
+                      : dataType === "MaterialControl"
+                        ? "Material Control "
+                        : "Part "}
+                  Usage Overview
+                </h2>
+                <div className="flex justify-start items-center flex-col sm:flex-row gap-1 sm:gap-2 mb-2">
+                  <div className="mb-1 w-full sm:w-40">
+                    <label
+                      htmlFor="dateRangeSelect"
+                      className="block text-gray-700"
+                    >
+                      <h6>DATE RANGE:</h6>
+                    </label>
+                    <select
+                      className="w-full md:w-40 no-arrow rounded-lg border border-neutral-300 hover:bg-neutral-200 transition duration-350 cursor-pointer px-2 py-2 focus:bg-neutral-50  focus:ring-1 focus:ring-neutral-300 focus:outline-none"
+                      id="dateRangeSelect"
+                      name="dateRangeSelect"
+                      value={dateRange}
+                      onChange={(e) => setDateRange(e.target.value)}
+                    >
+                      <option value={`week`}>This Week</option>
+                      <option value={`month`}>This Month</option>
+                      <option value={`year`}>This Year</option>
+                      <option value={`custom`}>Custom</option>
+                    </select>
+                  </div>
+                  <div className="mb-1 w-full sm:w-max">
+                    <label htmlFor="START DATE" className="block text-gray-700">
+                      <h6>START DATE:</h6>
+                    </label>
+                    <InputField
+                      label="START DATE"
+                      type="date"
+                      value={startDate!}
+                      required={true}
+                      onChange={(value: string) => {
+                        setStartDate(value);
+                        setDateRange("custom");
+                      }}
+                      autoComplete={`Previous date`}
+                    />
+                  </div>
+                  <div className="mb-1 w-full sm:w-max">
+                    <label htmlFor="END DATE" className="block text-gray-700">
+                      <h6>END DATE:</h6>
+                    </label>
+                    <InputField
+                      label="END DATE"
+                      type="date"
+                      value={endDate!}
+                      required={true}
+                      onChange={(value: string) => {
+                        setEndDate(value);
+                        setDateRange("custom");
+                      }}
+                      autoComplete={`Previous date`}
+                    />
+                  </div>
+                </div>
+                <div className="w-full overflow-x-auto">
+                  <div
+                    className="w-150 md:w-full"
+                    style={{ height: "clamp(20rem, 23.5dvw, 90rem)" }}
+                  >
+                    {filteredAndRankedParts.length > 0 ? (
+                      <ResponsiveContainer width="100%">
+                        <BarChart
+                          data={chartData}
+                          margin={{ top: 0, right: 30, left: 0, bottom: 0 }}
+                        >
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis
+                            dataKey="name"
+                            angle={-40}
+                            textAnchor="end"
+                            height={80}
+                            interval={0}
+                            style={{ fontSize: "12px" }}
+                          />
+                          <YAxis />
+                          <Tooltip
+                            content={({ active, payload }) => {
+                              if (active && payload && payload.length) {
+                                return (
+                                  <div className="bg-white p-4 rounded-lg shadow-lg border border-gray-200">
+                                    <p className="font-bold text-gray-800 mb-1">
+                                      {payload[0].payload.name}
+                                    </p>
+                                    <p className="text-sm text-gray-600 mb-1">
+                                      {payload[0].payload.fullName}
+                                    </p>
+                                    <p className="text-sm text-gray-600 mb-2">
+                                      {payload[0].payload.company}
+                                    </p>
+                                    <p className="text-sm text-gray-600 mb-1">
+                                      Rank: #{payload[0].payload.rank}
+                                    </p>
+                                    <p className="text-sm text-red-600">
+                                      Outbound: {payload[0].payload.outbound}
+                                    </p>
+                                    <p className="text-sm text-blue-600">
+                                      Current Stock: {payload[0].payload.stock}
+                                    </p>
+                                  </div>
+                                );
+                              }
+                              return null;
+                            }}
+                          />
+                          <Legend />
+                          <Bar
+                            dataKey="outbound"
+                            fill="#ef4444"
+                            name="Outbound"
+                          />
+                          <Bar
+                            dataKey="stock"
+                            fill="#3b82f6"
+                            name="Current Stock"
+                          />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    ) : (
+                      <div
+                        className="text-center py-12"
+                        style={{ height: 450 }}
+                      >
+                        <h1 className="text-neutral-500">
+                          <i className="bx  bxs-package"></i>
+                        </h1>
+                        <h3 className="text-xl font-semibold text-gray-600 mb-2">
+                          No Data Available
+                        </h3>
+                        <p className="text-gray-500">
+                          No parts have both inbound and outbound transactions
+                          within the selected date range.
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Alert Section */}
+            {/* {(lowStockParts.length > 0 || outOfStockParts.length > 0) && (
             <div className="bg-white rounded-lg shadow p-6">
               <h2 className="text-xl font-bold text-gray-900 mb-4">
                 Inventory Alerts
@@ -299,7 +310,7 @@ export default function Dashboard() {
                         className="flex justify-between items-center p-3 bg-red-50 rounded"
                       >
                         <div>
-                          <p className="font-medium text-gray-900">
+                          <p className="text-gray-900">
                             {part.partNumber}
                           </p>
                           <p className="text-sm text-gray-600">{part.specs}</p>
@@ -326,7 +337,7 @@ export default function Dashboard() {
                         className="flex justify-between items-center p-3 bg-yellow-50 rounded"
                       >
                         <div>
-                          <p className="font-medium text-gray-900">
+                          <p className="text-gray-900">
                             {part.partNumber}
                           </p>
                           <p className="text-sm text-gray-600">{part.specs}</p>
@@ -341,6 +352,7 @@ export default function Dashboard() {
               )}
             </div>
           )} */}
+          </div>
         </div>
       </div>
     </>

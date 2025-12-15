@@ -191,7 +191,7 @@ export default function Mainlayout() {
           />
         </div>
         <div className={`w-10/10`}>
-          <div className="bg-white h-95/100 my-7 mx-5 p-5 rounded-sm">
+          <div className="bg-white h-95/100 my-4 md:my-7 mx-2 md:mx-5 p-5 rounded-sm">
             <Outlet
               context={{
                 fetchUserDetails,

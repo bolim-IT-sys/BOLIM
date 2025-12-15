@@ -37,16 +37,16 @@ const Modal = ({
   if (!isVisible) return null;
   const sizeClass =
     size === "sm"
-      ? "w-100"
+      ? "md:w-100"
       : size === "md"
-        ? "w-150"
+        ? "md:w-150"
         : size === "lg"
-          ? "w-200"
+          ? "md:w-200"
           : size === "xl"
-            ? "w-250"
+            ? "md:w-250"
             : size === "2xl"
-              ? "w-300"
-              : "w-100";
+              ? "md:w-300"
+              : "md:w-100";
 
   return (
     <>
@@ -56,7 +56,7 @@ const Modal = ({
         style={{ backgroundColor: "rgb(0, 0, 0,.5)", zIndex: 99999 }}
       >
         <div
-          className={`bg-neutral-50 p-5 rounded visibl ${sizeClass} ${isAnimating ? "modal_fade_up" : "modal_fade_down"}`}
+          className={`bg-neutral-50 p-5 rounded visibl mx-5 w-full ${sizeClass} ${isAnimating ? "modal_fade_up" : "modal_fade_down"}`}
           onClick={(e) => e.stopPropagation()}
         >
           <div className="modal-content">

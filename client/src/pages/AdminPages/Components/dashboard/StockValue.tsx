@@ -137,21 +137,19 @@ export const StockValue = ({ data }: Props) => {
   return (
     <>
       <div
-        className={`bg-emerald-500 hover:bg-emerald-600 transition duration-500 ease-in-out text-neutral-50 rounded shadow p-6 cursor-pointer`}
+        className={`relative bg-emerald-500 hover:bg-emerald-600 transition duration-500 ease-in-out text-neutral-50 rounded shadow  p-3 md:p-6 cursor-pointer`}
         onClick={() => setModalShow(true)}
       >
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm font-medium text-neutral-50">
-              Inventory Value
-            </p>
-            <p className="text-2xl font-bold text-neutral-0 mt-2">
+            <h3 className="font-medium text-neutral-50">Inventory Value</h3>
+            <h1 className="font-bold text-neutral-0 mt-2">
               {`₩ ${formatNumberShort(totalInventoryValue)}`}
-            </p>
+            </h1>
             <p className="text-sm text-neutral-100 mt-1">Total stock value</p>
           </div>
           <div
-            className={`size-13 flex justify-center items-center p-3 rounded-full bg-neutral-50 text-emerald-500`}
+            className={`absolute top-5 right-5 size-10 lg:size-13 flex justify-center items-center p-3 rounded-full bg-neutral-50 text-emerald-500`}
           >
             <h3 className="mt-1">
               <i className="bx bxs-currency-notes"></i>

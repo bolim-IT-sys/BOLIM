@@ -106,7 +106,7 @@ export default function SideNavBar({
         </div>
       </div>
       <div
-        className={`${showSideBar ? "opacity-100" : "opacity-0"} ${isHidden ? "hidden" : ""} lg:hidden transition-all duration-400 ease-in-out fixed top-0 left-0 h-dvh w-dvw bg-neutral-900/55`}
+        className={`${showSideBar ? "opacity-100" : "opacity-0"} ${isHidden ? "hidden" : ""} lg:hidden transition-all duration-400 ease-in-out fixed top-0 left-0 h-dvh w-dvw bg-neutral-900/55 z-10`}
         onClick={() => setShowSideBar(false)}
       ></div>
     </>
