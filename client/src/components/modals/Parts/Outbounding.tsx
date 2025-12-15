@@ -137,32 +137,40 @@ export const Outbounding = ({
           setOutboundShow(false);
           setModalShow(true);
         }}
-        title={`OUTBOUND ${
-          type === "pin"
-            ? "PIN"
-            : type === "it"
-              ? "ITEM"
-              : type === "material"
-                ? "MATERIAL"
-                : "INVALID TYPE"
-        } (${item.partNumber})`}
+        title={
+          <>
+            <h4 className="w-55 sm:w-100 text-start">
+              {`OUTBOUND ${
+                type === "pin"
+                  ? "PIN"
+                  : type === "it"
+                    ? "ITEM"
+                    : type === "material"
+                      ? "MATERIAL"
+                      : "INVALID TYPE"
+              } (${item.partNumber})`}
+            </h4>
+          </>
+        }
         size="md"
         footer={
           <>
-            <SuccessButton
-              text="CONFIRM"
-              loadingText="OUTBOUNDING"
-              onClick={handleOutbound}
-              isLoading={outbounding}
-              disabled={outbounding || outboundFilled()}
-            />
-            <SecondaryButton
-              text="CLOSE"
-              onClick={() => {
-                setOutboundShow(false);
-                setModalShow(true);
-              }}
-            />
+            <div className="h-10 flex gap-2">
+              <SecondaryButton
+                text="CLOSE"
+                onClick={() => {
+                  setOutboundShow(false);
+                  setModalShow(true);
+                }}
+              />
+              <SuccessButton
+                text="CONFIRM"
+                loadingText="OUTBOUNDING"
+                onClick={handleOutbound}
+                isLoading={outbounding}
+                disabled={outbounding || outboundFilled()}
+              />
+            </div>
           </>
         }
       >
@@ -174,7 +182,7 @@ export const Outbounding = ({
                   htmlFor="SERIAL NUMBER"
                   className="block font-medium text-gray-700"
                 >
-                  <p>SERIAL NUMBER</p>
+                  <p>SERIAL NUMBER </p>
                 </label>
                 <InputField
                   label="SERIAL NUMBER"

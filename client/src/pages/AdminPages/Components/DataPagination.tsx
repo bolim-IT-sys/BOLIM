@@ -22,16 +22,20 @@ export const DataPagination = ({
 }: Props) => {
   return (
     <>
-      <div className="flex justify-between items-center p-4">
-        <div className="text-sm text-gray-600">
+      <div className="h-10 w-full flex justify-between items-end sm:items-center">
+        <div className="hidden sm:block text-sm text-gray-600">
           Showing {indexOfFirstItem + 1} to{" "}
           {Math.min(indexOfLastItem, data.length)} of {data.length} data
         </div>
 
-        <div className="flex gap-2">
-          <div>
+        <div className="flex w-full sm:w-max justify-between items-center gap-2">
+          <div className="">
             <PrimaryButton
-              text="PREVIOUS"
+              text={
+                <>
+                  <span className="py-1">PREVIOUS</span>
+                </>
+              }
               onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
               disabled={currentPage === 1}
             />
@@ -43,7 +47,11 @@ export const DataPagination = ({
 
           <div>
             <PrimaryButton
-              text="NEXT"
+              text={
+                <>
+                  <span className="py-1">NEXT</span>
+                </>
+              }
               onClick={() =>
                 setCurrentPage((prev) => Math.min(prev + 1, totalPages))
               }

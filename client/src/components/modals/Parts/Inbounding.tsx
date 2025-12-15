@@ -143,20 +143,22 @@ export const Inbounding = ({
         size="md"
         footer={
           <>
-            <SuccessButton
-              text="CONFIRM"
-              loadingText="INBOUNDING"
-              onClick={handleInbound}
-              isLoading={inbounding}
-              disabled={inbounding || inboundFilled()}
-            />
-            <SecondaryButton
-              text="CLOSE"
-              onClick={() => {
-                setInboundShow(false);
-                setModalShow(true);
-              }}
-            />
+            <div className="h-10 flex gap-2">
+              <SecondaryButton
+                text="CLOSE"
+                onClick={() => {
+                  setInboundShow(false);
+                  setModalShow(true);
+                }}
+              />
+              <SuccessButton
+                text="CONFIRM"
+                loadingText="INBOUNDING"
+                onClick={handleInbound}
+                isLoading={inbounding}
+                disabled={inbounding || inboundFilled()}
+              />
+            </div>
           </>
         }
       >

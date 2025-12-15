@@ -57,3 +57,7 @@ h5 {
 h6 {
   font-size: var(--text-xs);
 }
+
+p {
+  font-size: clamp(0.7rem, 0.55rem + 0.7vw, 0.8rem);
+}

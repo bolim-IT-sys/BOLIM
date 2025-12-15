@@ -69,40 +69,47 @@ export default function MaterialControl() {
 
   return (
     <>
-      <div className="mb-2 flex gap-2">
-        <div className="w-7/10">
-          <InputField
-            label={`Search(part number, specifications, category, unit price, company)`}
-            type="text"
-            value={searchTerm}
-            onChange={(value: string) => setSearchTerm(value)}
+      <div className="h-full">
+        <div className="h-2/15 sm:h-1/15">
+          <div className="mb-2 flex flex-col sm:flex-row gap-2">
+            <div className="w-full sm:w-6/10">
+              <InputField
+                label={`Search(part number, specifications, category, unit price, company)`}
+                type="text"
+                value={searchTerm}
+                onChange={(value: string) => setSearchTerm(value)}
+              />
+            </div>
+            <div className="w-full h-10 sm:w-4/10 flex gap-2">
+              <AddingPart fetchAllParts={fetchAllParts} type="material" />
+              <DownloadPartData parts={displayParts} />
+            </div>
+          </div>
+        </div>
+
+        <div
+          className={`h-12/15 sm:h-13/15 w-10/10 ${isFetching ? "overflow-hidden" : "overflow-auto"} border border-gray-300 relative`}
+        >
+          {isFetching ? <DataTableLoader /> : null}
+          <DataTable
+            data={displayParts}
+            setData={setMaterials}
+            type={"material"}
+            fetchAllParts={fetchAllParts}
+            currentData={currentData}
           />
         </div>
-        <div className="w-3/10 flex gap-2">
-          <AddingPart fetchAllParts={fetchAllParts} type="material" />
-          <DownloadPartData parts={displayParts} />
+        <div className="h-1/15 flex items-end justify-between">
+          <DataPagination
+            data={displayParts}
+            indexOfFirstItem={indexOfFirstItem}
+            indexOfLastItem={indexOfLastItem}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+            totalPages={totalPages}
+          />
         </div>
       </div>
-      <div
-        className={`h-87/100 w-full ${isFetching ? "overflow-hidden" : "overflow-auto"} border border-gray-300 relative`}
-      >
-        {isFetching ? <DataTableLoader /> : null}
-        <DataTable
-          data={displayParts}
-          setData={setMaterials}
-          type={"material"}
-          fetchAllParts={fetchAllParts}
-          currentData={currentData}
-        />
-      </div>
-      <DataPagination
-        data={displayParts}
-        indexOfFirstItem={indexOfFirstItem}
-        indexOfLastItem={indexOfLastItem}
-        currentPage={currentPage}
-        setCurrentPage={setCurrentPage}
-        totalPages={totalPages}
-      />
     </>
   );
 }

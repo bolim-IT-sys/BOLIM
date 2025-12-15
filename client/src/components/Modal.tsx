@@ -51,12 +51,12 @@ const Modal = ({
   return (
     <>
       <div
-        className={`fixed h-dvh w-dvw left-0 top-0 flex justify-center items-center ${isAnimating ? "modal_fade_in " : "modal_fade_out"}`}
+        className={`fixed h-dvh w-dvw px-3 left-0 top-0 flex justify-center items-center ${isAnimating ? "modal_fade_in " : "modal_fade_out"}`}
         onClick={onClose}
         style={{ backgroundColor: "rgb(0, 0, 0,.5)", zIndex: 99999 }}
       >
         <div
-          className={`bg-neutral-50 p-5 rounded visibl mx-5 w-full ${sizeClass} ${isAnimating ? "modal_fade_up" : "modal_fade_down"}`}
+          className={`bg-neutral-50 p-5 rounded visibl w-full ${sizeClass} ${isAnimating ? "modal_fade_up" : "modal_fade_down"}`}
           onClick={(e) => e.stopPropagation()}
         >
           <div className="modal-content">

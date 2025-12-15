@@ -71,15 +71,19 @@ export const AddingPart = ({ fetchAllParts, type }: AddingProps) => {
   return (
     <>
       <PrimaryButton
-        text={`ADD ${
-          type === "pin"
-            ? "PIN"
-            : type === "it"
-              ? "ITEM"
-              : type === "material"
-                ? "MATERIAL"
-                : "INVALID TYPE"
-        }`}
+        text={
+          <>
+            {`ADD ${
+              type === "pin"
+                ? "PIN"
+                : type === "it"
+                  ? "ITEM"
+                  : type === "material"
+                    ? "MATERIAL"
+                    : "INVALID TYPE"
+            }`}
+          </>
+        }
         onClick={() => setModalShow(true)}
       />
 
