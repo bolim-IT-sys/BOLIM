@@ -9,14 +9,13 @@
   --secondary_color: #dbe8ec;
   /* --secondary_color: #f3f3f3; */
 
-  /* TEXT CUSTOM SIZES */
-  --text-xs: clamp(0.75rem, 0.7rem + 0.2vw, 0.8rem);
-  --text-xs: clamp(0.75rem, 0.7rem + 0.2vw, 0.8rem);
-  --text-sm: clamp(0.875rem, 0.8rem + 0.3vw, 1rem);
-  --text-md: clamp(1rem, 0.9rem + 0.5vw, 1.25rem);
-  --text-lg: clamp(1.25rem, 1rem + 0.8vw, 1.5rem);
-  --text-xl: clamp(1.5rem, 1.2rem + 1vw, 2rem);
-  --text-2xl: clamp(2rem, 1.5rem + 1.5vw, 3rem);
+  /* TEXT CUSTOM SIZES — SMALLER VERSION */
+  --text-xs: clamp(0.65rem, 0.55rem + 0.5vw, 0.75rem);
+  --text-sm: clamp(0.75rem, 0.65rem + 0.6vw, 0.9rem);
+  --text-md: clamp(0.9rem, 0.75rem + 0.8vw, 1.1rem);
+  --text-lg: clamp(1.1rem, 0.9rem + 1vw, 1.3rem);
+  --text-xl: clamp(1.3rem, 1rem + 1.2vw, 1.7rem);
+  --text-2xl: clamp(1.6rem, 1.3rem + 1.6vw, 2.4rem);
 }
 
 * {
@@ -57,4 +56,8 @@ h5 {
 
 h6 {
   font-size: var(--text-xs);
+}
+
+p {
+  font-size: clamp(0.7rem, 0.55rem + 0.7vw, 0.8rem);
 }

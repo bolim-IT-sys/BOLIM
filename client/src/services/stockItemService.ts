@@ -281,7 +281,7 @@ export async function removeStockItem(id: number): Promise<StockItemResponse> {
         },
       }
     );
-    console.log("deleting user details");
+    // console.log("deleting user details");
     if (response.status === 200) {
       return response.data;
     }

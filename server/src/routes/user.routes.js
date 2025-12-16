@@ -8,9 +8,9 @@ const {
 
 const router = express.Router();
 
-router.get("/fetchUsers", getAllUsers);
-router.post("/createUser", createUser);
-router.put("/updateUser/:id", updateUser);
-router.delete("/deleteUser/:id", deleteUser);
+router.get("/fetch-users", getAllUsers);
+router.post("/create-user", createUser);
+router.put("/update-user/:id", updateUser);
+router.delete("/delete-user/:id", deleteUser);
 
 module.exports = router;

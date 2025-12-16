@@ -4,9 +4,7 @@ const bcrypt = require("bcrypt");
 const getAllUsers = async () => {
   return await User.findAll({
     attributes: { exclude: ["password"] },
-    where: {
-      isAdmin: 0, // Don't return passwords
-    },
+    order: [["username", "ASC"]],
   });
 };
 
@@ -30,7 +28,7 @@ const find = async (username) => {
       where: { username: username },
       raw: true,
     });
-    console.log("Checking user existense... ", user ? `Found` : "Cannot Found");
+    // console.log("Checking user existense... ", user ? `Found` : "Cannot Found");
     return user;
   } catch (error) {
     console.log("Error Finding User: ", error);
@@ -43,7 +41,7 @@ const findUserByUsername = async (username) => {
     const user = await User.findOne({
       where: { username: username },
     });
-    console.log("Checking username: ", username);
+    // console.log("Checking username: ", username, user);
     return user;
   } catch (error) {
     throw error;
@@ -52,15 +50,18 @@ const findUserByUsername = async (username) => {
 
 const createUser = async (userData) => {
   try {
-    const { username, password } = userData;
+    const { username, password, pins, it_stocks, materials } = userData;
 
     // Hash password before storing
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    console.log("Adding user.");
+    // console.log("Adding user.");
     const user = await User.create({
       username: username,
       password: hashedPassword,
+      pins: pins,
+      it_stocks: it_stocks,
+      materials: materials,
     });
 
     // Return user without password
@@ -82,7 +83,11 @@ const updateUser = async (userId, userData) => {
     }
 
     // prepare the data
-    const updateData = {};
+    const updateData = {
+      pins: userData.pins,
+      it_stocks: userData.it_stocks,
+      materials: userData.materials,
+    };
 
     if (userData.username) {
       updateData.username = userData.username;
@@ -95,7 +100,7 @@ const updateUser = async (userId, userData) => {
 
     await user.update(updateData);
 
-    console.log("User updated successfully.");
+    // console.log("User updated successfully.");
 
     // Return user without password
     return {
@@ -119,7 +124,7 @@ const deleteUser = async (userId) => {
     // IF USER IS FOUND DELETE
     await user.destroy(userId);
 
-    console.log("User deleted successfully.");
+    // console.log("User deleted successfully.");
 
     // Return user without password
     return {

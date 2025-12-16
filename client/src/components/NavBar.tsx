@@ -1,11 +1,11 @@
-import { AddingUser } from "./modals/Users/AddingUser";
-import type { User } from "../services/userService";
+import type { User } from "../services/User.Service";
 import { logout } from "../services/authService";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Dropdown, DropdownItem } from "./Dropdown";
 import DangerButton from "./button/DangerButton";
 import logo from "/bolimlogo.png";
 import type { Dispatch, SetStateAction } from "react";
+import LightButton from "./button/LightButton";
 
 interface NavbarProps {
   user: User;
@@ -16,7 +16,6 @@ interface NavbarProps {
 
 export default function NavBar({
   user,
-  fetchAllUsers,
   showSideBar,
   setShowSideBar,
 }: NavbarProps) {
@@ -38,9 +37,9 @@ export default function NavBar({
             <div className="size-10 flex justify-center items-center">
               <img className="w-full" src={logo} alt="navLogo" />
             </div>
-            <h4 className="">BOLIM(SPARE PARTS)</h4>
+            <h4 className="hidden sm:block">BOLIM(SPARE PARTS)</h4>
             <div
-              className={`size-9 ${showSideBar ? "bg-sky-600 hover:bg-sky-600 text-neutral-50" : "hover:bg-neutral-200"}  rounded transition duration-200 flex justify-center items-center`}
+              className={`size-9 ${showSideBar ? "bg-sky-600 hover:bg-sky-700 text-neutral-50" : "hover:bg-neutral-200"}  rounded transition duration-200 flex justify-center items-center cursor-pointer`}
               onClick={() => setShowSideBar((prev) => !prev)}
             >
               <h3>
@@ -58,7 +57,9 @@ export default function NavBar({
               }
             >
               <DropdownItem>
-                <AddingUser fetchAllUsers={fetchAllUsers!} />
+                <Link to={`/profile`}>
+                  <LightButton text="Account" />
+                </Link>{" "}
               </DropdownItem>
               <DropdownItem>
                 <DangerButton text="Logout" onClick={handleLogout} />

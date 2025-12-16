@@ -199,7 +199,7 @@ export async function removeStock(id: number): Promise<StockResponse> {
         "Content-Type": "application/json",
       },
     });
-    console.log("deleting user details");
+    // console.log("deleting user details");
     if (response.status === 200) {
       return response.data;
     }

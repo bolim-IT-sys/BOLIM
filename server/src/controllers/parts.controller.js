@@ -150,7 +150,7 @@ const updatePart = async (req, res) => {
           if (err) {
             console.error("Failed to delete old image:", err);
           } else {
-            console.log("Old image deleted:", existingPart.image);
+            // console.log("Old image deleted:", existingPart.image);
           }
         });
       }
@@ -184,7 +184,7 @@ const updatePart = async (req, res) => {
       parseFloat(data.unitPrice) === existingPart.unitPrice &&
       data.company === existingPart.company
     ) {
-      console.log("No changes made.");
+      // console.log("No changes made.");
       return res.json({
         success: false,
         message: "No changes made.",
@@ -212,7 +212,7 @@ const updatePart = async (req, res) => {
           } already taken.`,
         });
       }
-      console.log("No match found.");
+      // console.log("No match found.");
     }
     const updatePart = await partService.updatePart(PartId, data);
 
@@ -282,7 +282,7 @@ const deletePart = async (req, res) => {
           if (err) {
             console.error("Failed to delete old image:", err);
           } else {
-            console.log("Old image deleted:", existingPart.image);
+            // console.log("Old image deleted:", existingPart.image);
           }
         });
       }
@@ -543,7 +543,7 @@ const addingItem = async (req, res) => {
     );
 
     if (isPartExisting) {
-      console.log("Serial Number already exist.");
+      // console.log("Serial Number already exist.");
       return res.json({
         success: false,
         message: "Serial Number already exist.",
@@ -572,7 +572,7 @@ const outboundItem = async (req, res) => {
   try {
     const serialNumber = req.params.serialNumber;
 
-    console.log("Data in backend: ", req.body);
+    // console.log("Data in backend: ", req.body);
 
     if (
       !req.body.serialNumber ||
@@ -589,7 +589,7 @@ const outboundItem = async (req, res) => {
     // Check if part exists
     const existingItem = await partService.findItemBySerialNumber(serialNumber);
 
-    console.log("Existing match: ", existingItem);
+    // console.log("Existing match: ", existingItem);
     if (!existingItem) {
       return res.json({
         success: false,

@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { fetchUserData, type User } from "../services/userService";
+import { useCallback, useEffect, useState } from "react";
+import { fetchUserData, type User } from "../services/User.Service";
 import { useNavigate, Outlet, useSearchParams } from "react-router-dom";
 import NavBar from "../components/NavBar";
 import SideNavBar from "../components/SideNavBar";
@@ -25,37 +25,45 @@ export default function Mainlayout() {
   const sort = searchParams.get("sort") || "";
   const order = searchParams.get("order") || "";
 
-  const [showSideBar, setShowSideBar] = useState(true);
+  const [showSideBar, setShowSideBar] = useState(() => {
+    const stored = localStorage.getItem("showSideBar");
+    return stored ? JSON.parse(stored) : false;
+  });
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchUserDetails = async () => {
-      try {
-        const token = sessionStorage.getItem("token");
-        if (!token) {
-          console.log("No token found...");
-          alert("Invalid Session, logging out...");
-          navigate("/login");
-          return;
-        }
-        const result = await fetchUserData(token!);
-        if (result.success) {
-          setUser(result.data);
-          // console.log(result.data);
-        } else {
-          console.log("error occured.");
-          alert("Invalid Session, logging out...");
-          navigate("/login");
-        }
-      } catch (error) {
-        console.log(error);
+    localStorage.setItem("showSideBar", JSON.stringify(showSideBar));
+  }, [showSideBar]);
+
+  const fetchUserDetails = useCallback(async () => {
+    try {
+      const token = sessionStorage.getItem("token");
+      if (!token) {
+        // console.log("No token found...");
+        alert("Invalid Session, logging out...");
+        navigate("/login");
+        return;
       }
-    };
-    fetchUserDetails();
+      const result = await fetchUserData(token!);
+      if (result.success) {
+        setUser(result.data);
+        // console.log("User details: ", result.data);
+      } else {
+        console.log("error occured.");
+        alert("Invalid Session, logging out...");
+        navigate("/login");
+      }
+    } catch (error) {
+      console.log(error);
+    }
   }, [navigate]);
 
-  const fetchAllParts = async () => {
+  useEffect(() => {
+    fetchUserDetails();
+  }, [fetchUserDetails, navigate]);
+
+  const fetchAllParts = useCallback(async () => {
     try {
       // setIsFetching(true);
       const [inResult, outResult, result] = await Promise.all([
@@ -91,12 +99,12 @@ export default function Mainlayout() {
           setParts(pins);
           setITStocks(it);
           setMaterials(material);
-          console.log(
-            "Fetch IT and Material stocks: ",
-            `${ITStocks}, ${materials}`
-          );
+          // console.log(
+          //   "Fetch IT and Material stocks: ",
+          //   `${ITStocks}, ${materials}`
+          // );
         } else if (sort === "stocks") {
-          console.log(`Sorting by stocks and by ${order}`);
+          // console.log(`Sorting by stocks and by ${order}`);
           const sorted = sortByStocks(
             partWithInboundOutbound,
             sort === "stocks" && order === "asc" ? "desc" : "asc"
@@ -110,7 +118,7 @@ export default function Mainlayout() {
           setITStocks(it);
           setMaterials(material);
         } else if (sort === "unitPrice") {
-          console.log(`Sorting by unit price and by ${order}`);
+          // console.log(`Sorting by unit price and by ${order}`);
           const sorted = sortByPrice(
             partWithInboundOutbound,
             sort === "unitPrice" && order === "asc" ? "desc" : "asc"
@@ -146,15 +154,17 @@ export default function Mainlayout() {
         //   partWithInboundOutbound
         // );
       } else {
-        console.log("No parts found.");
+        // console.log("No parts found.");
         setParts([]);
       }
     } catch (err) {
       console.log("Unexpected error occured: ", err);
     }
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  const loadParts = async () => {
+  const loadParts = useCallback(async () => {
+    // console.log("fetching parts");
     try {
       setIsFetching(true);
       await fetchAllParts();
@@ -166,11 +176,11 @@ export default function Mainlayout() {
         import.meta.env.VITE_TIME_OUT
       );
     }
-  };
+  }, [fetchAllParts]);
 
   useEffect(() => {
     loadParts();
-  }, []);
+  }, [loadParts, navigate]);
 
   return (
     <div className="relative" style={{ height: "100dvh" }}>
@@ -179,14 +189,19 @@ export default function Mainlayout() {
         showSideBar={showSideBar}
         setShowSideBar={setShowSideBar}
       />
-      <div className="flex justify-start h-dvh w-dvw pt-15 overflow-hidden">
+      <div className="relative flex justify-start h-dvh w-dvw pt-15 overflow-hidden">
         <div>
-          <SideNavBar showSideBar={showSideBar} />
+          <SideNavBar
+            user={user!}
+            showSideBar={showSideBar}
+            setShowSideBar={setShowSideBar}
+          />
         </div>
         <div className={`w-10/10`}>
-          <div className="bg-white h-95/100 my-7 mx-5 p-5 rounded-sm">
+          <div className="bg-white h-95/100 my-4 md:my-7 mx-2 md:mx-5 p-5 rounded-sm">
             <Outlet
               context={{
+                fetchUserDetails,
                 user,
                 parts,
                 setParts,

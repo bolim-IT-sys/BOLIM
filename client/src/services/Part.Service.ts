@@ -52,7 +52,7 @@ export async function fetchParts(): Promise<FetchingPartsResponse> {
     });
 
     if (response.status === 200) {
-      // console.log("Parts Fetched: ", data);
+      // console.log("Parts Fetched: ", response.data);
       return response.data;
     } else {
       return response.data;

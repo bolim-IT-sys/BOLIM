@@ -22,16 +22,19 @@ export default function SuccessButton({
       disabled={disabled}
       onClick={onClick}
     >
-      <p className="flex justify-center items-center gap-1">
+      <div className="flex justify-center items-center gap-1">
         {isLoading ? (
           <>
             <i className="bx bx-loader-dots bx-spin" />
-            {loadingText}
+            <p className="">{loadingText}</p>
           </>
         ) : (
-          <>{text}</>
+          <>
+            {/* <i className="bx bx-loader-dots bx-spin " /> */}
+            <p className="">{text}</p>
+          </>
         )}
-      </p>
+      </div>
     </button>
   );
 }

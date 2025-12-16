@@ -18,7 +18,7 @@ export default function DangerButton({
   return (
     <button
       type="submit"
-      className="bg-red-500 hover:bg-red-400 disabled:bg-red-300 disabled:cursor-no-drop transition duration-200 ease-in-out cursor-pointer text-neutral-50 w-full rounded py-1 "
+      className="bg-red-500 hover:bg-red-600 disabled:bg-red-300 disabled:cursor-no-drop transition duration-200 ease-in-out cursor-pointer text-neutral-50 w-full rounded py-1 "
       disabled={disabled || isLoading}
       onClick={onClick}
     >

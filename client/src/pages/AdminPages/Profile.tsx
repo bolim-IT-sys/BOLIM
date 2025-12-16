@@ -1,0 +1,135 @@
+import { useEffect, useState } from "react";
+import InputField from "../../components/InputField";
+import {
+  editUser,
+  type CreateUserType,
+  type User,
+} from "../../services/User.Service";
+import { useOutletContext } from "react-router-dom";
+import SuccessButton from "../../components/button/SuccessButton";
+
+type ContextType = {
+  user: User;
+  fetchUserDetails: () => void;
+};
+
+export default function Profile() {
+  const { user, fetchUserDetails } = useOutletContext<ContextType>();
+  const [formData, setFormData] = useState<CreateUserType>({
+    username: "",
+    password: "",
+    pins: 0,
+    it_stocks: 0,
+    materials: 0,
+  });
+  const [id, setId] = useState<number>();
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    // console.log("USER DATA: ", user);
+    if (user) {
+      setId(user.id);
+      setFormData((prev) => ({
+        ...prev,
+        username: user.username,
+        pins: user.pins,
+        it_stocks: user.it_stocks,
+        materials: user.materials,
+      }));
+    }
+  }, [user]);
+
+  const handleChange = (field: string, value: string | number) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleSubmit = async () => {
+    setIsLoading(true);
+    try {
+      if (!id) return;
+
+      const result = await editUser(id, formData);
+      // console.log("creating part");
+
+      if (result.success) {
+        setTimeout(
+          () => {
+            alert(result.message);
+            fetchUserDetails();
+            setFormData({
+              username: formData.username,
+              password: "",
+              pins: formData.pins,
+              it_stocks: formData.it_stocks,
+              materials: formData.materials,
+            });
+          },
+          import.meta.env.VITE_TIME_OUT
+        );
+        // Redirect or update UI
+      } else {
+        setTimeout(
+          () => {
+            alert(`${result.message}`);
+          },
+          import.meta.env.VITE_TIME_OUT
+        );
+      }
+    } catch (error) {
+      console.error("Unexpecter error occured: ", error);
+    } finally {
+      setTimeout(
+        () => {
+          setIsLoading(false);
+        },
+        import.meta.env.VITE_TIME_OUT
+      );
+    }
+  };
+
+  const NoChanges =
+    user?.username === "" ||
+    (user?.username === formData.username && formData.password === "");
+
+  return (
+    <>
+      <div className="h-8/10 flex justify-center items-center flex-col ">
+        <div className="w-full md:w-120 mb-1">
+          <label htmlFor="USERNAME" className="block font-medium text-gray-700">
+            <p>USERNAME</p>
+          </label>
+          <InputField
+            label="USERNAME"
+            type="text"
+            value={formData.username}
+            required={true}
+            onChange={(value: string) => handleChange("username", value)}
+            autoComplete={`new-username`}
+          />
+        </div>
+        <div className="w-full md:w-120 mb-3">
+          <label htmlFor="PASSWORD" className="block font-medium text-gray-700">
+            <p>PASSWORD</p>
+          </label>
+          <InputField
+            label="PASSWORD"
+            type="password"
+            value={formData.password}
+            required={true}
+            onChange={(value: string) => handleChange("password", value)}
+            autoComplete={`new-password`}
+          />
+        </div>
+        <div className="w-full md:w-120">
+          <SuccessButton
+            text={<>UPDATE</>}
+            loadingText={"UPDATING"}
+            onClick={handleSubmit}
+            disabled={isLoading || NoChanges}
+            isLoading={isLoading}
+          />
+        </div>
+      </div>
+    </>
+  );
+}

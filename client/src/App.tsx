@@ -8,10 +8,14 @@ import {
 import Mainlayout from "./pages/Mainlayout";
 
 import LoginPage from "./pages/LoginPage";
+
+import Dashboard from "./pages/AdminPages/Dashboard";
 import Pins from "./pages/AdminPages/Pins";
 import ITStocks from "./pages/AdminPages/ITStocks";
 import MaterialControl from "./pages/AdminPages/MaterialControl";
-import Dashboard from "./pages/AdminPages/Dashboard";
+import Users from "./pages/AdminPages/Users";
+import Profile from "./pages/AdminPages/Profile";
+
 import "./styles/index.css";
 import "boxicons/css/boxicons.min.css";
 
@@ -29,6 +33,9 @@ export default function App() {
             path="/stocks/meterial-control"
             element={<MaterialControl />}
           />
+
+          <Route path="/users" element={<Users />} />
+          <Route path="/profile" element={<Profile />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/login" />} />
