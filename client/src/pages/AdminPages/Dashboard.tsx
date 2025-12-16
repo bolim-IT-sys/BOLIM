@@ -24,10 +24,16 @@ interface ContextType {
 export default function Dashboard() {
   const { parts, ITStocks, materials } = useOutletContext<ContextType>();
 
-  const [dataType, setDataType] = useState("Pins");
+  const [dataType, setDataType] = useState(() => {
+    const stored = localStorage.getItem("dataType");
+    return stored ? JSON.parse(stored) : "Pins";
+  });
   const [data, setData] = useState<Part[]>([]);
 
-  const [dateRange, setDateRange] = useState("week");
+  const [dateRange, setDateRange] = useState(() => {
+    const stored = localStorage.getItem("dateRange");
+    return stored ? JSON.parse(stored) : "week";
+  });
   const [startDate, setStartDate] = useState<string>();
   const [endDate, setEndDate] = useState<string>();
 
@@ -44,6 +50,7 @@ export default function Dashboard() {
   }, [dataType, parts, ITStocks, materials]);
 
   useEffect(() => {
+    localStorage.setItem("dateRange", JSON.stringify(dateRange));
     const dates = getDateRange(dateRange);
 
     if (dates) {
@@ -51,6 +58,10 @@ export default function Dashboard() {
       setEndDate(dates.end.toISOString().split("T")[0]);
     }
   }, [dateRange]);
+
+  useEffect(() => {
+    localStorage.setItem("dataType", JSON.stringify(dataType));
+  }, [dataType]);
 
   const filteredAndRankedParts = useMemo(() => {
     if (!startDate || !endDate) {
