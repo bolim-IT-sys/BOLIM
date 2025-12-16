@@ -25,9 +25,16 @@ export default function Mainlayout() {
   const sort = searchParams.get("sort") || "";
   const order = searchParams.get("order") || "";
 
-  const [showSideBar, setShowSideBar] = useState(true);
+  const [showSideBar, setShowSideBar] = useState(() => {
+    const stored = localStorage.getItem("showSideBar");
+    return stored ? JSON.parse(stored) : false;
+  });
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    localStorage.setItem("showSideBar", JSON.stringify(showSideBar));
+  }, [showSideBar]);
 
   const fetchUserDetails = useCallback(async () => {
     try {
