@@ -72,11 +72,10 @@ export default function LoginPage() {
 
   return (
     <div className="flex items-center justify-center h-dvh">
-      <div
-        className="bg-white p-4 rounded shadow w-100"
-        style={{ maxWidth: "400px" }}
-      >
-        <h2 className="h4 text-center mb-4">Login</h2>
+      <div className=" w-100 mx-5 bg-white p-4 rounded shadow">
+        <h2 className="h4 text-center mb-4">
+          <b>LOGIN</b>
+        </h2>
         <div className="mb-3">
           <InputField
             label="Username"
@@ -97,15 +96,25 @@ export default function LoginPage() {
             autoComplete={`current-password`}
           />
         </div>
-        <PrimaryButton
-          text={"Log in"}
-          loadingText={"Loging in"}
-          onClick={handleSubmit}
-          disabled={
-            formData.username === "" || formData.password === "" || isLoading
-          }
-          isLoading={isLoading}
-        />
+        <div className="h-10">
+          <PrimaryButton
+            text={
+              <>
+                <span className="my-1.5">Log in</span>
+              </>
+            }
+            loadingText={
+              <>
+                <span className="my-1.5">Loging in</span>
+              </>
+            }
+            onClick={handleSubmit}
+            disabled={
+              formData.username === "" || formData.password === "" || isLoading
+            }
+            isLoading={isLoading}
+          />
+        </div>
       </div>
     </div>
   );

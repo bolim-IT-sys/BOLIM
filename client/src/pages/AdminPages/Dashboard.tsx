@@ -211,7 +211,7 @@ export default function Dashboard() {
                     style={{ height: "clamp(20rem, 23.5dvw, 90rem)" }}
                   >
                     {filteredAndRankedParts.length > 0 ? (
-                      <ResponsiveContainer width="100%">
+                      <ResponsiveContainer height="100%" width="100%">
                         <BarChart
                           data={chartData}
                           margin={{ top: 0, right: 30, left: 0, bottom: 0 }}
