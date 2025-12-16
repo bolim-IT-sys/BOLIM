@@ -68,6 +68,16 @@ export const AddingPart = ({ fetchAllParts, type }: AddingProps) => {
     }
   };
 
+  const IncompleteForm = () => {
+    return (
+      formData.partNumber === "" ||
+      formData.specs === "" ||
+      formData.category === "" ||
+      formData.unitPrice === "" ||
+      formData.company === ""
+    );
+  };
+
   return (
     <>
       <PrimaryButton
@@ -102,22 +112,27 @@ export const AddingPart = ({ fetchAllParts, type }: AddingProps) => {
         size="md"
         footer={
           <>
-            <SuccessButton
-              text="ADD"
-              loadingText={`ADDING ${
-                type === "pin"
-                  ? "PIN"
-                  : type === "it"
-                    ? "ITEM"
-                    : type === "material"
-                      ? "MATERIAL"
-                      : "INVALID TYPE"
-              }`}
-              onClick={handleSubmit}
-              isLoading={isLoading}
-              disabled={isLoading}
-            />
-            <SecondaryButton text="CLOSE" onClick={() => setModalShow(false)} />
+            <div className="h-10 flex gap-2">
+              <SecondaryButton
+                text="CLOSE"
+                onClick={() => setModalShow(false)}
+              />
+              <SuccessButton
+                text="ADD"
+                loadingText={`ADDING ${
+                  type === "pin"
+                    ? "PIN"
+                    : type === "it"
+                      ? "ITEM"
+                      : type === "material"
+                        ? "MATERIAL"
+                        : "INVALID TYPE"
+                }`}
+                onClick={handleSubmit}
+                isLoading={isLoading}
+                disabled={isLoading || IncompleteForm()}
+              />
+            </div>
           </>
         }
       >
