@@ -33,7 +33,7 @@ export default function Mainlayout() {
     try {
       const token = sessionStorage.getItem("token");
       if (!token) {
-        console.log("No token found...");
+        // console.log("No token found...");
         alert("Invalid Session, logging out...");
         navigate("/login");
         return;
@@ -97,7 +97,7 @@ export default function Mainlayout() {
           //   `${ITStocks}, ${materials}`
           // );
         } else if (sort === "stocks") {
-          console.log(`Sorting by stocks and by ${order}`);
+          // console.log(`Sorting by stocks and by ${order}`);
           const sorted = sortByStocks(
             partWithInboundOutbound,
             sort === "stocks" && order === "asc" ? "desc" : "asc"
@@ -111,7 +111,7 @@ export default function Mainlayout() {
           setITStocks(it);
           setMaterials(material);
         } else if (sort === "unitPrice") {
-          console.log(`Sorting by unit price and by ${order}`);
+          // console.log(`Sorting by unit price and by ${order}`);
           const sorted = sortByPrice(
             partWithInboundOutbound,
             sort === "unitPrice" && order === "asc" ? "desc" : "asc"
@@ -147,7 +147,7 @@ export default function Mainlayout() {
         //   partWithInboundOutbound
         // );
       } else {
-        console.log("No parts found.");
+        // console.log("No parts found.");
         setParts([]);
       }
     } catch (err) {

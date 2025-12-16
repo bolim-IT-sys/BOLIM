@@ -27,9 +27,9 @@ const login = async (req, res) => {
     }
 
     // DEBUG: Log to see what fields the user has
-    console.log("User object:", user.username);
-    console.log("Password from request:", password);
-    console.log("PasswordHash from DB:", user.password);
+    // console.log("User object:", user.username);
+    // console.log("Password from request:", password);
+    // console.log("PasswordHash from DB:", user.password);
 
     // Check if passwordHash exists
     if (!user.password) {

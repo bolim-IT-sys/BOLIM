@@ -83,9 +83,9 @@ const updateUser = async (req, res) => {
       );
 
       if (userWithSameUsername) {
-        console.log("Matching user name: ", userWithSameUsername.username);
-        console.log(`${userId} !== ${userWithSameUsername.id}`);
-        console.log(userId !== userWithSameUsername.id);
+        // console.log("Matching user name: ", userWithSameUsername.username);
+        // console.log(`${userId} !== ${userWithSameUsername.id}`);
+        // console.log(userId !== userWithSameUsername.id);
         if (Number(userId) !== userWithSameUsername.id) {
           return res.json({
             success: false,

@@ -79,7 +79,7 @@ const findPartByPartname = async (name) => {
         1
       ),
     });
-    console.log("Checking name: ", name);
+    // console.log("Checking name: ", name);
     return parts;
   } catch (error) {
     throw error;
@@ -185,7 +185,7 @@ const deletePart = async (partsId) => {
     // IF USER IS PART DELETE
     await parts.destroy(partsId);
 
-    console.log("Part deleted successfully.");
+    // console.log("Part deleted successfully.");
 
     // Return parts without password
     return {
@@ -253,7 +253,7 @@ const deployItem = async (itemData) => {
       where: { serialNumber: itemData.serialNumber },
     });
 
-    console.log("Item found: ", item);
+    // console.log("Item found: ", item);
 
     if (!item) {
       throw new Error("Item not found.");
@@ -277,7 +277,7 @@ const deployItem = async (itemData) => {
 
     await item.update(updateData);
 
-    console.log("Item deployed successfully.");
+    // console.log("Item deployed successfully.");
 
     // Return parts without password
     return {
@@ -334,7 +334,7 @@ const outboundPart = async (outboundData) => {
     const { partId, quantity, outboundDate } = outboundData;
 
     // Hash password before storing
-    console.log("Data received in outbounding: ", outboundData);
+    // console.log("Data received in outbounding: ", outboundData);
 
     // console.log("Inbounding part.");
     const outbound = await Outbound.create({

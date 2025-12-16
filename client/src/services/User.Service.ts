@@ -202,7 +202,7 @@ export async function removeUser(id: number): Promise<UserResponse> {
         "Content-Type": "application/json",
       },
     });
-    console.log("deleting user details");
+    // console.log("deleting user details");
     if (response.status === 200) {
       return response.data;
     } else {

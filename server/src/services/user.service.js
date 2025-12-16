@@ -28,7 +28,7 @@ const find = async (username) => {
       where: { username: username },
       raw: true,
     });
-    console.log("Checking user existense... ", user ? `Found` : "Cannot Found");
+    // console.log("Checking user existense... ", user ? `Found` : "Cannot Found");
     return user;
   } catch (error) {
     console.log("Error Finding User: ", error);
@@ -41,7 +41,7 @@ const findUserByUsername = async (username) => {
     const user = await User.findOne({
       where: { username: username },
     });
-    console.log("Checking username: ", username, user);
+    // console.log("Checking username: ", username, user);
     return user;
   } catch (error) {
     throw error;
@@ -55,7 +55,7 @@ const createUser = async (userData) => {
     // Hash password before storing
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    console.log("Adding user.");
+    // console.log("Adding user.");
     const user = await User.create({
       username: username,
       password: hashedPassword,
@@ -124,7 +124,7 @@ const deleteUser = async (userId) => {
     // IF USER IS FOUND DELETE
     await user.destroy(userId);
 
-    console.log("User deleted successfully.");
+    // console.log("User deleted successfully.");
 
     // Return user without password
     return {
