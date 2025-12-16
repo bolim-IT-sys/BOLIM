@@ -82,12 +82,22 @@ export const EditingUser = ({ user, fetchAllUsers }: EditingProps) => {
   };
 
   const NoChanges = () => {
+    // If password has input → allow submit
+    if (formData.password?.trim() !== "") {
+      return false;
+    }
+
+    // Disable if username empty
+    if (formData.username.trim() === "") {
+      return true;
+    }
+
+    // Disable if nothing else changed
     return (
-      formData.username === "" ||
-      (user.username === formData.username &&
-        user.pins === formData.pins &&
-        user.it_stocks === formData.it_stocks &&
-        user.materials === formData.materials)
+      user.username === formData.username &&
+      user.pins === formData.pins &&
+      user.it_stocks === formData.it_stocks &&
+      user.materials === formData.materials
     );
   };
 
@@ -109,14 +119,19 @@ export const EditingUser = ({ user, fetchAllUsers }: EditingProps) => {
         title={`EDIT ${user.username.toLocaleUpperCase()} DETAILS `}
         footer={
           <>
-            <SuccessButton
-              text="SAVE"
-              loadingText="SAVING CHANGES"
-              onClick={handleSubmit}
-              isLoading={isLoading}
-              disabled={isLoading || NoChanges()}
-            />
-            <SecondaryButton text="CLOSE" onClick={() => setModalShow(false)} />
+            <div className="h-10 flex gap-2 ">
+              <SecondaryButton
+                text="CLOSE"
+                onClick={() => setModalShow(false)}
+              />
+              <SuccessButton
+                text="SAVE"
+                loadingText="SAVING CHANGES"
+                onClick={handleSubmit}
+                isLoading={isLoading}
+                disabled={isLoading || NoChanges()}
+              />
+            </div>
           </>
         }
       >
@@ -153,7 +168,7 @@ export const EditingUser = ({ user, fetchAllUsers }: EditingProps) => {
               autoComplete={`new-password`}
             />
           </div>
-          <div className="flex justify-between">
+          <div className="flex justify-between flex-col sm:flex-row">
             <div className="mb-1">
               <label
                 htmlFor="pin_admin"
@@ -162,7 +177,7 @@ export const EditingUser = ({ user, fetchAllUsers }: EditingProps) => {
                 <p>PINS:</p>
               </label>
               <select
-                className="w-40 no-arrow rounded-lg border border-neutral-300 hover:bg-neutral-200 transition duration-350 cursor-pointer px-2 py-2 focus:bg-neutral-50  focus:ring-1 focus:ring-neutral-300 focus:outline-none"
+                className="w-full sm:w-40 no-arrow rounded-lg border border-neutral-300 hover:bg-neutral-200 transition duration-350 cursor-pointer px-2 py-2 focus:bg-neutral-50  focus:ring-1 focus:ring-neutral-300 focus:outline-none"
                 id="pin_admin"
                 name="pin_admin"
                 value={formData.pins}
@@ -185,7 +200,7 @@ export const EditingUser = ({ user, fetchAllUsers }: EditingProps) => {
                 <p>IT STOCKS:</p>
               </label>
               <select
-                className="w-40 no-arrow rounded-lg border border-neutral-300 hover:bg-neutral-200 transition duration-350 cursor-pointer px-2 py-2 focus:bg-neutral-50  focus:ring-1 focus:ring-neutral-300 focus:outline-none"
+                className="w-full sm:w-40 no-arrow rounded-lg border border-neutral-300 hover:bg-neutral-200 transition duration-350 cursor-pointer px-2 py-2 focus:bg-neutral-50  focus:ring-1 focus:ring-neutral-300 focus:outline-none"
                 id="it_admin"
                 name="it_admin"
                 value={formData.it_stocks}
@@ -208,7 +223,7 @@ export const EditingUser = ({ user, fetchAllUsers }: EditingProps) => {
                 <p>MATERIALS:</p>
               </label>
               <select
-                className="w-40 no-arrow rounded-lg border border-neutral-300 hover:bg-neutral-200 transition duration-350 cursor-pointer px-2 py-2 focus:bg-neutral-50  focus:ring-1 focus:ring-neutral-300 focus:outline-none"
+                className="w-full sm:w-40 no-arrow rounded-lg border border-neutral-300 hover:bg-neutral-200 transition duration-350 cursor-pointer px-2 py-2 focus:bg-neutral-50  focus:ring-1 focus:ring-neutral-300 focus:outline-none"
                 id="material_admin"
                 name="material_admin"
                 value={formData.materials}
