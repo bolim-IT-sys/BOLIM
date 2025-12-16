@@ -267,7 +267,7 @@ export const DataTable = ({
           <h1 className="flex">
             <i className="bx  bx-confused"></i>
           </h1>
-          <h3>No matches found.</h3>
+          <h3>No data found.</h3>
         </div>
       ) : (
         <div className="w-150">
