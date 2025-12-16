@@ -94,7 +94,7 @@ export default function Profile() {
   return (
     <>
       <div className="h-8/10 flex justify-center items-center flex-col ">
-        <div className="w-120 mb-1">
+        <div className="w-full md:w-120 mb-1">
           <label htmlFor="USERNAME" className="block font-medium text-gray-700">
             <p>USERNAME</p>
           </label>
@@ -107,7 +107,7 @@ export default function Profile() {
             autoComplete={`new-username`}
           />
         </div>
-        <div className="w-120 mb-3">
+        <div className="w-full md:w-120 mb-3">
           <label htmlFor="PASSWORD" className="block font-medium text-gray-700">
             <p>PASSWORD</p>
           </label>
@@ -120,7 +120,7 @@ export default function Profile() {
             autoComplete={`new-password`}
           />
         </div>
-        <div className="w-120">
+        <div className="w-full md:w-120">
           <SuccessButton
             text={<>UPDATE</>}
             loadingText={"UPDATING"}
