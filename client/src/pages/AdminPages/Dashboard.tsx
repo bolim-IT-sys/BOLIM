@@ -14,30 +14,58 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { getDateRange } from "../../helper/date.helper";
+import type { User } from "../../services/User.Service";
 
 interface ContextType {
+  user: User;
   parts: Part[];
   ITStocks: Part[];
   materials: Part[];
 }
 
 export default function Dashboard() {
-  const { parts, ITStocks, materials } = useOutletContext<ContextType>();
+  const { user, parts, ITStocks, materials } = useOutletContext<ContextType>();
 
-  const [dataType, setDataType] = useState(() => {
+  const [dataType, setDataType] = useState<string>("");
+  useEffect(() => {
+    // Remove the if (user) check or handle the falsy case
+    if (!user) {
+      // console.log("No user yet, dataType remains empty");
+      return; // or set a default: setDataType("Pins");
+    }
+
     const stored = localStorage.getItem("dataType");
-    return stored ? JSON.parse(stored) : "Pins";
-  });
+    // console.log(stored ? "Has Stored" : "Has no Stored");
+    if (stored) {
+      const parsedData = JSON.parse(stored);
+      // console.log("Parsed: ", parsedData);
+      if (parsedData === "Pins" && user.pins) {
+        setDataType("Pins");
+        // console.log("11INITIAL DATA TYPE: ", "Pins");
+      } else if (parsedData === "ITStocks" && user.it_stocks) {
+        setDataType("ITStocks");
+        // console.log("12INITIAL DATA TYPE: ", "ITStocks");
+      } else if (parsedData === "MaterialControl" && user.materials) {
+        setDataType("MaterialControl");
+        // console.log("13INITIAL DATA TYPE: ", "MaterialControl");
+      }
+      // console.log("1INITIAL DATA TYPE: ", JSON.parse(stored));
+    } else if (user.pins) {
+      setDataType("Pins");
+      // console.log("2INITIAL DATA TYPE: ", "Pins");
+    } else if (user.it_stocks) {
+      setDataType("ITStocks");
+      // console.log("3INITIAL DATA TYPE: ", "ITStocks");
+    } else if (user.materials) {
+      setDataType("MaterialControl");
+      // console.log("4INITIAL DATA TYPE: ", "MaterialControl");
+    }
+  }, [user]);
+
   const [data, setData] = useState<Part[]>([]);
 
-  const [dateRange, setDateRange] = useState(() => {
-    const stored = localStorage.getItem("dateRange");
-    return stored ? JSON.parse(stored) : "week";
-  });
-  const [startDate, setStartDate] = useState<string>();
-  const [endDate, setEndDate] = useState<string>();
-
   useEffect(() => {
+    // console.log("DATA TYPE: ", dataType);
     if (dataType === "Pins") {
       setData(parts);
     } else if (dataType === "ITStocks") {
@@ -45,9 +73,29 @@ export default function Dashboard() {
     } else if (dataType === "MaterialControl") {
       setData(materials);
     } else {
+      // console.log("No data type.");
       setData([]);
     }
-  }, [dataType, parts, ITStocks, materials]);
+  }, [user, dataType, parts, ITStocks, materials]);
+
+  useEffect(() => {
+    if (user) {
+      if (!dataType || dataType === "") {
+        // console.log("data type cant be saved.");
+        localStorage.removeItem("dataType");
+      } else {
+        // console.log("data type can be saved.");
+        localStorage.setItem("dataType", JSON.stringify(dataType));
+      }
+    }
+  }, [user, dataType]);
+
+  const [dateRange, setDateRange] = useState(() => {
+    const stored = localStorage.getItem("dateRange");
+    return stored ? JSON.parse(stored) : "week";
+  });
+  const [startDate, setStartDate] = useState<string>();
+  const [endDate, setEndDate] = useState<string>();
 
   useEffect(() => {
     localStorage.setItem("dateRange", JSON.stringify(dateRange));
@@ -58,10 +106,6 @@ export default function Dashboard() {
       setEndDate(dates.end.toISOString().split("T")[0]);
     }
   }, [dateRange]);
-
-  useEffect(() => {
-    localStorage.setItem("dataType", JSON.stringify(dataType));
-  }, [dataType]);
 
   const filteredAndRankedParts = useMemo(() => {
     if (!startDate || !endDate) {
@@ -138,9 +182,16 @@ export default function Dashboard() {
                 value={dataType}
                 onChange={(e) => setDataType(e.target.value)}
               >
-                <option value={`Pins`}>Pins</option>
-                <option value={`ITStocks`}>IT Stocks</option>
-                <option value={`MaterialControl`}>Material Control</option>
+                <option value={``}>Options...</option>
+                <option disabled={!user?.pins} value={`Pins`}>
+                  Pins
+                </option>
+                <option disabled={!user?.it_stocks} value={`ITStocks`}>
+                  IT Stocks
+                </option>
+                <option disabled={!user?.materials} value={`MaterialControl`}>
+                  Material Control
+                </option>
               </select>
             </div>
           </div>
@@ -216,7 +267,7 @@ export default function Dashboard() {
                     />
                   </div>
                 </div>
-                <div className="w-full overflow-x-auto">
+                <div className="w-full overflow-x-auto md:overflow-hidden">
                   <div
                     className="w-150 md:w-full"
                     style={{ height: "clamp(20rem, 23.5dvw, 90rem)" }}
