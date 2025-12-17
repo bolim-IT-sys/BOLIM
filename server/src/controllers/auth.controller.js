@@ -110,7 +110,7 @@ const authenticateToken = async (req, res) => {
         username: user.username,
         pins: user.pins,
         it_stocks: user.it_stocks,
-        materials: user.it_stocks,
+        materials: user.materials,
       },
     });
   } catch (error) {

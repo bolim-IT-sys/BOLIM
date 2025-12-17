@@ -1,14 +1,16 @@
 import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
 import { type Part } from "../../services/Part.Service";
 import { AddingPart } from "../../components/modals/Parts/AddingPart";
-import { useOutletContext } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import { DataTable } from "./Components/DataTable";
 import { DataPagination } from "./Components/DataPagination";
 import InputField from "../../components/InputField";
 import { DownloadPartData } from "../../components/downloadButton/DownloadPartData";
 import { DataTableLoader } from "../../components/loaders/DataTableLoader";
+import type { User } from "../../services/User.Service";
 
 interface ContextType {
+  user: User;
   materials: Part[];
   setMaterials: Dispatch<SetStateAction<Part[]>>;
   fetchAllParts: () => void;
@@ -16,7 +18,7 @@ interface ContextType {
 }
 
 export default function MaterialControl() {
-  const { materials, setMaterials, fetchAllParts, isFetching } =
+  const { user, materials, setMaterials, fetchAllParts, isFetching } =
     useOutletContext<ContextType>();
   const [currentData, setCurrentData] = useState<Part[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -31,6 +33,16 @@ export default function MaterialControl() {
   const [totalPages, setTotalPages] = useState<number>(0);
 
   const displayParts = searchTerm === "" ? materials : searchedParts;
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user) {
+      if (!user?.materials) {
+        alert("You're not authorized to access this page.");
+        navigate("/dashboard");
+      }
+    }
+  }, [navigate, user]);
 
   useEffect(() => {
     if (searchTerm !== "") {
