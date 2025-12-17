@@ -30,7 +30,7 @@ export default function App() {
           <Route path="/stocks/pins" element={<Pins />} />
           <Route path="/stocks/it-stocks" element={<ITStocks />} />
           <Route
-            path="/stocks/meterial-control"
+            path="/stocks/material-control"
             element={<MaterialControl />}
           />
 

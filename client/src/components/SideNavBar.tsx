@@ -34,11 +34,13 @@ export default function SideNavBar({
         className={`h-full absolute lg:static bg-sky-600 ${showSideBar ? "w-full md:w-65 left-0 " : "w-20 -left-20"} transition-all duration-400 ease-in-out shadow-md z-30`}
       >
         <WebItems
+          user={user}
           isHidden={isHidden}
           isShowing={isShowing}
           isSuperAdmin={Boolean(isSuperAdmin)}
         />
         <MobileItems
+          user={user}
           isHidden={isHidden}
           isShowing={isShowing}
           isSuperAdmin={Boolean(isSuperAdmin)}

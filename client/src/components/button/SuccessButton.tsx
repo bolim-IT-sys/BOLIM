@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 
 interface buttonProps {
   text: ReactNode;
-  loadingText?: string;
+  loadingText?: ReactNode;
   onClick?: () => void;
   disabled?: boolean;
   isLoading?: boolean;
