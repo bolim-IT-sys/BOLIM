@@ -9,7 +9,7 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
   const isAuth = sessionStorage.getItem("token");
   if (!isAuth) {
     alert("Invalid session logging out...");
-    console.log("Invalid session logging out...");
+    // console.log("Invalid session logging out...");
   }
   return isAuth ? children : <Navigate to="/login" />;
 }

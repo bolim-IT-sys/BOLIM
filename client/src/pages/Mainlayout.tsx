@@ -50,7 +50,7 @@ export default function Mainlayout() {
         setUser(result.data);
         // console.log("User details: ", result.data);
       } else {
-        console.log("error occured.");
+        // console.log("error occured.");
         alert("Invalid Session, logging out...");
         navigate("/login");
       }

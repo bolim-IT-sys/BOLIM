@@ -6,7 +6,7 @@ const getAllParts = async (req, res) => {
   try {
     const parts = await partService.getAllParts();
     if (!parts) {
-      console.log("No parts found.");
+      // console.log("No parts found.");
       res.json({
         success: false,
         message: "No parts found.",
@@ -17,7 +17,7 @@ const getAllParts = async (req, res) => {
     }
   } catch (err) {
     // You can add specific error handling here if needed
-    console.log("Error fetching parts.");
+    // console.log("Error fetching parts.");
 
     res.json({
       success: false,

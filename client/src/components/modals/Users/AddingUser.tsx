@@ -31,7 +31,7 @@ export const AddingUser = ({ fetchAllUsers }: AddingProps) => {
     setIsLoading(true);
     try {
       const result = await createUser(formData);
-      console.log("creating user");
+      // console.log("creating user");
 
       if (result.success) {
         setTimeout(
