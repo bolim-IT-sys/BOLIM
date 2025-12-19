@@ -1,7 +1,13 @@
 import type { Part } from "../../services/Part.Service";
 import { useOutletContext } from "react-router-dom";
 import InputField from "../../components/InputField";
-import { useEffect, useMemo, useState } from "react";
+import {
+  useEffect,
+  useMemo,
+  useState,
+  type Dispatch,
+  type SetStateAction,
+} from "react";
 import { KeyMetrics } from "./Components/dashboard/KeyMetrics";
 import {
   BarChart,
@@ -19,12 +25,14 @@ import type { User } from "../../services/User.Service";
 interface ContextType {
   user: User;
   parts: Part[];
+  setParts: Dispatch<SetStateAction<Part[]>>;
   ITStocks: Part[];
   materials: Part[];
 }
 
 export default function Dashboard() {
-  const { user, parts, ITStocks, materials } = useOutletContext<ContextType>();
+  const { user, parts, setParts, ITStocks, materials } =
+    useOutletContext<ContextType>();
 
   const [dataType, setDataType] = useState<string>("");
   useEffect(() => {
@@ -197,7 +205,7 @@ export default function Dashboard() {
           </div>
           <div className="h-full overflow-hidden">
             {/* Key Metrics Grid */}
-            <KeyMetrics data={data} />
+            <KeyMetrics setParts={setParts} data={data} dataType={dataType} />
 
             {/* BAR CHART */}
 
