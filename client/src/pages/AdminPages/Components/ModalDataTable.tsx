@@ -1,4 +1,4 @@
-import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
+import { useState, type Dispatch, type SetStateAction } from "react";
 import {
   currentMonth,
   currentYear,
@@ -42,34 +42,6 @@ export const ModalDataTable = ({ data, setData, type }: Props) => {
 
   const year = currentYear();
   const month = currentMonth();
-
-  const [currentData, setCurrentData] = useState<Part[]>([]);
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const [itemsPerPage, setItemsPerPage] = useState<number>(20);
-
-  const [searchedParts, setSearchedParts] = useState<Part[]>([]);
-  const [searchTerm, setSearchTerm] = useState<string>("");
-
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-
-  const [totalPages, setTotalPages] = useState<number>(0);
-
-  const displayParts = searchTerm === "" ? data : searchedParts;
-
-  useEffect(() => {
-    setItemsPerPage(50);
-    setCurrentData(displayParts.slice(indexOfFirstItem, indexOfLastItem));
-
-    setTotalPages(Math.ceil(data.length / itemsPerPage));
-  }, [
-    displayParts,
-    data,
-    currentPage,
-    indexOfFirstItem,
-    indexOfLastItem,
-    itemsPerPage,
-  ]);
 
   const handleSortByPartNumber = () => {
     const sorted = sortByPartNumber(
@@ -378,9 +350,9 @@ export const ModalDataTable = ({ data, setData, type }: Props) => {
               </tr>
             </thead>
             <tbody>
-              {currentData.length > 0 ? (
+              {data.length > 0 ? (
                 <>
-                  {currentData.map((item) => (
+                  {data.map((item) => (
                     <tr key={item.id} className="hover:bg-gray-50">
                       <td className="text-center border border-neutral-300 px-3 py-2">
                         <div className="h-18 flex justify-center items-center">

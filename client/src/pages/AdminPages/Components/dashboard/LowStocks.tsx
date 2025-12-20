@@ -11,7 +11,6 @@ type Props = {
 };
 export const LowStocks = ({ lowStockParts, setParts, dataType }: Props) => {
   const [modalShow, setModalShow] = useState(false);
-  console.log(lowStockParts);
   return (
     <>
       <div
@@ -41,7 +40,10 @@ export const LowStocks = ({ lowStockParts, setParts, dataType }: Props) => {
         onClose={() => setModalShow(false)}
         title={
           <>
-            <h4>MONTHLY STOCK VALUE TREND</h4>
+            <h4>
+              LOW STOCKS{" "}
+              <b className="text-yellow-500">({lowStockParts.length})</b>
+            </h4>
           </>
         }
         size="2xl"
@@ -58,7 +60,7 @@ export const LowStocks = ({ lowStockParts, setParts, dataType }: Props) => {
           </>
         }
       >
-        <div className="h-150 w-full overflow-auto border border-neutral-300">
+        <div className="relative h-150 w-full overflow-auto border border-neutral-300">
           <ModalDataTable
             data={lowStockParts}
             setData={setParts}

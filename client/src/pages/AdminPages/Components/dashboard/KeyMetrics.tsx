@@ -8,6 +8,7 @@ import type { Part } from "../../../../services/Part.Service";
 import { StockValue } from "./StockValue";
 import { LowStocks } from "./LowStocks";
 import type { Dispatch, SetStateAction } from "react";
+import { OutOfStocks } from "./OutOfStocks";
 
 type Props = {
   setParts: Dispatch<SetStateAction<Part[]>>;
@@ -60,29 +61,11 @@ export const KeyMetrics = ({ setParts, data, dataType }: Props) => {
           setParts={setParts}
           dataType={dataType}
         />
-        <div
-          className={`relative bg-red-500 text-neutral-50 rounded shadow p-3 md:p-6`}
-        >
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="font-medium text-neutral-50">Out of Stock</h3>
-              <h1 className="font-bold text-neutral-0 mt-2">
-                {`${outOfStockParts.length}`}
-                {/* {`₩${totalInventoryValue.toLocaleString("en-US", { maximumFractionDigits: 2 })}`} */}
-              </h1>
-              <p className="text-neutral-100 mt-1">
-                Immediate attention needed
-              </p>
-            </div>
-            <div
-              className={`absolute top-5 right-5 size-10 lg:size-13 flex justify-center items-center p-3 rounded-full bg-neutral-50 text-red-500`}
-            >
-              <h3 className="mt-1">
-                <i className="bx  bxs-trending-down"></i>
-              </h3>
-            </div>
-          </div>
-        </div>
+        <OutOfStocks
+          outOfStockParts={outOfStockParts}
+          setParts={setParts}
+          dataType={dataType}
+        />
       </div>
     </>
   );
