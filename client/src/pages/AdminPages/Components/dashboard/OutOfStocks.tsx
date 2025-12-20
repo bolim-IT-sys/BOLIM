@@ -60,7 +60,7 @@ export const OutOfStocks = ({ outOfStockParts, setParts, dataType }: Props) => {
           </>
         }
       >
-        <div className="relative h-150 w-10/10 overflow-auto border border-neutral-300">
+        <div className="relative h-100 md:h-150 w-10/10 overflow-auto border border-neutral-300">
           <ModalDataTable
             data={outOfStockParts}
             setData={setParts}

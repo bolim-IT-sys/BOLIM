@@ -277,11 +277,11 @@ export default function Dashboard() {
                 </div>
                 <div className="w-full overflow-x-auto md:overflow-hidden">
                   <div
-                    className="w-150 md:w-full"
-                    style={{ height: "clamp(20rem, 23.5dvw, 90rem)" }}
+                    className="w-150 md:w-full flex items-center justify-center mt-5"
+                    style={{ height: "clamp(20rem, 22dvw, 90rem)" }}
                   >
                     {filteredAndRankedParts.length > 0 ? (
-                      <ResponsiveContainer height="100%" width="100%">
+                      <ResponsiveContainer height="100%" width={1400}>
                         <BarChart
                           data={chartData}
                           margin={{ top: 0, right: 30, left: 0, bottom: 0 }}
