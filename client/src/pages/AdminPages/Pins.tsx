@@ -81,9 +81,9 @@ export default function Pins() {
 
   return (
     <>
-      <div className="h-full">
-        <div className="h-2/15 sm:h-1/15">
-          <div className="mb-2 flex flex-col sm:flex-row gap-2">
+      <div className="h-full flex flex-col justify-between">
+        <div className="">
+          <div className="flex flex-col sm:flex-row gap-2">
             <div className="w-full sm:w-6/10">
               <InputField
                 label="Search(part number, specifications, category, unit price, company)"
@@ -101,7 +101,7 @@ export default function Pins() {
 
         {/* <div className="h-87/100 w-full overflow-hidden border border-gray-300 relative"></div> */}
         <div
-          className={`h-12/15 sm:h-13/15 w-10/10 ${isFetching ? "overflow-hidden" : "overflow-auto"} border border-gray-300 relative`}
+          className={`h-11/15 sm:h-16/20 w-10/10 ${isFetching ? "overflow-hidden" : "overflow-auto"} border border-gray-300 relative`}
           // style={{ height: "clamp(30rem, 50dvw, 60rem)" }}
         >
           {isFetching ? <DataTableLoader /> : null}
@@ -114,7 +114,7 @@ export default function Pins() {
             currentData={currentData}
           />
         </div>
-        <div className="h-1/15 flex items-end justify-between">
+        <div className="flex items-end justify-between">
           <DataPagination
             data={displayParts}
             indexOfFirstItem={indexOfFirstItem}
