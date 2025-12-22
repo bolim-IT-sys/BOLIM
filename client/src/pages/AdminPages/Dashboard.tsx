@@ -180,14 +180,15 @@ export default function Dashboard() {
               </select>
             </div>
           </div>
-          <div className="h-full overflow-hidden">
+          <div className="h-full w-full overflow-hidden">
             {/* Key Metrics Grid */}
             <KeyMetrics setParts={setParts} data={data} dataType={dataType} />
+          </div>
 
-            {/* BAR CHART */}
-
-            <div>
-              <div className="bg-white rounded-xl shadow-lg">
+          {/* BAR CHART */}
+          <div className="w-full">
+            <div className="w-full">
+              <div>
                 <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
                   {dataType === "Pins"
                     ? "Pins "
@@ -252,153 +253,88 @@ export default function Dashboard() {
                     />
                   </div>
                 </div>
-                <div className="w-full overflow-x-auto md:overflow-hidden">
-                  <div
-                    className="w-150 md:w-full flex items-center justify-center mt-5"
-                    style={{ height: "clamp(20rem, 22dvw, 90rem)" }}
-                  >
-                    {filteredAndRankedParts.length > 0 ? (
-                      <ResponsiveContainer height="100%" width={1400}>
-                        <BarChart
-                          data={chartData}
-                          margin={{ top: 0, right: 30, left: 0, bottom: 0 }}
-                        >
-                          <CartesianGrid strokeDasharray="3 3" />
-                          <XAxis
-                            dataKey="name"
-                            angle={-40}
-                            textAnchor="end"
-                            height={80}
-                            interval={0}
-                            style={{ fontSize: "12px" }}
-                          />
-                          <YAxis />
-                          <Tooltip
-                            content={({ active, payload }) => {
-                              if (active && payload && payload.length) {
-                                return (
-                                  <div className="bg-white p-4 rounded-lg shadow-lg border border-gray-200">
-                                    <p className="font-bold text-gray-800 mb-1">
-                                      {payload[0].payload.name}
-                                    </p>
-                                    <p className="text-sm text-gray-600 mb-1">
-                                      {payload[0].payload.fullName}
-                                    </p>
-                                    <p className="text-sm text-gray-600 mb-2">
-                                      {payload[0].payload.company}
-                                    </p>
-                                    <p className="text-sm text-gray-600 mb-1">
-                                      Rank: #{payload[0].payload.rank}
-                                    </p>
-                                    <p className="text-sm text-red-600">
-                                      Outbound: {payload[0].payload.outbound}
-                                    </p>
-                                    <p className="text-sm text-blue-600">
-                                      Current Stock: {payload[0].payload.stock}
-                                    </p>
-                                  </div>
-                                );
-                              }
-                              return null;
-                            }}
-                          />
-                          <Legend />
-                          <Bar
-                            dataKey="outbound"
-                            fill="#ef4444"
-                            name="Outbound"
-                          />
-                          <Bar
-                            dataKey="stock"
-                            fill="#3b82f6"
-                            name="Current Stock"
-                          />
-                        </BarChart>
-                      </ResponsiveContainer>
-                    ) : (
-                      <div
-                        className="text-center py-12"
-                        style={{ height: 450 }}
+              </div>
+
+              <div className="w-full overflow-x-auto rounded-2xl">
+                <div
+                  className=" flex items-center justify-center mt-5"
+                  style={{ height: "clamp(20rem, 22dvw, 90rem)" }}
+                >
+                  {filteredAndRankedParts.length > 0 ? (
+                    <ResponsiveContainer height="100%">
+                      <BarChart
+                        data={chartData}
+                        margin={{ top: 0, right: 30, left: 0, bottom: 0 }}
                       >
-                        <h1 className="text-neutral-500">
-                          <i className="bx  bxs-package"></i>
-                        </h1>
-                        <h3 className="text-xl font-semibold text-gray-600 mb-2">
-                          No Data Available
-                        </h3>
-                        <p className="text-gray-500">
-                          No parts have both inbound and outbound transactions
-                          within the selected date range.
-                        </p>
-                      </div>
-                    )}
-                  </div>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis
+                          dataKey="name"
+                          angle={-40}
+                          textAnchor="end"
+                          height={80}
+                          interval={0}
+                          style={{ fontSize: "12px" }}
+                        />
+                        <YAxis />
+                        <Tooltip
+                          content={({ active, payload }) => {
+                            if (active && payload && payload.length) {
+                              return (
+                                <div className="bg-white p-4 rounded-lg shadow-lg border border-gray-200">
+                                  <p className="font-bold text-gray-800 mb-1">
+                                    {payload[0].payload.name}
+                                  </p>
+                                  <p className="text-sm text-gray-600 mb-1">
+                                    {payload[0].payload.fullName}
+                                  </p>
+                                  <p className="text-sm text-gray-600 mb-2">
+                                    {payload[0].payload.company}
+                                  </p>
+                                  <p className="text-sm text-gray-600 mb-1">
+                                    Rank: #{payload[0].payload.rank}
+                                  </p>
+                                  <p className="text-sm text-red-600">
+                                    Outbound: {payload[0].payload.outbound}
+                                  </p>
+                                  <p className="text-sm text-blue-600">
+                                    Current Stock: {payload[0].payload.stock}
+                                  </p>
+                                </div>
+                              );
+                            }
+                            return null;
+                          }}
+                        />
+                        <Legend />
+                        <Bar
+                          dataKey="outbound"
+                          fill="#ef4444"
+                          name="Outbound"
+                        />
+                        <Bar
+                          dataKey="stock"
+                          fill="#3b82f6"
+                          name="Current Stock"
+                        />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  ) : (
+                    <div className="text-center py-12" style={{ height: 450 }}>
+                      <h1 className="text-neutral-500">
+                        <i className="bx  bxs-package"></i>
+                      </h1>
+                      <h3 className="text-xl font-semibold text-gray-600 mb-2">
+                        No Data Available
+                      </h3>
+                      <p className="text-gray-500">
+                        No parts have both inbound and outbound transactions
+                        within the selected date range.
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
-
-            {/* Alert Section */}
-            {/* {(lowStockParts.length > 0 || outOfStockParts.length > 0) && (
-            <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-xl font-bold text-gray-900 mb-4">
-                Inventory Alerts
-              </h2>
-
-              {outOfStockParts.length > 0 && (
-                <div className="mb-6">
-                  <h3 className="text-lg font-semibold text-red-600 mb-3 flex items-center">
-                    <AlertTriangle size={20} className="mr-2" />
-                    Out of Stock ({outOfStockParts.length})
-                  </h3>
-                  <div className="space-y-2">
-                    {outOfStockParts.slice(0, 5).map((part) => (
-                      <div
-                        key={part.id}
-                        className="flex justify-between items-center p-3 bg-red-50 rounded"
-                      >
-                        <div>
-                          <p className="text-gray-900">
-                            {part.partNumber}
-                          </p>
-                          <p className="text-sm text-gray-600">{part.specs}</p>
-                        </div>
-                        <span className="text-sm font-semibold text-red-600">
-                          0 units
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {lowStockParts.length > 0 && (
-                <div>
-                  <h3 className="text-lg font-semibold text-yellow-600 mb-3 flex items-center">
-                    <AlertTriangle size={20} className="mr-2" />
-                    Low Stock ({lowStockParts.length})
-                  </h3>
-                  <div className="space-y-2">
-                    {lowStockParts.slice(0, 5).map((part) => (
-                      <div
-                        key={part.id}
-                        className="flex justify-between items-center p-3 bg-yellow-50 rounded"
-                      >
-                        <div>
-                          <p className="text-gray-900">
-                            {part.partNumber}
-                          </p>
-                          <p className="text-sm text-gray-600">{part.specs}</p>
-                        </div>
-                        <span className="text-sm font-semibold text-yellow-600">
-                          {part.quantity} units
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          )} */}
           </div>
         </div>
       </div>
