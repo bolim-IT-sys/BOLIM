@@ -4,7 +4,7 @@ import {
   currentYear,
   getSafetyStock,
 } from "../../../helper/helper";
-import { removePart, type Part } from "../../../services/Part.Service";
+import { type Part } from "../../../services/Part.Service";
 import {
   sortByExcessInsufficient,
   sortByOrderQuantity,
@@ -14,9 +14,6 @@ import {
   sortByStocks,
   sortByUrgentRequest,
 } from "../../../helper/sorting.helper";
-import { ViewPartStocks } from "../../../components/modals/Parts/ViewPartStocks";
-import { EditingPart } from "../../../components/modals/Parts/EditingPart";
-import DangerButton from "../../../components/button/DangerButton";
 import { useSearchParams } from "react-router-dom";
 import { ImageModal } from "../../../components/modals/Parts/ImageModal";
 import {
@@ -31,17 +28,9 @@ type Props = {
   data: Part[];
   setData: Dispatch<SetStateAction<Part[]>>;
   type: string;
-  fetchAllParts: () => void;
-  currentData: Part[];
 };
 
-export const DataTable = ({
-  data,
-  setData,
-  type,
-  fetchAllParts,
-  currentData,
-}: Props) => {
+export const ModalDataTable = ({ data, setData, type }: Props) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const sort = searchParams.get("sort") || "partNumber";
   const order = searchParams.get("order") || "asc";
@@ -50,7 +39,6 @@ export const DataTable = ({
     `${order}`
   );
   const [sortBy, setSortBy] = useState<string>(sort);
-  const [isDeleting, setIsDeleting] = useState<number>(0);
 
   const year = currentYear();
   const month = currentMonth();
@@ -200,66 +188,6 @@ export const DataTable = ({
     );
   };
 
-  const handleDelete = async (partId: number) => {
-    const isConfirm = window.confirm(
-      `Are you sure you want to delete this ${
-        type === "pin"
-          ? "pin"
-          : type === "it"
-            ? "item"
-            : type === "material"
-              ? "material"
-              : "INVALID TYPE"
-      }? This action cannot be undone.`
-    );
-
-    if (!isConfirm) {
-      return;
-    }
-
-    try {
-      setIsDeleting(partId);
-      // console.log("removing stock");
-      const result = await removePart(partId);
-
-      if (result.success) {
-        setTimeout(
-          () => {
-            alert(
-              ` ${
-                type === "pin"
-                  ? "Pin"
-                  : type === "it"
-                    ? "Item"
-                    : type === "material"
-                      ? "Material"
-                      : "INVALID TYPE"
-              } deleted successfully.`
-            );
-            fetchAllParts();
-          },
-          import.meta.env.VITE_TIME_OUT
-        );
-      } else {
-        setTimeout(
-          () => {
-            alert(result.message);
-          },
-          import.meta.env.VITE_TIME_OUT
-        );
-      }
-    } catch (error) {
-      console.error("Error occured: ", error);
-    } finally {
-      setTimeout(
-        () => {
-          setIsDeleting(0);
-        },
-        import.meta.env.VITE_TIME_OUT
-      );
-    }
-  };
-
   return (
     <>
       {data.length === 0 ? (
@@ -355,11 +283,6 @@ export const DataTable = ({
                     </h5>
                   </div>
                 </th>
-                <th className="w-30 border border-neutral-300 text-center px-2 py-3">
-                  <div className="h-10 flex justify-center items-center">
-                    <h5>ACTION</h5>
-                  </div>
-                </th>
                 <th
                   className="hover:bg-sky-700 transition duration-200 cursor-pointer w-50 border border-neutral-300 text-center px-2 py-3"
                   onClick={handleSortBySecurementRate}
@@ -427,9 +350,9 @@ export const DataTable = ({
               </tr>
             </thead>
             <tbody>
-              {currentData.length > 0 ? (
+              {data.length > 0 ? (
                 <>
-                  {currentData.map((item) => (
+                  {data.map((item) => (
                     <tr key={item.id} className="hover:bg-gray-50">
                       <td className="text-center border border-neutral-300 px-3 py-2">
                         <div className="h-18 flex justify-center items-center">
@@ -472,44 +395,7 @@ export const DataTable = ({
                           </h6>
                         </div>
                       </td>
-                      <td
-                        className=" text-center border border-neutral-300 p-2"
-                        style={{ zIndex: -10 }}
-                      >
-                        <div className="flex flex-col gap-1">
-                          <ViewPartStocks
-                            item={item}
-                            setData={setData}
-                            type={type}
-                          />
-                          <div className="flex gap-1">
-                            <EditingPart
-                              fetchAllParts={fetchAllParts}
-                              item={item}
-                              type={type}
-                            />
-                            <DangerButton
-                              text={
-                                <>
-                                  <span className="my-.5">
-                                    <i className="bx  bxs-trash"></i>
-                                  </span>
-                                </>
-                              }
-                              loadingText={
-                                <>
-                                  <span className="my-.5">
-                                    <i className="bx bx-loader-dots bx-spin" />
-                                  </span>
-                                </>
-                              }
-                              onClick={() => handleDelete(item.id!)}
-                              isLoading={isDeleting === item.id}
-                              disabled={isDeleting === item.id}
-                            />
-                          </div>
-                        </div>
-                      </td>
+
                       <td className="text-center border border-neutral-300 px-3 py-2">
                         <h6>{computeSecurementRate(item)}%</h6>
                       </td>

@@ -420,73 +420,86 @@ export const ViewPartStocks = ({ item, setData, type }: Props) => {
                     </tr>
                   ) : (
                     <>
-                      {stockItems.map((item) => (
-                        <tr key={item.id}>
-                          <td className="border border-neutral-400 px-3 py-2">
-                            <div className="flex justify-center items-center flex-col gap-1">
-                              <h6>{item.serialNumber}</h6>
-                            </div>
-                          </td>
-                          <td className="border border-neutral-400 px-3 py-2">
-                            <div className="flex justify-center items-center flex-col gap-1">
-                              <h6>{String(item.PRDate)}</h6>
-                            </div>
-                          </td>
-                          <td className="border border-neutral-400 px-3 py-2">
-                            <div className="flex justify-center items-center flex-col gap-1">
-                              <h6>{String(item.receivedDate)}</h6>
-                            </div>
-                          </td>
-                          <td className="border border-neutral-400 px-3 py-2">
-                            <div
-                              className={`flex justify-center items-center flex-col gap-1 ${
-                                item.deployedDate ? null : "text-neutral-400"
-                              }`}
-                            >
-                              <h6>
-                                {item.deployedDate
-                                  ? String(item.deployedDate)
-                                  : "N/A"}
-                              </h6>
-                            </div>
-                          </td>
-                          <td className="border border-neutral-400 px-3 py-2">
-                            <div
-                              className={`flex justify-center items-center flex-col gap-1 ${
-                                item.station ? null : "text-neutral-400"
-                              }`}
-                            >
-                              <h6>{item.station ? item.station : "N/A"}</h6>
-                            </div>
-                          </td>
-                          <td className="border border-neutral-400 px-3 py-2">
-                            <div
-                              className={`flex justify-center items-center flex-col gap-1 ${
-                                item.department ? null : "text-neutral-400"
-                              }`}
-                            >
-                              <h6>
-                                {item.department ? item.department : "N/A"}
-                              </h6>
-                            </div>
-                          </td>
-                          <td className="border border-neutral-400 px-3 py-2">
-                            <div
-                              className={`flex justify-center items-center flex-col gap-1 ${
-                                item.remarks === "available"
-                                  ? "text-green-700"
-                                  : "text-red-600"
-                              }`}
-                            >
-                              <h6>
-                                {item.remarks
-                                  ? item.remarks.toUpperCase()
-                                  : "N/A"}
-                              </h6>
+                      {stockItems.length > 0 ? (
+                        stockItems.map((item) => (
+                          <tr key={item.id}>
+                            <td className="border border-neutral-400 px-3 py-2">
+                              <div className="flex justify-center items-center flex-col gap-1">
+                                <h6>{item.serialNumber}</h6>
+                              </div>
+                            </td>
+                            <td className="border border-neutral-400 px-3 py-2">
+                              <div className="flex justify-center items-center flex-col gap-1">
+                                <h6>{String(item.PRDate)}</h6>
+                              </div>
+                            </td>
+                            <td className="border border-neutral-400 px-3 py-2">
+                              <div className="flex justify-center items-center flex-col gap-1">
+                                <h6>{String(item.receivedDate)}</h6>
+                              </div>
+                            </td>
+                            <td className="border border-neutral-400 px-3 py-2">
+                              <div
+                                className={`flex justify-center items-center flex-col gap-1 ${
+                                  item.deployedDate ? null : "text-neutral-400"
+                                }`}
+                              >
+                                <h6>
+                                  {item.deployedDate
+                                    ? String(item.deployedDate)
+                                    : "N/A"}
+                                </h6>
+                              </div>
+                            </td>
+                            <td className="border border-neutral-400 px-3 py-2">
+                              <div
+                                className={`flex justify-center items-center flex-col gap-1 ${
+                                  item.station ? null : "text-neutral-400"
+                                }`}
+                              >
+                                <h6>{item.station ? item.station : "N/A"}</h6>
+                              </div>
+                            </td>
+                            <td className="border border-neutral-400 px-3 py-2">
+                              <div
+                                className={`flex justify-center items-center flex-col gap-1 ${
+                                  item.department ? null : "text-neutral-400"
+                                }`}
+                              >
+                                <h6>
+                                  {item.department ? item.department : "N/A"}
+                                </h6>
+                              </div>
+                            </td>
+                            <td className="border border-neutral-400 px-3 py-2">
+                              <div
+                                className={`flex justify-center items-center flex-col gap-1 ${
+                                  item.remarks === "available"
+                                    ? "text-green-700"
+                                    : "text-red-600"
+                                }`}
+                              >
+                                <h6>
+                                  {item.remarks
+                                    ? item.remarks.toUpperCase()
+                                    : "N/A"}
+                                </h6>
+                              </div>
+                            </td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td
+                            colSpan={7}
+                            className="border border-neutral-400 px-3 py-2"
+                          >
+                            <div className="flex justify-center items-center gap-1">
+                              <p>No data found.</p>
                             </div>
                           </td>
                         </tr>
-                      ))}
+                      )}
                     </>
                   )}
                 </tbody>

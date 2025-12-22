@@ -120,10 +120,18 @@ export default function Profile() {
             autoComplete={`new-password`}
           />
         </div>
-        <div className="w-full md:w-120">
+        <div className="h-10 w-full md:w-120 flex">
           <SuccessButton
-            text={<>UPDATE</>}
-            loadingText={"UPDATING"}
+            text={
+              <>
+                <span>UPDATE</span>
+              </>
+            }
+            loadingText={
+              <>
+                <span>UPDATING</span>
+              </>
+            }
             onClick={handleSubmit}
             disabled={isLoading || NoChanges}
             isLoading={isLoading}

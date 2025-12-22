@@ -169,13 +169,20 @@ export const StockValue = ({ data }: Props) => {
         size="2xl"
         footer={
           <>
-            <SecondaryButton text="CLOSE" onClick={() => setModalShow(false)} />
+            <SecondaryButton
+              text={
+                <>
+                  <span className="my-1">CLOSE</span>
+                </>
+              }
+              onClick={() => setModalShow(false)}
+            />
           </>
         }
       >
-        <div>
-          <div className="flex justify-start items-center gap-2 mb-2">
-            <div className="mb-1">
+        <div className="h-120 md:h-150 overflow-y-auto ">
+          <div className="flex justify-start items-center flex-col sm:flex-row gap-1 mb-2">
+            <div className="w-full">
               <label
                 htmlFor="START-DATE"
                 className="block font-medium text-gray-700"
@@ -191,7 +198,7 @@ export const StockValue = ({ data }: Props) => {
                 autoComplete={`Previous date`}
               />
             </div>
-            <div className="mb-1">
+            <div className="w-full">
               <label
                 htmlFor="END-DATE"
                 className="block font-medium text-gray-700"
@@ -211,7 +218,7 @@ export const StockValue = ({ data }: Props) => {
 
           {/* Statistics Cards */}
           {statistics && (
-            <div className="grid grid-cols-4 gap-4 mb-2">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 mb-2">
               <div className="bg-blue-50 p-4 rounded-lg">
                 <div className="text-xs text-gray-600 mb-1">Peak Value</div>
                 <div className="text-lg font-bold text-blue-600">
@@ -260,67 +267,73 @@ export const StockValue = ({ data }: Props) => {
           )}
 
           {/* Line Chart */}
-          <div className="bg-white rounded-lg border border-gray-200 p-4">
-            {monthlyStockData.length > 0 ? (
-              <ResponsiveContainer width="100%" height={400}>
-                <LineChart
-                  data={monthlyStockData}
-                  margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis
-                    dataKey="displayMonth"
-                    angle={-45}
-                    textAnchor="end"
-                    height={80}
-                    style={{ fontSize: "12px" }}
-                  />
-                  <YAxis
-                    tickFormatter={(value) => `₩${formatNumberShort(value)}`}
-                  />
-                  <Tooltip
-                    content={({ active, payload }) => {
-                      if (active && payload && payload.length) {
-                        return (
-                          <div className="bg-white p-3 rounded-lg shadow-lg border border-gray-200">
-                            <p className="font-semibold text-gray-800 mb-1">
-                              {payload[0].payload.displayMonth}
-                            </p>
-                            <p className="text-sm text-emerald-600">
-                              Value: ₩
-                              {payload[0].value?.toLocaleString("en-US", {
-                                maximumFractionDigits: 0,
-                              })}
-                            </p>
-                          </div>
-                        );
-                      }
-                      return null;
-                    }}
-                  />
-                  <Legend />
-                  <Line
-                    type="monotone"
-                    dataKey="value"
-                    stroke="#10b981"
-                    strokeWidth={2}
-                    name="Stock Value (₩)"
-                    dot={{ fill: "#10b981", r: 4 }}
-                    activeDot={{ r: 6 }}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            ) : (
-              <div
-                className="flex justify-center items-center flex-col text-center py-12 text-gray-500"
-                style={{ height: 400 }}
-              >
-                <h1 className="text-neutral-400">
-                  <i className="bx  bx-calendar-x"></i>
-                </h1>
-                <h4>No data available for the selected date range</h4>
+          <div className="w-10/10 bg-white rounded-lg border border-gray-200 p-4">
+            <div className="overflow-x-auto">
+              <div className="w-150 sm:w-full">
+                {monthlyStockData.length > 0 ? (
+                  <ResponsiveContainer width="100%" height={400}>
+                    <LineChart
+                      data={monthlyStockData}
+                      margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis
+                        dataKey="displayMonth"
+                        angle={-45}
+                        textAnchor="end"
+                        height={80}
+                        style={{ fontSize: "12px" }}
+                      />
+                      <YAxis
+                        tickFormatter={(value) =>
+                          `₩${formatNumberShort(value)}`
+                        }
+                      />
+                      <Tooltip
+                        content={({ active, payload }) => {
+                          if (active && payload && payload.length) {
+                            return (
+                              <div className="bg-white p-3 rounded-lg shadow-lg border border-gray-200">
+                                <p className="font-semibold text-gray-800 mb-1">
+                                  {payload[0].payload.displayMonth}
+                                </p>
+                                <p className="text-sm text-emerald-600">
+                                  Value: ₩
+                                  {payload[0].value?.toLocaleString("en-US", {
+                                    maximumFractionDigits: 0,
+                                  })}
+                                </p>
+                              </div>
+                            );
+                          }
+                          return null;
+                        }}
+                      />
+                      <Legend />
+                      <Line
+                        type="monotone"
+                        dataKey="value"
+                        stroke="#10b981"
+                        strokeWidth={2}
+                        name="Stock Value (₩)"
+                        dot={{ fill: "#10b981", r: 4 }}
+                        activeDot={{ r: 6 }}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div
+                    className="flex justify-center items-center flex-col text-center py-12 text-gray-500"
+                    style={{ height: 400 }}
+                  >
+                    <h1 className="text-neutral-400">
+                      <i className="bx  bx-calendar-x"></i>
+                    </h1>
+                    <h4>No data available for the selected date range</h4>
+                  </div>
+                )}
               </div>
-            )}
+            </div>
           </div>
         </div>
       </Modal>

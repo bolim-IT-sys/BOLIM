@@ -138,14 +138,19 @@ export const EditingPart = ({ fetchAllParts, item, type }: EditingProps) => {
         } DETAILS `}
         footer={
           <>
-            <SuccessButton
-              text="SAVE"
-              loadingText="SAVING CHANGES"
-              onClick={handleSubmit}
-              isLoading={isLoading}
-              disabled={isLoading || NoChanges()}
-            />
-            <SecondaryButton text="CLOSE" onClick={() => setModalShow(false)} />
+            <div className="h-10 flex gap-2">
+              <SecondaryButton
+                text="CLOSE"
+                onClick={() => setModalShow(false)}
+              />
+              <SuccessButton
+                text="SAVE"
+                loadingText="SAVING CHANGES"
+                onClick={handleSubmit}
+                isLoading={isLoading}
+                disabled={isLoading || NoChanges()}
+              />
+            </div>
           </>
         }
       >
