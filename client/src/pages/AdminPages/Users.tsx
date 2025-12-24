@@ -123,10 +123,10 @@ export default function Users() {
 
   return (
     <>
-      <div className="h-full">
-        <div className="h-1/15">
-          <div className="mb-2 flex gap-2">
-            <div className="w-7/10">
+      <div className="h-full flex flex-col justify-between">
+        <div className="">
+          <div className="flex flex-col sm:flex-row gap-2">
+            <div className="md:w-7/10">
               <InputField
                 label={`Search user`}
                 type="text"
@@ -134,13 +134,13 @@ export default function Users() {
                 onChange={(value: string) => setSearchTerm(value)}
               />
             </div>
-            <div className="w-3/10 flex gap-2">
+            <div className="h-10 md:w-3/10 flex gap-2">
               <AddingUser fetchAllUsers={fetchAllUsers} />
             </div>
           </div>
         </div>
         <div
-          className={`h-13/15 w-10/10 ${isLoading ? "overflow-hidden" : "overflow-auto"} border border-gray-300 relative`}
+          className={`h-15/20 sm:h-17/20 w-10/10 ${isLoading ? "overflow-hidden" : "overflow-auto"} border border-gray-300 relative`}
         >
           {isLoading ? <DataTableLoader /> : null}
           <div className="w-full overflow-x-auto">
@@ -221,7 +221,7 @@ export default function Users() {
                           loadingText={
                             <>
                               <span className="my-.5">
-                                <i className="bx bx-loader-dots bx-spin" />{" "}
+                                <i className="bx bx-loader-circle bx-spin" />{" "}
                                 DELETING
                               </span>
                             </>
@@ -238,7 +238,7 @@ export default function Users() {
             </table>
           </div>
         </div>
-        <div className="h-1/15 flex items-end justify-between">
+        <div className="flex items-end justify-between">
           <DataPagination
             data={displayedData}
             indexOfFirstItem={indexOfFirstItem}

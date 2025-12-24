@@ -101,7 +101,7 @@ export default function Pins() {
 
         {/* <div className="h-87/100 w-full overflow-hidden border border-gray-300 relative"></div> */}
         <div
-          className={`h-11/15 sm:h-16/20 w-10/10 ${isFetching ? "overflow-hidden" : "overflow-auto"} border border-gray-300 relative`}
+          className={`h-15/20 sm:h-17/20 w-10/10 ${isFetching ? "overflow-hidden" : "overflow-auto"} border border-gray-300 relative`}
           // style={{ height: "clamp(30rem, 50dvw, 60rem)" }}
         >
           {isFetching ? <DataTableLoader /> : null}
