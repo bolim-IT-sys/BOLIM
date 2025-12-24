@@ -151,9 +151,9 @@ export const StockValue = ({ data }: Props) => {
           <div
             className={`absolute top-5 right-5 size-10 lg:size-13 flex justify-center items-center p-3 rounded-full bg-neutral-50 text-emerald-500`}
           >
-            <h3 className="mt-1">
-              <i className="bx bxs-currency-notes"></i>
-            </h3>
+            <h2 className="">
+              <i className="bx bx-money"></i>
+            </h2>
           </div>
         </div>
       </div>

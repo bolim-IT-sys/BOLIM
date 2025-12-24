@@ -29,9 +29,9 @@ export const LowStocks = ({ lowStockParts, setParts, dataType }: Props) => {
           <div
             className={`absolute top-5 right-5 size-10 lg:size-13 flex justify-center items-center p-3 rounded-full bg-neutral-50 text-yellow-400`}
           >
-            <h3 className="mt-1">
-              <i className="bx  bxs-alert-triangle"></i>
-            </h3>
+            <h2 className="">
+              <i className="bx  bx-trending-down"></i>
+            </h2>
           </div>
         </div>
       </div>
