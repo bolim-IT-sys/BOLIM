@@ -4,6 +4,8 @@ import { login } from "../services/authService";
 import InputField from "../components/InputField";
 import { fetchUserData } from "../services/User.Service";
 import PrimaryButton from "../components/button/PrimaryButton";
+import logo from "/logowithtext.png";
+import background from "/bolim_image.png";
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({
@@ -72,9 +74,17 @@ export default function LoginPage() {
 
   return (
     <div className="flex items-center justify-center h-dvh">
-      <div className=" w-100 mx-5 bg-white p-4 rounded shadow">
+      <div className="absolute h-10/10 w-10/10">
+        <img className="w-full h-full object-cover" src={background} alt="" />
+      </div>
+      <div className=" w-100 mx-5 bg-white p-4 rounded shadow z-10">
+        <div className="w-full flex justify-center">
+          <div className="w-2/10">
+            <img className="w-full" src={logo} alt="" />
+          </div>
+        </div>
         <h2 className="h4 text-center mb-4">
-          <b>LOGIN</b>
+          <b>SPARE INVENTORY</b>
         </h2>
         <div className="mb-3">
           <InputField
