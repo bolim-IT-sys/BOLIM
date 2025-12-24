@@ -260,7 +260,7 @@ export const ViewPartStocks = ({ item, setData, type }: Props) => {
                     >
                       <div className="flex justify-center items-center gap-1">
                         <h5>
-                          <i className="bx bx-loader-dots bx-spin" />
+                          <i className="bx bx-loader-circle bx-spin" />
                         </h5>
                         <p>Loading</p>
                       </div>
@@ -412,7 +412,7 @@ export const ViewPartStocks = ({ item, setData, type }: Props) => {
                       >
                         <div className="flex justify-center items-center gap-1">
                           <h5>
-                            <i className="bx bx-loader-dots bx-spin" />
+                            <i className="bx bx-loader-circle bx-spin" />
                           </h5>
                           <p>Loading</p>
                         </div>
