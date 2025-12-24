@@ -155,7 +155,7 @@ export default function Dashboard() {
 
   return (
     <>
-      <div className="h-full overflow-y-auto">
+      <div className="h-full overflow-x-hidden">
         <div className="">
           {/* Header */}
           <div className="mb-3 flex items-center gap-2">
@@ -255,7 +255,7 @@ export default function Dashboard() {
                 </div>
               </div>
 
-              <div className="w-full overflow-x-auto rounded-2xl">
+              <div className="w-full overflow-x-auto md:overflow-hidden rounded-2xl">
                 <div
                   className=" flex items-center justify-center mt-5"
                   style={{ height: "clamp(20rem, 22dvw, 90rem)" }}

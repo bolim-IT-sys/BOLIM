@@ -499,7 +499,7 @@ export const DataTable = ({
                               loadingText={
                                 <>
                                   <span className="my-.5">
-                                    <i className="bx bx-loader-dots bx-spin" />
+                                    <i className="bx bx-loader-circle bx-spin" />
                                   </span>
                                 </>
                               }

@@ -25,7 +25,7 @@ export default function SecondaryButton({
       <p className="flex justify-center items-center gap-1">
         {isLoading ? (
           <>
-            <i className="bx bx-loader-dots bx-spin" />
+            <i className="bx bx-loader-circle bx-spin" />
             {loadingText}
           </>
         ) : (

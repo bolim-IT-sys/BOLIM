@@ -19,7 +19,7 @@ export default function Mainlayout() {
   const [parts, setParts] = useState<Part[]>([]);
   const [ITStocks, setITStocks] = useState<Part[]>([]);
   const [materials, setMaterials] = useState<Part[]>([]);
-  const [isFetching, setIsFetching] = useState(false);
+  const [isFetching, setIsFetching] = useState(true);
 
   const [searchParams] = useSearchParams();
   const sort = searchParams.get("sort") || "";

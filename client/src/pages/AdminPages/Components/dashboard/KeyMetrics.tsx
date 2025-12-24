@@ -47,11 +47,11 @@ export const KeyMetrics = ({ setParts, data, dataType }: Props) => {
               <p className="text-neutral-100 mt-1">Number of stock items</p>
             </div>
             <div
-              className={`absolute top-5 right-5 size-10 lg:size-13 flex justify-center items-center p-3 rounded-full bg-neutral-50 text-sky-500`}
+              className={`absolute top-5 right-5 size-10 lg:size-13 flex justify-center items-center p-3 rounded-full bg-neutral-50 text-sky-600`}
             >
-              <h3 className="">
-                <i className="bx  bxs-package"></i>
-              </h3>
+              <h2 className="">
+                <i className="bx bxs-package"></i>
+              </h2>
             </div>
           </div>
         </Link>

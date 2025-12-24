@@ -58,11 +58,24 @@ export default function NavBar({
             >
               <DropdownItem>
                 <Link to={`/profile`}>
-                  <LightButton text="Account" />
+                  <LightButton
+                    text={
+                      <>
+                        <span className="my-1">Account</span>
+                      </>
+                    }
+                  />
                 </Link>{" "}
               </DropdownItem>
               <DropdownItem>
-                <DangerButton text="Logout" onClick={handleLogout} />
+                <DangerButton
+                  text={
+                    <>
+                      <span className="my-1">Logout</span>
+                    </>
+                  }
+                  onClick={handleLogout}
+                />
               </DropdownItem>
             </Dropdown>
           </div>

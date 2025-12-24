@@ -17,7 +17,8 @@ import Users from "./pages/AdminPages/Users";
 import Profile from "./pages/AdminPages/Profile";
 
 import "./styles/index.css";
-import "boxicons/css/boxicons.min.css";
+// import "boxicons/css/boxicons.min.css";
+// import "boxicons";
 
 export default function App() {
   return (

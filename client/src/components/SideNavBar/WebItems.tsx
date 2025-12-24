@@ -24,7 +24,7 @@ export const WebItems = ({
           to="/dashboard"
         >
           <h3 className="flex justify-center items-center mx-2 my-1">
-            <i className="bx bx-chart-bar-big-columns mt-2"></i>
+            <i className="bx bxs-dashboard mt-1"></i>
           </h3>
           <h4
             className={`absolute w-45 mt-1 start-12 font-bold ${isShowing ? "opacity-100" : "opacity-0"} ${isHidden ? "pointer-events-none" : ""} transition-all duration-250 ease-in-out`}
@@ -38,7 +38,7 @@ export const WebItems = ({
             to="/stocks/pins"
           >
             <h3 className="flex justify-center items-center mx-2 my-1">
-              <i className="bx bx-plug-connect mt-2"></i>
+              <i className="bx bx-usb mt-1"></i>
             </h3>
             <h4
               className={`absolute w-45 mt-1 start-12 font-bold ${isShowing ? "opacity-100" : "opacity-0"} ${isHidden ? "pointer-events-none" : ""} transition-all duration-250 ease-in-out`}
@@ -53,7 +53,7 @@ export const WebItems = ({
             to="/stocks/it-stocks"
           >
             <h3 className="flex justify-center items-center mx-2 my-1">
-              <i className="bx bx-computer mt-2"></i>
+              <i className="bx bx-desktop mt-1"></i>
             </h3>
             <h4
               className={`absolute w-45 mt-1 start-12 font-bold ${isShowing ? "opacity-100" : "opacity-0"} ${isHidden ? "pointer-events-none" : ""} transition-all duration-250 ease-in-out`}
@@ -68,7 +68,7 @@ export const WebItems = ({
             to="/stocks/material-control"
           >
             <h3 className="flex justify-center items-center mx-2 my-1">
-              <i className="bx bx-spanner mt-2"></i>
+              <i className="bx bxs-wrench mt-1"></i>
             </h3>
             <h4
               className={`absolute w-45 mt-1 start-12 font-bold ${isShowing ? "opacity-100" : "opacity-0"} ${isHidden ? "pointer-events-none" : ""} transition-all duration-250 ease-in-out`}
@@ -85,7 +85,7 @@ export const WebItems = ({
               to="/users"
             >
               <h3 className="flex justify-center items-center mx-2 my-1">
-                <i className="bx bx-community mt-2"></i>
+                <i className="bx bxs-group mt-1"></i>
               </h3>
               <h4
                 className={`absolute w-45 mt-1 start-12 font-bold ${isShowing ? "opacity-100" : "opacity-0"} ${isHidden ? "pointer-events-none" : ""} transition-all duration-250 ease-in-out`}
