@@ -77,7 +77,7 @@ export default function LoginPage() {
       <div className="absolute h-10/10 w-10/10">
         <img className="w-full h-full object-cover" src={background} alt="" />
       </div>
-      <div className=" w-100 mx-5 bg-white p-4 rounded shadow z-10">
+      <div className=" w-100 mx-5 bg-white p-6 rounded-xl shadow z-10">
         <div className="w-full flex justify-center">
           <div className="w-2/10">
             <img className="w-full" src={logo} alt="" />
