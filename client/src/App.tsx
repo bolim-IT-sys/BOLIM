@@ -14,6 +14,7 @@ import Pins from "./pages/AdminPages/Pins";
 import ITStocks from "./pages/AdminPages/ITStocks";
 import MaterialControl from "./pages/AdminPages/MaterialControl";
 import Users from "./pages/AdminPages/Users";
+import Inventory from "./pages/AdminPages/InventoryManagement";
 import Profile from "./pages/AdminPages/Profile";
 
 import "./styles/index.css";
@@ -35,6 +36,7 @@ export default function App() {
             element={<MaterialControl />}
           />
 
+          <Route path="/inventory" element={<Inventory />} />
           <Route path="/users" element={<Users />} />
           <Route path="/profile" element={<Profile />} />
         </Route>
