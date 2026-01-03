@@ -89,6 +89,20 @@ export const WebItems = ({
         {isSuperAdmin ? (
           <>
             <Link
+              className={`group relative p-2 flex items-center ${location.pathname === "/inventory" ? "bg-neutral-50 text-neutral-800" : "hover:hover:bg-cyan-400"} transition duration-150 w-full rounded cursor-pointer`}
+              to="/inventory"
+            >
+              <h3 className="flex justify-center items-center mx-2 my-1">
+                <i className="bx bxs-group mt-1 ms-0.5"></i>
+              </h3>
+              <SideNavBarToolTip isHidden={isHidden} toolTipName={"Users"} />
+              <h4
+                className={`absolute w-65 mt-1 start-12 font-bold ${isShowing ? "opacity-100" : "opacity-0"} ${isHidden ? "pointer-events-none" : ""} transition-all duration-250 ease-in-out`}
+              >
+                Inventory Management
+              </h4>
+            </Link>
+            <Link
               className={`group relative p-2 flex items-center ${location.pathname === "/users" ? "bg-neutral-50 text-neutral-800" : "hover:hover:bg-cyan-400"} transition duration-150 w-full rounded cursor-pointer`}
               to="/users"
             >
@@ -99,7 +113,7 @@ export const WebItems = ({
               <h4
                 className={`absolute w-45 mt-1 start-12 font-bold ${isShowing ? "opacity-100" : "opacity-0"} ${isHidden ? "pointer-events-none" : ""} transition-all duration-250 ease-in-out`}
               >
-                Users
+                User Management
               </h4>
             </Link>
           </>

@@ -31,7 +31,7 @@ export default function SideNavBar({
   return (
     <>
       <div
-        className={`h-full absolute lg:static bg-sky-600 ${showSideBar ? "w-full md:w-65 left-0 " : "w-20 -left-20"} transition-all duration-400 ease-in-out shadow-md z-30`}
+        className={`h-full absolute lg:static bg-sky-600 ${showSideBar ? "w-full md:w-70 left-0 " : "w-20 -left-20"} transition-all duration-400 ease-in-out shadow-md z-30`}
       >
         <WebItems
           user={user}
