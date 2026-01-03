@@ -30,6 +30,9 @@ app.use("/api/auth", authRoutes);
 const userRoutes = require("./routes/user.routes.js");
 app.use("/api/users", userRoutes);
 
+const inventoryRoutes = require("./routes/inventory.routes.js");
+app.use("/api/inventory", inventoryRoutes);
+
 const partsRoutes = require("./routes/parts.routes.js");
 app.use("/api/parts", partsRoutes);
 

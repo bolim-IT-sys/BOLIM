@@ -13,6 +13,10 @@ import {
   sortByPrice,
   sortByStocks,
 } from "../helper/sorting.helper";
+import {
+  fetchInventories,
+  type Inventory,
+} from "../services/Inventory.Service";
 
 export default function Mainlayout() {
   const [user, setUser] = useState<User>();
@@ -20,6 +24,8 @@ export default function Mainlayout() {
   const [ITStocks, setITStocks] = useState<Part[]>([]);
   const [materials, setMaterials] = useState<Part[]>([]);
   const [isFetching, setIsFetching] = useState(true);
+
+  const [inventories, setInventories] = useState<Inventory[]>([]);
 
   const [searchParams] = useSearchParams();
   const sort = searchParams.get("sort") || "";
@@ -59,9 +65,23 @@ export default function Mainlayout() {
     }
   }, [navigate]);
 
+  const load_inventories = async () => {
+    await fetchInventories(setInventories);
+  };
+
   useEffect(() => {
-    fetchUserDetails();
+    const loadData = async () => {
+      await fetchUserDetails();
+      await load_inventories();
+    };
+
+    loadData();
   }, [fetchUserDetails, navigate]);
+
+  useEffect(() => {
+    if (!inventories) return;
+    console.log("Inventories fetched: ", inventories);
+  }, [inventories]);
 
   const fetchAllParts = useCallback(async () => {
     try {
@@ -211,6 +231,8 @@ export default function Mainlayout() {
                 setMaterials,
                 fetchAllParts,
                 isFetching,
+                inventories,
+                load_inventories,
               }}
             />
           </div>

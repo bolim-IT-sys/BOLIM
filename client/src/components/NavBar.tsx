@@ -65,7 +65,7 @@ export default function NavBar({
                       </>
                     }
                   />
-                </Link>{" "}
+                </Link>
               </DropdownItem>
               <DropdownItem>
                 <DangerButton
