@@ -54,7 +54,7 @@ export const MoreOptionDropDown = ({
       </div>
       {/* SIDE BAR DROPDOWN ITEMS */}
       <div
-        className={`${showDropdown ? "overflow-y-scroll" : "overflow-hidden"} overflow-x-hidden custom_scroll ${collapse ? "h-0" : "h-50"}  transition-all duration-900 ease-in-out p  t-2`}
+        className={`${showDropdown ? "overflow-y-scroll" : "overflow-hidden"} overflow-x-hidden custom_scroll ${collapse ? "h-0" : "h-50"}  transition-all duration-500 ease-in-out p  t-2`}
       >
         {inventories.map((inventory, index) => (
           <Link
