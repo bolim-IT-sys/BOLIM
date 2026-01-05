@@ -2,17 +2,24 @@ import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
 import type { User } from "../services/User.Service";
 import { WebItems } from "./SideNavBar/WebItems";
 import { MobileItems } from "./SideNavBar/MobileItems";
+import type { Inventory } from "../services/Inventory.Service";
 
 type Props = {
   user: User;
+  inventories: Inventory[];
   showSideBar: boolean;
   setShowSideBar: Dispatch<SetStateAction<boolean>>;
+  collapse: boolean;
+  setCollapse: Dispatch<SetStateAction<boolean>>;
 };
 
 export default function SideNavBar({
   user,
+  inventories,
   showSideBar,
   setShowSideBar,
+  collapse,
+  setCollapse,
 }: Props) {
   const [isHidden, setIsHidden] = useState(showSideBar);
   const [isShowing, setIsShowing] = useState(showSideBar);
@@ -35,9 +42,13 @@ export default function SideNavBar({
       >
         <WebItems
           user={user}
+          inventories={inventories}
           isHidden={isHidden}
           isShowing={isShowing}
           isSuperAdmin={Boolean(isSuperAdmin)}
+          setShowSideBar={setShowSideBar}
+          collapse={collapse}
+          setCollapse={setCollapse}
         />
         <MobileItems
           user={user}

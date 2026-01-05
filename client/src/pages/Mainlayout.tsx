@@ -31,10 +31,12 @@ export default function Mainlayout() {
   const sort = searchParams.get("sort") || "";
   const order = searchParams.get("order") || "";
 
+  // FOR SIDE AND NAV BAR
   const [showSideBar, setShowSideBar] = useState(() => {
     const stored = localStorage.getItem("showSideBar");
     return stored ? JSON.parse(stored) : false;
   });
+  const [collapse, setCollapse] = useState(true);
 
   const navigate = useNavigate();
 
@@ -80,7 +82,7 @@ export default function Mainlayout() {
 
   useEffect(() => {
     if (!inventories) return;
-    console.log("Inventories fetched: ", inventories);
+    // console.log("Inventories fetched: ", inventories);
   }, [inventories]);
 
   const fetchAllParts = useCallback(async () => {
@@ -208,13 +210,18 @@ export default function Mainlayout() {
         user={user!}
         showSideBar={showSideBar}
         setShowSideBar={setShowSideBar}
+        collapse={collapse}
+        setCollapse={setCollapse}
       />
       <div className="relative flex justify-start h-dvh w-dvw pt-15 overflow-hidden">
         <div>
           <SideNavBar
             user={user!}
+            inventories={inventories}
             showSideBar={showSideBar}
             setShowSideBar={setShowSideBar}
+            collapse={collapse}
+            setCollapse={setCollapse}
           />
         </div>
         <div className={`w-10/10`}>

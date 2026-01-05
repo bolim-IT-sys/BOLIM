@@ -1,19 +1,30 @@
 import { Link, useLocation } from "react-router-dom";
 import type { User } from "../../services/User.Service";
 import { SideNavBarToolTip } from "./SideNavBarToolTip";
+import { MoreOptionDropDown } from "./MoreOptionDropDown";
+import type { Dispatch, SetStateAction } from "react";
+import type { Inventory } from "../../services/Inventory.Service";
 
 type Props = {
   user: User;
+  inventories: Inventory[];
   isHidden: boolean;
   isShowing: boolean;
   isSuperAdmin: boolean;
+  setShowSideBar: Dispatch<SetStateAction<boolean>>;
+  collapse: boolean;
+  setCollapse: Dispatch<SetStateAction<boolean>>;
 };
 
 export const WebItems = ({
   user,
+  inventories,
   isHidden,
   isShowing,
   isSuperAdmin,
+  setShowSideBar,
+  collapse,
+  setCollapse,
 }: Props) => {
   const location = useLocation();
 
@@ -86,6 +97,15 @@ export const WebItems = ({
           </Link>
         ) : null}
 
+        <MoreOptionDropDown
+          inventories={inventories}
+          isHidden={isHidden}
+          isShowing={isShowing}
+          setShowSideBar={setShowSideBar}
+          collapse={collapse}
+          setCollapse={setCollapse}
+        />
+
         {isSuperAdmin ? (
           <>
             <Link
@@ -93,9 +113,12 @@ export const WebItems = ({
               to="/inventory"
             >
               <h3 className="flex justify-center items-center mx-2 my-1">
-                <i className="bx bxs-group mt-1 ms-0.5"></i>
+                <i className="bx bxs-archive mt-1 ms-0.5"></i>
               </h3>
-              <SideNavBarToolTip isHidden={isHidden} toolTipName={"Users"} />
+              <SideNavBarToolTip
+                isHidden={isHidden}
+                toolTipName={"Inventory Management"}
+              />
               <h4
                 className={`absolute w-65 mt-1 start-12 font-bold ${isShowing ? "opacity-100" : "opacity-0"} ${isHidden ? "pointer-events-none" : ""} transition-all duration-250 ease-in-out`}
               >

@@ -75,7 +75,7 @@ export default function InventoryManagement() {
       return;
     }
 
-    // console.log("removing stock");
+    // console.log("removing inventory");
     await removeInventory(id, load_inventories, setIsDeleting);
   };
 
