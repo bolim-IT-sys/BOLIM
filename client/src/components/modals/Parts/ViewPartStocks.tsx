@@ -24,6 +24,7 @@ import {
   getTotalByYearExcludingCurrentMonth,
 } from "../../../helper/helper";
 import { useOutletContext } from "react-router-dom";
+import { computeStocks } from "../../../helper/table.helper";
 
 interface Props {
   item: Part;
@@ -53,7 +54,7 @@ export const ViewPartStocks = ({ item, setData, type }: Props) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [formData, setFormData] = useState<InboundOutboundType>({
     partId: item.id!,
-    currentQuantity: item.quantity,
+    currentQuantity: computeStocks(item),
     quantity: type === "it" ? "1" : "",
     inboundDate: new Date().toISOString().split("T")[0],
     outboundDate: new Date().toISOString().split("T")[0],
@@ -149,7 +150,7 @@ export const ViewPartStocks = ({ item, setData, type }: Props) => {
                 {`${item.partNumber}`}:{" "}
                 <span
                   className={`${
-                    item.quantity <
+                    computeStocks(item) <
                     getSafetyStock(
                       outbounds.map((o) => ({
                         quantity: o.quantity,
@@ -162,9 +163,9 @@ export const ViewPartStocks = ({ item, setData, type }: Props) => {
                       : "bg-emerald-100 text-emerald-800"
                   } rounded px-2`}
                 >
-                  <b>{item.quantity} </b>
+                  <b>{computeStocks(item)} </b>
                   <i className="text-sm hidden sm:inline">
-                    {item.quantity <
+                    {computeStocks(item) <
                     getSafetyStock(
                       outbounds.map((o) => ({
                         quantity: o.quantity,
