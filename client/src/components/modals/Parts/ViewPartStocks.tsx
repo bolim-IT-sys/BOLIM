@@ -74,23 +74,31 @@ export const ViewPartStocks = ({ item, setData, type }: Props) => {
         fetchITStocks(item.id!),
       ]);
 
-      if (inResult.success) {
-        setInbounds(inResult.data!);
-      }
+      setTimeout(
+        () => {
+          if (inResult.success) {
+            setInbounds(inResult.data!);
+          }
 
-      if (outResult.success) {
-        setOutbounds(outResult.data!);
-      }
+          if (outResult.success) {
+            setOutbounds(outResult.data!);
+          }
 
-      if (itemResult.success) {
-        setStockItems(itemResult.data!);
-      }
+          if (itemResult.success) {
+            setStockItems(itemResult.data!);
+          }
+        },
+        import.meta.env.VITE_TIME_OUT
+      );
     } catch (err) {
       console.error("Error fetching inbounds and outbounds: ", err);
     } finally {
-      setTimeout(() => {
-        setIsLoading(false);
-      }, 0);
+      setTimeout(
+        () => {
+          setIsLoading(false);
+        },
+        import.meta.env.VITE_TIME_OUT
+      );
     }
   };
 
@@ -130,13 +138,14 @@ export const ViewPartStocks = ({ item, setData, type }: Props) => {
     <>
       <PrimaryButton text="VIEW" onClick={() => handleViewModal()} />
 
+      {/* MAIN MODAL */}
       <Modal
         isOpen={modalShow}
         onClose={() => setModalShow(false)}
         title={
           <>
             <div className="flex items-center gap-2">
-              <h3 className="">
+              <h3 className="text-start">
                 {`${item.partNumber}`}:{" "}
                 <span
                   className={`${
@@ -154,7 +163,7 @@ export const ViewPartStocks = ({ item, setData, type }: Props) => {
                   } rounded px-2`}
                 >
                   <b>{item.quantity} </b>
-                  <i className="text-sm">
+                  <i className="text-sm hidden sm:inline">
                     {item.quantity <
                     getSafetyStock(
                       outbounds.map((o) => ({
@@ -203,7 +212,7 @@ export const ViewPartStocks = ({ item, setData, type }: Props) => {
         footer={
           <>
             <div className="h-10 flex gap-2">
-              {/* <ItemData part={part} /> */}
+              {/* INBOUND MODAL */}
               <PrimaryButton
                 text={`INBOUND`}
                 onClick={() => {
@@ -211,6 +220,7 @@ export const ViewPartStocks = ({ item, setData, type }: Props) => {
                   setInboundShow(true);
                 }}
               />
+              {/* OUTBOUND MODAL */}
               <WarningButton
                 text="OUTBOUND"
                 onClick={() => {
@@ -220,6 +230,7 @@ export const ViewPartStocks = ({ item, setData, type }: Props) => {
               />
             </div>
             <div className="h-10">
+              {/* CLOSE BUTTON */}
               <SecondaryButton
                 text={
                   <>
@@ -234,6 +245,7 @@ export const ViewPartStocks = ({ item, setData, type }: Props) => {
       >
         <div className="flex flex-col gap-3">
           <div className="w-10/10 overflow-x-auto border-x border-gray-400">
+            {/* INBOUND OUTBOUND DATA TABLE */}
             <table className="w-250 md:w-full table-fixed border border-gray-300 text-sm">
               <thead className="bg-sky-100">
                 <tr>
@@ -375,6 +387,7 @@ export const ViewPartStocks = ({ item, setData, type }: Props) => {
             </table>
           </div>
 
+          {/* STOCK DEPLOYMENT RECORD TABLE */}
           {type === "it" ? (
             <div className="w-10/10 overflow-x-auto border-x border-gray-400">
               <table className="w-250 md:w-full table-fixed border border-gray-300">
@@ -407,7 +420,7 @@ export const ViewPartStocks = ({ item, setData, type }: Props) => {
                   {isLoading ? (
                     <tr>
                       <td
-                        colSpan={13}
+                        colSpan={7}
                         className="border border-neutral-400 px-3 py-2"
                       >
                         <div className="flex justify-center items-center gap-1">

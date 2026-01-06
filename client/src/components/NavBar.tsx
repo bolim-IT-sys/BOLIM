@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Dropdown, DropdownItem } from "./Dropdown";
 import DangerButton from "./button/DangerButton";
 import logo from "/bolimlogo.png";
-import type { Dispatch, SetStateAction } from "react";
+import { type Dispatch, type SetStateAction } from "react";
 import LightButton from "./button/LightButton";
 
 interface NavbarProps {
@@ -12,12 +12,16 @@ interface NavbarProps {
   fetchAllUsers?: () => void;
   showSideBar: boolean;
   setShowSideBar: Dispatch<SetStateAction<boolean>>;
+  collapse: boolean;
+  setCollapse: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function NavBar({
   user,
   showSideBar,
   setShowSideBar,
+  collapse,
+  setCollapse,
 }: NavbarProps) {
   const navigate = useNavigate();
 
@@ -25,6 +29,10 @@ export default function NavBar({
     logout();
     navigate("/login");
   };
+
+  // useEffect(() => {
+  //   console.log(`Nav: ${showSideBar}, Side: ${collapse}`);
+  // }, [showSideBar, collapse]);
 
   return (
     <>
@@ -40,7 +48,10 @@ export default function NavBar({
             <h4 className="hidden sm:block">BOLIM(SPARE PARTS)</h4>
             <div
               className={`size-9 ${showSideBar ? "bg-sky-600 hover:bg-sky-700 text-neutral-50" : "hover:bg-neutral-200"}  rounded transition duration-200 flex justify-center items-center cursor-pointer`}
-              onClick={() => setShowSideBar((prev) => !prev)}
+              onClick={() => {
+                setShowSideBar((prev) => !prev);
+                setCollapse(showSideBar && !collapse ? true : true);
+              }}
             >
               <h3>
                 <i className="bx mt-2 bx-menu"></i>
@@ -65,7 +76,7 @@ export default function NavBar({
                       </>
                     }
                   />
-                </Link>{" "}
+                </Link>
               </DropdownItem>
               <DropdownItem>
                 <DangerButton

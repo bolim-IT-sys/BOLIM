@@ -6,7 +6,7 @@ export const getDataType = (
   setDataType: Dispatch<SetStateAction<string>>
 ) => {
   const stored = localStorage.getItem("dataType");
-  console.log(stored ? "has" : "none");
+  // console.log(stored ? "has" : "none");
 
   if (stored) {
     const parsedData = JSON.parse(stored);

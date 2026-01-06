@@ -2,9 +2,10 @@ import { type Dispatch, type SetStateAction } from "react";
 import PrimaryButton from "../../../components/button/PrimaryButton";
 import type { Part } from "../../../services/Part.Service";
 import type { User } from "../../../services/User.Service";
+import type { Inventory } from "../../../services/Inventory.Service";
 
 type Props = {
-  data: Part[] | User[];
+  data: Part[] | User[] | Inventory[];
   indexOfFirstItem: number;
   indexOfLastItem: number;
   currentPage: number;
