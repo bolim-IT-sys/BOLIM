@@ -18,13 +18,12 @@ import { Outbounding } from "./Outbounding";
 import {
   currentMonth,
   currentYear,
-  getInQuantity,
-  getOutQuantity,
   getSafetyStock,
-  getTotalByYearExcludingCurrentMonth,
 } from "../../../helper/helper";
 import { useOutletContext } from "react-router-dom";
 import { computeStocks } from "../../../helper/table.helper";
+import { ItemStockTable } from "../../tables/ItemStockTable";
+import { InboundOutboundHistoryTable } from "../../tables/InboundOutboundHistoryTable";
 
 interface Props {
   item: Part;
@@ -54,6 +53,8 @@ export const ViewPartStocks = ({ item, setData, type }: Props) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [formData, setFormData] = useState<InboundOutboundType>({
     partId: item.id!,
+    from: "",
+    to: "",
     currentQuantity: computeStocks(item),
     quantity: type === "it" ? "1" : "",
     inboundDate: new Date().toISOString().split("T")[0],
@@ -245,279 +246,23 @@ export const ViewPartStocks = ({ item, setData, type }: Props) => {
         }
       >
         <div className="flex flex-col gap-3">
-          <div className="w-10/10 overflow-x-auto border-x border-gray-400">
+          <div className="w-10/10 overflow-x-auto border border-gray-400">
             {/* INBOUND OUTBOUND DATA TABLE */}
-            <table className="w-250 md:w-full table-fixed border border-gray-300 text-sm">
-              <thead className="bg-sky-100">
-                <tr>
-                  {months.map((monthHead, index) => (
-                    <th
-                      key={index}
-                      className={`border ${month === index ? "border-emerald-700 bg-emerald-500 text-neutral-50" : "border-neutral-400"} px-3 py-2 text-center cursor-pointer`}
-                      onClick={() => setMonth(index)}
-                    >
-                      <h5>{monthHead}</h5>
-                    </th>
-                  ))}
-                  <th className="w-50 bg-sky-400 border border-neutral-400 px-3 py-2 text-neutral-50 text-center">
-                    <h5>TOTAL</h5>
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {isLoading ? (
-                  <tr>
-                    <td
-                      colSpan={13}
-                      className="border border-neutral-400 px-3 py-2"
-                    >
-                      <div className="flex justify-center items-center gap-1">
-                        <h5>
-                          <i className="bx bx-loader-circle bx-spin" />
-                        </h5>
-                        <p>Loading</p>
-                      </div>
-                    </td>
-                  </tr>
-                ) : (
-                  <>
-                    <tr>
-                      {months.map((month, index) => (
-                        <td
-                          key={index}
-                          className="border border-neutral-400 px-3 py-2"
-                        >
-                          <div className="flex justify-center items-center gap-1">
-                            <h6 className="text-green-600">
-                              {/* INBOUND QUANTITY PER MONTH */}
-                              {getInQuantity(inbounds, month, chosenYear) > 0
-                                ? `+${getInQuantity(inbounds, month, chosenYear)}`
-                                : 0}
-                            </h6>
-                          </div>
-                        </td>
-                      ))}
-                      <td className="border border-neutral-400 px-3 py-2">
-                        <div className="flex justify-center items-center flex-col gap-1 text-green-600">
-                          <h6 className="text-green-600">
-                            {/* TOTAL QUANTITY */}
-                            {getTotalByYearExcludingCurrentMonth(
-                              inbounds.map((o) => ({
-                                quantity: o.quantity,
-                                date: String(o.inboundDate),
-                              })),
-                              chosenYear,
-                              month + 1
-                            )}
-                          </h6>
-                          <h6>
-                            (SAFTETY STOCK:{" "}
-                            {getSafetyStock(
-                              outbounds.map((o) => ({
-                                quantity: o.quantity,
-                                date: String(o.outboundDate),
-                              })),
-                              chosenYear,
-                              month
-                            )}
-                            )
-                          </h6>
-                        </div>
-                      </td>
-                    </tr>
-                    <tr>
-                      {months.map((month, index) => (
-                        <td
-                          key={index}
-                          className="border border-neutral-400 px-3 py-2"
-                        >
-                          <div className="flex justify-center items-center gap-1">
-                            <h6 className="text-red-500">
-                              {/* OUTBOUND PERMONTH */}
-                              {getOutQuantity(outbounds, month, chosenYear) > 0
-                                ? `-${getOutQuantity(outbounds, month, chosenYear)}`
-                                : 0}
-                            </h6>
-                          </div>
-                        </td>
-                      ))}
-                      <td className="border border-neutral-400 px-3 py-2">
-                        <div className="flex justify-center items-center flex-col text-red-500">
-                          <h6 className="">
-                            {/* TOTAL OUTBOUNDS BASED ON CURRENT MONTH */}
-                            {getTotalByYearExcludingCurrentMonth(
-                              outbounds.map((o) => ({
-                                quantity: o.quantity,
-                                date: String(o.outboundDate),
-                              })),
-                              chosenYear,
-                              month + 1
-                            )}
-                          </h6>
-                          <h6>
-                            (AVERAGE MONTHLY USAGE :{" "}
-                            {Math.round(
-                              getTotalByYearExcludingCurrentMonth(
-                                outbounds.map((o) => ({
-                                  quantity: o.quantity,
-                                  date: String(o.outboundDate),
-                                })),
-                                chosenYear,
-                                month
-                              ) / month
-                            ) > 0
-                              ? Math.round(
-                                  getTotalByYearExcludingCurrentMonth(
-                                    outbounds.map((o) => ({
-                                      quantity: o.quantity,
-                                      date: String(o.outboundDate),
-                                    })),
-                                    chosenYear,
-                                    month
-                                  ) / month
-                                )
-                              : 0}
-                            )
-                          </h6>
-                        </div>
-                      </td>
-                    </tr>
-                  </>
-                )}
-              </tbody>
-            </table>
+            <InboundOutboundHistoryTable
+              isLoading={isLoading}
+              inbounds={inbounds}
+              outbounds={outbounds}
+              chosenYear={chosenYear}
+              months={months}
+              month={month}
+              setMonth={setMonth}
+            />
           </div>
 
           {/* STOCK DEPLOYMENT RECORD TABLE */}
           {type === "it" ? (
-            <div className="w-10/10 overflow-x-auto border-x border-gray-400">
-              <table className="w-250 md:w-full table-fixed border border-gray-300">
-                <thead className="bg-sky-100">
-                  <tr>
-                    <th className="bg-sky-100 border border-neutral-400 px-3 py-2 text-neutral-900 text-center">
-                      <h5>SERIAL NUMBER</h5>
-                    </th>
-                    <th className="bg-sky-100 border border-neutral-400 px-3 py-2 text-neutral-900 text-center">
-                      <h5>PR DATE</h5>
-                    </th>
-                    <th className="bg-sky-100 border border-neutral-400 px-3 py-2 text-neutral-900 text-center">
-                      <h5>RECIEVED DATE</h5>
-                    </th>
-                    <th className="bg-sky-100 border border-neutral-400 px-3 py-2 text-neutral-900 text-center">
-                      <h5>DEPLOYED DATE</h5>
-                    </th>
-                    <th className="bg-sky-100 border border-neutral-400 px-3 py-2 text-neutral-900 text-center">
-                      <h5>STATION</h5>
-                    </th>
-                    <th className="bg-sky-100 border border-neutral-400 px-3 py-2 text-neutral-900 text-center">
-                      <h5>DEPARTMENT</h5>
-                    </th>
-                    <th className="bg-sky-400 border border-neutral-400 px-3 py-2 text-neutral-50 text-center">
-                      <h5>REMARKS</h5>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {isLoading ? (
-                    <tr>
-                      <td
-                        colSpan={7}
-                        className="border border-neutral-400 px-3 py-2"
-                      >
-                        <div className="flex justify-center items-center gap-1">
-                          <h5>
-                            <i className="bx bx-loader-circle bx-spin" />
-                          </h5>
-                          <p>Loading</p>
-                        </div>
-                      </td>
-                    </tr>
-                  ) : (
-                    <>
-                      {stockItems.length > 0 ? (
-                        stockItems.map((item) => (
-                          <tr key={item.id}>
-                            <td className="border border-neutral-400 px-3 py-2">
-                              <div className="flex justify-center items-center flex-col gap-1">
-                                <h6>{item.serialNumber}</h6>
-                              </div>
-                            </td>
-                            <td className="border border-neutral-400 px-3 py-2">
-                              <div className="flex justify-center items-center flex-col gap-1">
-                                <h6>{String(item.PRDate)}</h6>
-                              </div>
-                            </td>
-                            <td className="border border-neutral-400 px-3 py-2">
-                              <div className="flex justify-center items-center flex-col gap-1">
-                                <h6>{String(item.receivedDate)}</h6>
-                              </div>
-                            </td>
-                            <td className="border border-neutral-400 px-3 py-2">
-                              <div
-                                className={`flex justify-center items-center flex-col gap-1 ${
-                                  item.deployedDate ? null : "text-neutral-400"
-                                }`}
-                              >
-                                <h6>
-                                  {item.deployedDate
-                                    ? String(item.deployedDate)
-                                    : "N/A"}
-                                </h6>
-                              </div>
-                            </td>
-                            <td className="border border-neutral-400 px-3 py-2">
-                              <div
-                                className={`flex justify-center items-center flex-col gap-1 ${
-                                  item.station ? null : "text-neutral-400"
-                                }`}
-                              >
-                                <h6>{item.station ? item.station : "N/A"}</h6>
-                              </div>
-                            </td>
-                            <td className="border border-neutral-400 px-3 py-2">
-                              <div
-                                className={`flex justify-center items-center flex-col gap-1 ${
-                                  item.department ? null : "text-neutral-400"
-                                }`}
-                              >
-                                <h6>
-                                  {item.department ? item.department : "N/A"}
-                                </h6>
-                              </div>
-                            </td>
-                            <td className="border border-neutral-400 px-3 py-2">
-                              <div
-                                className={`flex justify-center items-center flex-col gap-1 ${
-                                  item.remarks === "available"
-                                    ? "text-green-700"
-                                    : "text-red-600"
-                                }`}
-                              >
-                                <h6>
-                                  {item.remarks
-                                    ? item.remarks.toUpperCase()
-                                    : "N/A"}
-                                </h6>
-                              </div>
-                            </td>
-                          </tr>
-                        ))
-                      ) : (
-                        <tr>
-                          <td
-                            colSpan={7}
-                            className="border border-neutral-400 px-3 py-2"
-                          >
-                            <div className="flex justify-center items-center gap-1">
-                              <p>No data found.</p>
-                            </div>
-                          </td>
-                        </tr>
-                      )}
-                    </>
-                  )}
-                </tbody>
-              </table>
+            <div className="relative w-10/10 max-h-60 overflow-x-auto border border-gray-400">
+              <ItemStockTable isLoading={isLoading} stockItems={stockItems} />
             </div>
           ) : null}
         </div>
