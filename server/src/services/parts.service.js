@@ -14,7 +14,6 @@ const findById = async (id) => {
   try {
     const parts = await Part.findOne({
       where: { id: id },
-      raw: true,
     });
     // console.log("Part ID confirm: ", parts);
     return parts;
@@ -24,10 +23,13 @@ const findById = async (id) => {
   }
 };
 
+const normalizeSerial = (value) =>
+  value.replace(/[\u200E\u200F\u202A-\u202E]/g, "").trim();
+
 const findItemBySerialNumber = async (serialNumber) => {
   try {
     const item = await ITStock.findOne({
-      where: { serialNumber: serialNumber },
+      where: { serialNumber: normalizeSerial(serialNumber) },
       raw: true,
     });
     // console.log("Item found: ", item);
@@ -200,7 +202,7 @@ const deletePart = async (partsId) => {
 
 const inboundPart = async (inboundData) => {
   try {
-    const { partId, quantity, inboundDate } = inboundData;
+    const { partId, from, quantity, inboundDate } = inboundData;
 
     // Hash password before storing
     // console.log("Data received in inbounding: ", inboundData);
@@ -208,6 +210,7 @@ const inboundPart = async (inboundData) => {
     // console.log("Inbounding part.");
     const inbound = await Inbound.create({
       partId: partId,
+      from: from,
       quantity: quantity,
       inboundDate: inboundDate,
     });
@@ -224,7 +227,7 @@ const inboundPart = async (inboundData) => {
 
 const addItem = async (itemDetails) => {
   try {
-    const { stockId, serialNumber, PRDate, receivedDate } = itemDetails;
+    const { from, stockId, serialNumber, PRDate, receivedDate } = itemDetails;
 
     // Hash password before storing
     // console.log("Data received in inbounding: ", inboundData);
@@ -232,6 +235,7 @@ const addItem = async (itemDetails) => {
     // console.log("Inbounding part.");
     const addItem = await ITStock.create({
       stockId: stockId,
+      from: from,
       serialNumber: serialNumber,
       PRDate: PRDate,
       receivedDate: receivedDate,
@@ -260,7 +264,10 @@ const deployItem = async (itemData) => {
     }
 
     // prepare the data
-    const updateData = {};
+    const updateData = {
+      from: itemData.from,
+      to: itemData.to,
+    };
 
     if (itemData.deployedDate) {
       updateData.deployedDate = itemData.deployedDate;
@@ -294,6 +301,7 @@ const getItems = async (id) => {
   try {
     const items = await ITStock.findAll({
       where: { stockId: id },
+      order: [["remarks", "ASC"]],
       raw: true,
     });
     // console.log("Inbounds fetched: ", inbounds);
@@ -331,13 +339,15 @@ const getInbounds = async (id) => {
 
 const outboundPart = async (outboundData) => {
   try {
-    const { partId, quantity, outboundDate } = outboundData;
+    const { from, to, partId, quantity, outboundDate } = outboundData;
 
     // Hash password before storing
     // console.log("Data received in outbounding: ", outboundData);
 
     // console.log("Inbounding part.");
     const outbound = await Outbound.create({
+      from: from,
+      to: to,
       partId: partId,
       quantity: quantity,
       outboundDate: outboundDate,

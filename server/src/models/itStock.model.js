@@ -7,6 +7,14 @@ const ITStock = sequelize.define("ITStock", {
     primaryKey: true,
     autoIncrement: true,
   },
+  from: {
+    type: DataTypes.STRING(150),
+    allowNull: true,
+  },
+  to: {
+    type: DataTypes.STRING(150),
+    allowNull: true,
+  },
   stockId: {
     type: DataTypes.INTEGER,
     allowNull: false,

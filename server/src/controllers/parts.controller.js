@@ -309,7 +309,12 @@ const inboundPart = async (req, res) => {
   try {
     // console.log("Data received in Controller: ", req.body);
     // Optional: Validate request body first
-    if (!req.body.partId || !req.body.quantity || !req.body.inboundDate) {
+    if (
+      !req.body.from ||
+      !req.body.partId ||
+      !req.body.quantity ||
+      !req.body.inboundDate
+    ) {
       // console.log("Please fill in all required fields.");
       return res.json({
         message: "Please fill in all required fields.",
@@ -411,7 +416,13 @@ const outboundPart = async (req, res) => {
   try {
     // console.log("Data received in Controller: ", req.body);
     // Optional: Validate request body first
-    if (!req.body.partId || !req.body.quantity || !req.body.outboundDate) {
+    if (
+      !req.body.from ||
+      !req.body.to ||
+      !req.body.partId ||
+      !req.body.quantity ||
+      !req.body.outboundDate
+    ) {
       // console.log("Please fill in all required fields.");
       return res.json({
         message: "Please fill in all required fields.",
@@ -575,6 +586,8 @@ const outboundItem = async (req, res) => {
     // console.log("Data in backend: ", req.body);
 
     if (
+      !req.body.from ||
+      !req.body.to ||
       !req.body.serialNumber ||
       !req.body.deployedDate ||
       !req.body.station ||

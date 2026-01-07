@@ -7,6 +7,10 @@ const Inbound = sequelize.define("Inbound", {
     primaryKey: true,
     autoIncrement: true,
   },
+  from: {
+    type: DataTypes.STRING(150),
+    allowNull: false,
+  },
   partId: {
     type: DataTypes.INTEGER,
     allowNull: false,
