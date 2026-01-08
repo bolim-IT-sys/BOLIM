@@ -1,4 +1,6 @@
-import axios, { AxiosError } from "axios";
+import axios from "axios";
+import type { Dispatch, SetStateAction } from "react";
+import type { Part } from "./Part.Service";
 
 export interface Inbound {
   id?: number;
@@ -23,11 +25,15 @@ export interface ITStocks {
   deployedDate?: Date;
   station?: string;
   department?: string;
+  from?: string;
+  to?: string;
   remarks?: string;
 }
 
 export interface InboundOutboundType {
   partId: number;
+  from: string;
+  to: string;
   currentQuantity: number;
   serialNumber?: string;
   quantity: string;
@@ -43,6 +49,8 @@ export interface addItemType {
 }
 
 export interface deployItemType {
+  from: string;
+  to: string;
   serialNumber: string;
   deployedDate: string;
   station: string;
@@ -80,10 +88,6 @@ export interface FetchingOutboundsResponse {
   data?: Outbound[];
 }
 
-// Define the error response structure from your API
-interface ApiErrorResponse {
-  message?: string;
-}
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000/api";
 
 export async function fetchAllInbounds(): Promise<FetchingInboundsResponse> {
@@ -104,7 +108,8 @@ export async function fetchAllInbounds(): Promise<FetchingInboundsResponse> {
     console.log(error);
     return {
       success: false,
-      message: "Something went wrong while fetching parts.",
+      message:
+        "Something went wrong while fetching parts. Check your internet connection and try again.",
     };
   }
 }
@@ -131,13 +136,21 @@ export async function fetchInbounds(
     console.log(error);
     return {
       success: false,
-      message: "Something went wrong while fetching parts.",
+      message:
+        "Something went wrong while fetching parts. Check your internet connection and try again.",
     };
   }
 }
 
 export async function inboundPart(
-  formData: InboundOutboundType
+  item: Part,
+  formData: InboundOutboundType,
+  fetchTransactions: () => void,
+  fetchAllParts: () => void,
+  setInboundShow: (value: boolean) => void,
+  setModalShow: (value: boolean) => void,
+  setData: Dispatch<SetStateAction<Part[]>>,
+  setFormData: Dispatch<SetStateAction<InboundOutboundType>>
 ): Promise<InboundOutboundResponse> {
   try {
     const response = await axios.post(`${API_URL}/parts/inbound`, formData, {
@@ -147,7 +160,39 @@ export async function inboundPart(
     });
     // console.log("creating user");
     if (response.status === 201) {
-      return response.data;
+      setTimeout(
+        () => {
+          alert(response.data.message);
+          fetchTransactions();
+          fetchAllParts();
+          setInboundShow(false);
+          setModalShow(true);
+          // UPDATING THE QUANTITY OF THE INBOUNDED PART
+          setData((prevParts) =>
+            prevParts.map((p) =>
+              p.id === formData.partId
+                ? { ...p, quantity: p.quantity + Number(formData.quantity) }
+                : p
+            )
+          );
+          // RESETTING FORMDATA AFTER INBOUND
+          setFormData((prev) => ({
+            ...prev,
+            partId: item.id!,
+            currentQuantity: item.quantity + Number(formData.quantity),
+            serialNumber: `${item.partNumber} ${item.inbounds!.length + 1}`,
+            quantity: "1",
+          }));
+        },
+        import.meta.env.VITE_TIME_OUT
+      );
+    } else {
+      setTimeout(
+        () => {
+          alert(response.data.message);
+        },
+        import.meta.env.VITE_TIME_OUT
+      );
     }
 
     return {
@@ -155,38 +200,11 @@ export async function inboundPart(
       message: "Unexpected response status",
     };
   } catch (error) {
-    // Type guard for Axios errors
-    if (axios.isAxiosError(error)) {
-      const axiosError = error as AxiosError<ApiErrorResponse>;
-      // console.error(
-      //   "Error creating part:",
-      //   axiosError.response?.data || axiosError.message
-      // );
-
-      // Check if it's a connection error
-      if (
-        axiosError.code === "ERR_NETWORK" ||
-        axiosError.message.includes("ERR_CONNECTION_REFUSED")
-      ) {
-        return {
-          success: false,
-          message:
-            "Cannot connect to server. Please check if the server is running.",
-        };
-      }
-
-      return {
-        success: false,
-        message: axiosError.response?.data?.message || axiosError.message,
-      };
-    }
-
-    // Handle non-Axios errors
-    // console.error("Error creating user:", error);
+    console.log(error);
     return {
       success: false,
       message:
-        error instanceof Error ? error.message : "An unknown error occurred",
+        "Something went wrong while fetching parts. Check your internet connection and try again.",
     };
   }
 }
@@ -209,7 +227,8 @@ export async function fetchAllOutbounds(): Promise<FetchingOutboundsResponse> {
     console.log(error);
     return {
       success: false,
-      message: "Something went wrong while fetching parts.",
+      message:
+        "Something went wrong while fetching parts. Check your internet connection and try again.",
     };
   }
 }
@@ -233,13 +252,22 @@ export async function fetchOutbounds(
     console.log(error);
     return {
       success: false,
-      message: "Something went wrong while fetching parts.",
+      message:
+        "Something went wrong while fetching parts. Check your internet connection and try again.",
     };
   }
 }
 
 export async function outboundPart(
-  formData: InboundOutboundType
+  item: Part,
+  formData: InboundOutboundType,
+  setFormData: Dispatch<SetStateAction<InboundOutboundType>>,
+  setOutboundShow: (value: boolean) => void,
+  setModalShow: (value: boolean) => void,
+  fetchTransactions: () => void,
+  fetchAllParts: () => void,
+  setData: Dispatch<SetStateAction<Part[]>>,
+  setItemDetails: Dispatch<SetStateAction<deployItemType>>
 ): Promise<InboundOutboundResponse> {
   try {
     const response = await axios.post(`${API_URL}/parts/outbound`, formData, {
@@ -249,7 +277,44 @@ export async function outboundPart(
     });
     // console.log("creating user");
     if (response.status === 201) {
-      return response.data;
+      setTimeout(
+        () => {
+          alert(response.data.message);
+          setOutboundShow(false);
+          setModalShow(true);
+          fetchTransactions();
+          fetchAllParts();
+          // UPDATING THE QUANTITY OF THE INBOUNDED PART
+          setData((prevParts) =>
+            prevParts.map((p) =>
+              p.id === formData.partId
+                ? { ...p, quantity: p.quantity - Number(formData.quantity) }
+                : p
+            )
+          );
+          // RESETTING FORMDATA AFTER INBOUND
+          setFormData((prev) => ({
+            ...prev,
+            partId: item.id!,
+            currentQuantity: item.quantity + Number(formData.quantity),
+            quantity: "1",
+          }));
+          setItemDetails((prev) => ({
+            ...prev,
+            partId: item.id!,
+            currentQuantity: item.quantity + Number(formData.quantity),
+            quantity: "1",
+          }));
+        },
+        import.meta.env.VITE_TIME_OUT
+      );
+    } else {
+      setTimeout(
+        () => {
+          alert(`Error: ${response.data.message}`);
+        },
+        import.meta.env.VITE_TIME_OUT
+      );
     }
 
     return {
@@ -257,38 +322,11 @@ export async function outboundPart(
       message: "Unexpected response status",
     };
   } catch (error) {
-    // Type guard for Axios errors
-    if (axios.isAxiosError(error)) {
-      const axiosError = error as AxiosError<ApiErrorResponse>;
-      // console.error(
-      //   "Error creating part:",
-      //   axiosError.response?.data || axiosError.message
-      // );
-
-      // Check if it's a connection error
-      if (
-        axiosError.code === "ERR_NETWORK" ||
-        axiosError.message.includes("ERR_CONNECTION_REFUSED")
-      ) {
-        return {
-          success: false,
-          message:
-            "Cannot connect to server. Please check if the server is running.",
-        };
-      }
-
-      return {
-        success: false,
-        message: axiosError.response?.data?.message || axiosError.message,
-      };
-    }
-
-    // Handle non-Axios errors
-    // console.error("Error creating user:", error);
+    console.log(error);
     return {
       success: false,
       message:
-        error instanceof Error ? error.message : "An unknown error occurred",
+        "Something went wrong while outbounding item. Check your internet connection and try again.",
     };
   }
 }
@@ -310,7 +348,8 @@ export async function fetchITStocks(
     console.log(error);
     return {
       success: false,
-      message: "Something went wrong while fetching parts.",
+      message:
+        "Something went wrong while fetching parts. Check your internet connection and try again.",
     };
   }
 }
@@ -331,38 +370,11 @@ export async function addingItem(
       return response.data;
     }
   } catch (error) {
-    // Type guard for Axios errors
-    if (axios.isAxiosError(error)) {
-      const axiosError = error as AxiosError<ApiErrorResponse>;
-      // console.error(
-      //   "Error creating part:",
-      //   axiosError.response?.data || axiosError.message
-      // );
-
-      // Check if it's a connection error
-      if (
-        axiosError.code === "ERR_NETWORK" ||
-        axiosError.message.includes("ERR_CONNECTION_REFUSED")
-      ) {
-        return {
-          success: false,
-          message:
-            "Cannot connect to server. Please check if the server is running.",
-        };
-      }
-
-      return {
-        success: false,
-        message: axiosError.response?.data?.message || axiosError.message,
-      };
-    }
-
-    // Handle non-Axios errors
-    // console.error("Error creating user:", error);
+    console.log(error);
     return {
       success: false,
       message:
-        error instanceof Error ? error.message : "An unknown error occurred",
+        "Something went wrong while fetching parts. Check your internet connection and try again.",
     };
   }
 }
@@ -382,38 +394,11 @@ export async function outboundItem(
       return response.data;
     }
   } catch (error) {
-    // Type guard for Axios errors
-    if (axios.isAxiosError(error)) {
-      const axiosError = error as AxiosError<ApiErrorResponse>;
-      // console.error(
-      //   "Error creating user:",
-      //   axiosError.response?.data || axiosError.message
-      // );
-
-      // Check if it's a connection error
-      if (
-        axiosError.code === "ERR_NETWORK" ||
-        axiosError.message.includes("ERR_CONNECTION_REFUSED")
-      ) {
-        return {
-          success: false,
-          message:
-            "Cannot connect to server. Please check if the server is running.",
-        };
-      }
-
-      return {
-        success: false,
-        message: axiosError.response?.data?.message || axiosError.message,
-      };
-    }
-
-    // Handle non-Axios errors
-    console.error("Error updating user:", error);
+    console.log(error);
     return {
       success: false,
       message:
-        error instanceof Error ? error.message : "An unknown error occurred",
+        "Something went wrong while outbounding item. Check your internet connection and try again.",
     };
   }
 }

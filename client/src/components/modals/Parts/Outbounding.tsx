@@ -43,6 +43,8 @@ export const Outbounding = ({
   handleChange,
 }: Props) => {
   const [itemDetails, setItemDetails] = useState<deployItemType>({
+    from: formData.from!,
+    to: formData.to!,
     serialNumber: ``,
     deployedDate: formData.outboundDate!,
     station: "",
@@ -53,6 +55,8 @@ export const Outbounding = ({
   useEffect(() => {
     setItemDetails((prev) => ({
       ...prev,
+      from: formData.from!,
+      to: formData.to!,
       deployedDate: formData.outboundDate!,
       station: prev.station,
       department: prev.department,
@@ -67,52 +71,34 @@ export const Outbounding = ({
 
         if (!deployItem.success) {
           return alert(deployItem.message);
+        } else {
+          await outboundPart(
+            item,
+            formData,
+            setFormData,
+            setOutboundShow,
+            setModalShow,
+            fetchTransactions,
+            fetchAllParts,
+            setData,
+            setItemDetails
+          );
         }
-      }
-      const result = await outboundPart(formData);
-      // console.log("deploying stock item.");
-
-      if (result.success) {
-        setTimeout(
-          () => {
-            alert(result.message);
-            setOutboundShow(false);
-            setModalShow(true);
-            fetchTransactions();
-            fetchAllParts();
-            // UPDATING THE QUANTITY OF THE INBOUNDED PART
-            setData((prevParts) =>
-              prevParts.map((p) =>
-                p.id === formData.partId
-                  ? { ...p, quantity: p.quantity - Number(formData.quantity) }
-                  : p
-              )
-            );
-            // RESETTING FORMDATA AFTER INBOUND
-            setFormData((prev) => ({
-              ...prev,
-              partId: item.id!,
-              currentQuantity: item.quantity + Number(formData.quantity),
-              quantity: "1",
-            }));
-            setItemDetails((prev) => ({
-              ...prev,
-              partId: item.id!,
-              currentQuantity: item.quantity + Number(formData.quantity),
-              quantity: "1",
-            }));
-          },
-          import.meta.env.VITE_TIME_OUT
-        );
-        // Redirect or update UI
       } else {
-        setTimeout(
-          () => {
-            alert(`Error: ${result.message}`);
-          },
-          import.meta.env.VITE_TIME_OUT
+        await outboundPart(
+          item,
+          formData,
+          setFormData,
+          setOutboundShow,
+          setModalShow,
+          fetchTransactions,
+          fetchAllParts,
+          setData,
+          setItemDetails
         );
       }
+
+      // console.log("deploying stock item.");
     } catch (error) {
       console.error("Unexpecter error occured: ", error);
     } finally {
@@ -125,8 +111,24 @@ export const Outbounding = ({
     }
   };
 
-  const outboundFilled = () => {
-    return formData.quantity === "" || formData.inboundDate === "";
+  const incompleteForm = () => {
+    if (type === "it") {
+      return (
+        formData.from === "" ||
+        formData.to === "" ||
+        formData.serialNumber === "" ||
+        itemDetails.station === "" ||
+        itemDetails.department === "" ||
+        formData.quantity === "" ||
+        formData.inboundDate === ""
+      );
+    }
+    return (
+      formData.from === "" ||
+      formData.to === "" ||
+      formData.quantity === "" ||
+      formData.inboundDate === ""
+    );
   };
 
   return (
@@ -168,13 +170,47 @@ export const Outbounding = ({
                 loadingText="OUTBOUNDING"
                 onClick={handleOutbound}
                 isLoading={outbounding}
-                disabled={outbounding || outboundFilled()}
+                disabled={outbounding || incompleteForm()}
               />
             </div>
           </>
         }
       >
         <div className="text-start">
+          <div className="mb-1">
+            <label
+              htmlFor="OUTBOUND PERSONEL"
+              className="block font-medium text-gray-700"
+            >
+              <p>OUTBOUND PERSONEL</p>
+            </label>
+            <InputField
+              label="OUTBOUND PERSONEL"
+              type="text"
+              value={formData.from!}
+              onChange={(value: string) =>
+                setFormData((prev) => ({ ...prev, from: value }))
+              }
+              autoComplete={`from`}
+            />
+          </div>
+          <div className="mb-1">
+            <label
+              htmlFor="RECEIVER"
+              className="block font-medium text-gray-700"
+            >
+              <p>RECEIVER</p>
+            </label>
+            <InputField
+              label="RECEIVER"
+              type="text"
+              value={formData.to!}
+              onChange={(value: string) =>
+                setFormData((prev) => ({ ...prev, to: value }))
+              }
+              autoComplete={`to`}
+            />
+          </div>
           {type === "it" ? (
             <>
               <div className="mb-1">

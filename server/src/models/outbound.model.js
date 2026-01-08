@@ -7,6 +7,14 @@ const Outbound = sequelize.define("Outbound", {
     primaryKey: true,
     autoIncrement: true,
   },
+  from: {
+    type: DataTypes.STRING(150),
+    allowNull: false,
+  },
+  to: {
+    type: DataTypes.STRING(150),
+    allowNull: false,
+  },
   partId: {
     type: DataTypes.INTEGER,
     allowNull: false,

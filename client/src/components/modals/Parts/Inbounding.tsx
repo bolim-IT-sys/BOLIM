@@ -43,6 +43,7 @@ export const Inbounding = ({
   handleChange,
 }: Props) => {
   const [itemDetails, setItemDetails] = useState<addItemType>({
+    // from: formData.from!,
     stockId: item.id!,
     serialNumber: `${item.partNumber} ${item.inbounds!.length + 1}`,
     PRDate: "",
@@ -52,6 +53,7 @@ export const Inbounding = ({
   useEffect(() => {
     setItemDetails((prev) => ({
       ...prev,
+      // from: formData.from!,
       serialNumber: `${item.partNumber} ${item.inbounds!.length + 1}`,
       receivedDate: formData.inboundDate!,
       PRDate: prev.PRDate,
@@ -66,47 +68,32 @@ export const Inbounding = ({
 
         if (!addItem.success) {
           return alert(addItem.message);
+        } else {
+          await inboundPart(
+            item,
+            formData,
+            fetchTransactions,
+            fetchAllParts,
+            setInboundShow,
+            setModalShow,
+            setData,
+            setFormData
+          );
         }
-      }
-      const result = await inboundPart(formData);
-      // console.log("deploying stock item.");
-
-      if (result.success) {
-        setTimeout(
-          () => {
-            alert(result.message);
-            fetchTransactions();
-            fetchAllParts();
-            setInboundShow(false);
-            setModalShow(true);
-            // UPDATING THE QUANTITY OF THE INBOUNDED PART
-            setData((prevParts) =>
-              prevParts.map((p) =>
-                p.id === formData.partId
-                  ? { ...p, quantity: p.quantity + Number(formData.quantity) }
-                  : p
-              )
-            );
-            // RESETTING FORMDATA AFTER INBOUND
-            setFormData((prev) => ({
-              ...prev,
-              partId: item.id!,
-              currentQuantity: item.quantity + Number(formData.quantity),
-              serialNumber: `${item.partNumber} ${item.inbounds!.length + 1}`,
-              quantity: "1",
-            }));
-          },
-          import.meta.env.VITE_TIME_OUT
-        );
-        // Redirect or update UI
       } else {
-        setTimeout(
-          () => {
-            alert(`Error: ${result.message}`);
-          },
-          import.meta.env.VITE_TIME_OUT
+        await inboundPart(
+          item,
+          formData,
+          fetchTransactions,
+          fetchAllParts,
+          setInboundShow,
+          setModalShow,
+          setData,
+          setFormData
         );
       }
+
+      // console.log("deploying stock item.");
     } catch (error) {
       alert(`Unexpecter error occured: ${error}`);
     } finally {
@@ -163,6 +150,21 @@ export const Inbounding = ({
         }
       >
         <div className="text-start">
+          <div className="mb-1">
+            <label
+              htmlFor="INBOUNDING PERSONEL"
+              className="block font-medium text-gray-700"
+            >
+              <p>INBOUNDING PERSONEL</p>
+            </label>
+            <InputField
+              label="INBOUNDING PERSONEL"
+              type="text"
+              value={formData.from}
+              onChange={(value: string) => handleChange("from", value)}
+              autoComplete={`from`}
+            />
+          </div>
           {type === "it" ? (
             <>
               <div className="mb-1">
