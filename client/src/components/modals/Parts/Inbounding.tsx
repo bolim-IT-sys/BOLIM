@@ -108,7 +108,8 @@ export const Inbounding = ({
             setModalShow,
             setData,
             setFormData,
-            print
+            print,
+            printLabel
           );
         }
       } else {
@@ -121,7 +122,8 @@ export const Inbounding = ({
           setModalShow,
           setData,
           setFormData,
-          print
+          print,
+          printLabel
         );
       }
 
@@ -139,7 +141,13 @@ export const Inbounding = ({
   };
 
   const inboundFilled = () => {
-    return formData.quantity === "" || formData.inboundDate === "";
+    return (
+      formData.quantity === "" ||
+      formData.inboundDate === "" ||
+      (type === "it" && itemDetails.PRDate === "") ||
+      formData.from === "" ||
+      (type === "pin" && formData.lotNo === "")
+    );
   };
 
   return (
@@ -181,7 +189,11 @@ export const Inbounding = ({
                 loadingText="INBOUNDING"
                 onClick={handleInbound}
                 isLoading={inbounding}
-                disabled={inbounding || inboundFilled() || !isConnected}
+                disabled={
+                  inbounding ||
+                  inboundFilled() ||
+                  (type === "pin" && printLabel && !isConnected)
+                }
               />
             </div>
           </>
@@ -201,6 +213,24 @@ export const Inbounding = ({
           />
         ) : (
           <div className="text-start">
+            {type === "pin" ? (
+              <div className="mb-1">
+                <label
+                  htmlFor="LOT NUMBER"
+                  className="block font-medium text-gray-700"
+                >
+                  <p>LOT NUMBER</p>
+                </label>
+                <InputField
+                  label="LOT NUMBER"
+                  type="text"
+                  value={formData.lotNo}
+                  onChange={(value: string) => handleChange("lotNo", value)}
+                  autoComplete={`lotNo`}
+                />
+              </div>
+            ) : null}
+
             <div className="mb-1">
               <label
                 htmlFor="INBOUNDING PERSONEL"
@@ -289,34 +319,39 @@ export const Inbounding = ({
                 autoComplete={`inboundDate`}
               />
             </div>
-            <div className="flex items-center h-10 gap-1 mt-2">
-              <SwitchButton
-                checked={printLabel}
-                onChange={setPrintLabel}
-                disabled={!isConnected}
-                label="Print Label"
-              />
-              <div>
-                <h2
-                  className="text-green-700 cursor-pointer"
-                  onClick={() => getPrinters(setLoadingPrinters)}
-                >
-                  <i
-                    className={`bx bx-refresh ${loadingPrinters ? "bx-spin" : ""}`}
-                  ></i>
-                </h2>
+            {type === "pin" ? (
+              <div className="flex items-center h-10 gap-1 mt-2">
+                <SwitchButton
+                  checked={printLabel}
+                  onChange={setPrintLabel}
+                  disabled={!isConnected || type !== "pin"}
+                  label="Print Label"
+                />
+
+                {/* PRINTER REFRESH BUTTON */}
+                <div>
+                  <h2
+                    className={`text-green-700 cursor-pointer ${loadingPrinters ? "cursor-progress" : ""}`}
+                    onClick={() => getPrinters(setLoadingPrinters)}
+                  >
+                    <i
+                      className={`bx ${loadingPrinters ? "bx-loader" : "bx-refresh"} ${loadingPrinters ? "bx-spin" : ""}`}
+                    ></i>
+                  </h2>
+                </div>
+                {/* PRINTER SETTINGS BUTTON */}
+                <div>
+                  <h2
+                    className="text-sky-600 hover:text-sky-700 transition duration-300 ease-in-out cursor-pointer"
+                    onClick={() => {
+                      setShowPrinter(true);
+                    }}
+                  >
+                    <i className="bx bxs-cog"></i>
+                  </h2>
+                </div>
               </div>
-              <div>
-                <h2
-                  className="text-sky-600 hover:text-sky-700 transition duration-300 ease-in-out cursor-pointer"
-                  onClick={() => {
-                    setShowPrinter(true);
-                  }}
-                >
-                  <i className="bx bxs-cog"></i>
-                </h2>
-              </div>
-            </div>
+            ) : null}
           </div>
         )}
       </Modal>
