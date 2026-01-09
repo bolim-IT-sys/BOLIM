@@ -146,7 +146,8 @@ export const Inbounding = ({
       formData.inboundDate === "" ||
       (type === "it" && itemDetails.PRDate === "") ||
       formData.from === "" ||
-      (type === "pin" && formData.lotNo === "")
+      (type === "pin" && formData.lotNo === "") ||
+      (type === "pin" && loadingPrinters)
     );
   };
 
