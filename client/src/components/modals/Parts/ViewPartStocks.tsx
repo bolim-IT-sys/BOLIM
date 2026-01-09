@@ -56,6 +56,7 @@ export const ViewPartStocks = ({ item, setData, type }: Props) => {
   const [formData, setFormData] = useState<InboundOutboundType>({
     partNumber: item.partNumber,
     partId: item.id!,
+    lotNo: "",
     from: "",
     to: "",
     currentQuantity: computeStocks(item),

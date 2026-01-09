@@ -310,6 +310,7 @@ const inboundPart = async (req, res) => {
     // console.log("Data received in Controller: ", req.body);
     // Optional: Validate request body first
     if (
+      !req.body.lotNo ||
       !req.body.from ||
       !req.body.partId ||
       !req.body.quantity ||

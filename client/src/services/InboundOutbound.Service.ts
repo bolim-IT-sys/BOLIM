@@ -33,6 +33,7 @@ export interface ITStocks {
 export interface InboundOutboundType {
   partNumber: string;
   partId: number;
+  lotNo: string;
   from: string;
   to: string;
   currentQuantity: number;
@@ -152,7 +153,8 @@ export async function inboundPart(
   setModalShow: (value: boolean) => void,
   setData: Dispatch<SetStateAction<Part[]>>,
   setFormData: Dispatch<SetStateAction<InboundOutboundType>>,
-  print: (value: string) => Promise<boolean>
+  print: (value: string) => Promise<boolean>,
+  printLabel: boolean
 ): Promise<InboundOutboundResponse> {
   // Generate ZPL
   const generateZPL = (
@@ -184,7 +186,7 @@ export async function inboundPart(
 ^FDDate: ${date}^FS
 
 // FOR QR CODE
-^FO370,25
+^FO390,25
 ^BQN,2,4
 ^FDLA,${qrData}^FS
 
@@ -196,14 +198,14 @@ export async function inboundPart(
   const handlePrint = async (): Promise<void> => {
     const zpl = generateZPL(
       formData.partNumber,
-      formData.partNumber,
+      formData.lotNo,
       formData.quantity,
       formData.from,
       formData.inboundDate
     );
     const success = await print(zpl);
     if (success) {
-      alert("Print job sent successfully!");
+      // alert("Print job sent successfully!");
     }
   };
   try {
@@ -221,7 +223,9 @@ export async function inboundPart(
           fetchAllParts();
           setInboundShow(false);
           setModalShow(true);
-          handlePrint();
+          if (printLabel) {
+            handlePrint();
+          }
           // UPDATING THE QUANTITY OF THE INBOUNDED PART
           setData((prevParts) =>
             prevParts.map((p) =>
@@ -234,6 +238,7 @@ export async function inboundPart(
           setFormData((prev) => ({
             ...prev,
             partId: item.id!,
+            lotNo: "",
             currentQuantity: item.quantity + Number(formData.quantity),
             serialNumber: `${item.partNumber} ${item.inbounds!.length + 1}`,
             quantity: "1",
