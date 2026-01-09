@@ -182,7 +182,7 @@ export default function Dashboard() {
           </div>
           <div className="h-full w-full overflow-hidden">
             {/* Key Metrics Grid */}
-            <KeyMetrics setParts={setParts} data={data} dataType={dataType} />
+            <KeyMetrics data={data} dataType={dataType} />
           </div>
 
           {/* BAR CHART */}

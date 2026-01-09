@@ -15,7 +15,6 @@ import {
   sortByUrgentRequest,
 } from "../../../helper/sorting.helper";
 import { useSearchParams } from "react-router-dom";
-import { ImageModal } from "../../../components/modals/Parts/ImageModal";
 import {
   computeExcessInsufficient,
   computeOrderQuantity,
@@ -206,14 +205,6 @@ export const ModalDataTable = ({ data, setData, type }: Props) => {
             >
               <tr>
                 <th
-                  className="hover:bg-sky-700 transition duration-200 border border-neutral-300 text-center px-2 py-3 cursor-pointer"
-                  onClick={handleSortByPartNumber}
-                >
-                  <div className="h-10 flex justify-center items-center">
-                    <h5>IMAGE</h5>
-                  </div>
-                </th>
-                <th
                   className="w-50 hover:bg-sky-700 transition duration-200 border border-neutral-300 text-center px-2 py-3 cursor-pointer"
                   onClick={handleSortByPartNumber}
                 >
@@ -354,11 +345,6 @@ export const ModalDataTable = ({ data, setData, type }: Props) => {
                 <>
                   {data.map((item) => (
                     <tr key={item.id} className="hover:bg-gray-50">
-                      <td className="text-center border border-neutral-300 px-3 py-2">
-                        <div className="h-18 flex justify-center items-center">
-                          <ImageModal part={item} />
-                        </div>
-                      </td>
                       <td className="text-center border border-neutral-300 px-3 py-2">
                         <h6>{item.partNumber}</h6>
                       </td>
