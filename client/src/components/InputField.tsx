@@ -1,3 +1,5 @@
+import { handleKeyDown } from "../helper/helper";
+
 interface InputFieldProps {
   label: string;
   type: string;
@@ -5,6 +7,7 @@ interface InputFieldProps {
   required?: boolean;
   onChange: (value: string) => void;
   autoComplete?: string;
+  onKeyPress?: () => void;
 }
 
 export default function InputField({
@@ -14,6 +17,7 @@ export default function InputField({
   required,
   onChange,
   autoComplete,
+  onKeyPress,
 }: InputFieldProps) {
   return (
     <div className="caret-pink-500">
@@ -27,6 +31,7 @@ export default function InputField({
         onChange={(e) => onChange(e.target.value)}
         required={required ?? false}
         autoComplete={autoComplete}
+        onKeyDown={(e) => handleKeyDown(e, onKeyPress)}
         className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
     </div>
