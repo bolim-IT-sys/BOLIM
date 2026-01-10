@@ -1,3 +1,4 @@
+import type { KeyboardEvent } from "react";
 import type { Inbound, Outbound } from "../services/InboundOutbound.Service";
 
 export const formatNumberShort = (num: number) => {
@@ -147,5 +148,11 @@ export const getSafetyStock = (
     return averageOutboundPerMonth * 2;
   } else {
     return 10;
+  }
+};
+
+export const handleKeyDown = (e: KeyboardEvent, onKeyPress?: () => void) => {
+  if (e.key === "Enter" && onKeyPress) {
+    onKeyPress();
   }
 };

@@ -7,6 +7,10 @@ const Inbound = sequelize.define("Inbound", {
     primaryKey: true,
     autoIncrement: true,
   },
+  lotNo: {
+    type: DataTypes.STRING(150),
+    allowNull: false,
+  },
   from: {
     type: DataTypes.STRING(150),
     allowNull: false,

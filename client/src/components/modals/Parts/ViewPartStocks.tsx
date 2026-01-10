@@ -48,11 +48,15 @@ export const ViewPartStocks = ({ item, setData, type }: Props) => {
   const [outboundShow, setOutboundShow] = useState<boolean>(false);
   const [outbounding, setOutBounding] = useState<boolean>(false);
 
+  const [showPrinter, setShowPrinter] = useState(false);
+
   const [stockItems, setStockItems] = useState<ITStocks[]>([]);
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [formData, setFormData] = useState<InboundOutboundType>({
+    partNumber: item.partNumber,
     partId: item.id!,
+    lotNo: "",
     from: "",
     to: "",
     currentQuantity: computeStocks(item),
@@ -283,6 +287,8 @@ export const ViewPartStocks = ({ item, setData, type }: Props) => {
         setInBounding={setInBounding}
         setModalShow={setModalShow}
         handleChange={handleChange}
+        showPrinter={showPrinter}
+        setShowPrinter={setShowPrinter}
       />
 
       {/* OUTBOUNDING */}

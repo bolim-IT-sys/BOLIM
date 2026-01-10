@@ -32,8 +32,7 @@ interface ContextType {
 }
 
 export default function Dashboard() {
-  const { user, parts, setParts, ITStocks, materials } =
-    useOutletContext<ContextType>();
+  const { user, parts, ITStocks, materials } = useOutletContext<ContextType>();
 
   const [dataType, setDataType] = useState<string>("");
   useEffect(() => {
@@ -182,7 +181,7 @@ export default function Dashboard() {
           </div>
           <div className="h-full w-full overflow-hidden">
             {/* Key Metrics Grid */}
-            <KeyMetrics setParts={setParts} data={data} dataType={dataType} />
+            <KeyMetrics data={data} dataType={dataType} />
           </div>
 
           {/* BAR CHART */}

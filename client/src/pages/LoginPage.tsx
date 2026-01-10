@@ -94,6 +94,7 @@ export default function LoginPage() {
             required={true}
             onChange={(value: string) => handleChange("username", value)}
             autoComplete={`username`}
+            onKeyPress={handleSubmit}
           />
         </div>
         <div className="mb-3">
@@ -104,6 +105,7 @@ export default function LoginPage() {
             required={true}
             onChange={(value: string) => handleChange("password", value)}
             autoComplete={`current-password`}
+            onKeyPress={handleSubmit}
           />
         </div>
         <div className="h-10">

@@ -7,32 +7,36 @@ import {
 import type { Part } from "../../../../services/Part.Service";
 import { StockValue } from "./StockValue";
 import { LowStocks } from "./LowStocks";
-import type { Dispatch, SetStateAction } from "react";
+import { useEffect, useState } from "react";
 import { OutOfStocks } from "./OutOfStocks";
 
 type Props = {
-  setParts: Dispatch<SetStateAction<Part[]>>;
   data: Part[];
   dataType: string;
 };
 
-export const KeyMetrics = ({ setParts, data, dataType }: Props) => {
+export const KeyMetrics = ({ data, dataType }: Props) => {
+  const [lowStockParts, setLowStockParts] = useState<Part[]>([]);
+  const [outOfStockParts, setOutOfStockParts] = useState<Part[]>([]);
   const totalParts = data.length;
 
-  const lowStockParts = data.filter((stock) => {
-    const safetyStock = getSafetyStock(
-      stock.outbounds!.map((o) => ({
-        quantity: o.quantity,
-        date: String(o.outboundDate),
-      })),
-      currentYear(),
-      currentMonth()
-    );
-    const lowStockParts = stock.quantity > 0 && stock.quantity < safetyStock;
-    // console.log("Low Stock Parts: ", lowStockParts);
-    return lowStockParts;
-  });
-  const outOfStockParts = data.filter((stock) => stock.quantity === 0);
+  useEffect(() => {
+    const lowStockParts = data.filter((stock) => {
+      const safetyStock = getSafetyStock(
+        stock.outbounds!.map((o) => ({
+          quantity: o.quantity,
+          date: String(o.outboundDate),
+        })),
+        currentYear(),
+        currentMonth()
+      );
+      return stock.quantity > 0 && stock.quantity < safetyStock;
+    });
+    setLowStockParts(lowStockParts);
+
+    const outOfStockParts = data.filter((stock) => stock.quantity === 0);
+    setOutOfStockParts(outOfStockParts);
+  }, [data]);
   return (
     <>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2 mb-2">
@@ -58,12 +62,12 @@ export const KeyMetrics = ({ setParts, data, dataType }: Props) => {
         <StockValue data={data} />
         <LowStocks
           lowStockParts={lowStockParts}
-          setParts={setParts}
+          setParts={setLowStockParts}
           dataType={dataType}
         />
         <OutOfStocks
           outOfStockParts={outOfStockParts}
-          setParts={setParts}
+          setParts={setOutOfStockParts}
           dataType={dataType}
         />
       </div>

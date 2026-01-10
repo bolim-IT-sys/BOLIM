@@ -43,7 +43,7 @@ export const ItemStockTable = ({ isLoading, stockItems }: Props) => {
         <tbody>
           {isLoading ? (
             <tr>
-              <td colSpan={7} className="border border-neutral-400 px-3 py-2">
+              <td colSpan={9} className="border border-neutral-400 px-3 py-2">
                 <div className="flex justify-center items-center gap-1">
                   <h5>
                     <i className="bx bx-loader-circle bx-spin" />

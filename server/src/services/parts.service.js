@@ -202,13 +202,14 @@ const deletePart = async (partsId) => {
 
 const inboundPart = async (inboundData) => {
   try {
-    const { partId, from, quantity, inboundDate } = inboundData;
+    const { lotNo, partId, from, quantity, inboundDate } = inboundData;
 
     // Hash password before storing
     // console.log("Data received in inbounding: ", inboundData);
 
     // console.log("Inbounding part.");
     const inbound = await Inbound.create({
+      lotNo: lotNo,
       partId: partId,
       from: from,
       quantity: quantity,

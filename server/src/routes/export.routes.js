@@ -22,7 +22,7 @@ router.post("/export-to-excel", async (req, res) => {
       latestYear,
     } = req.body;
 
-    // Prepare data for Excel
+    // Prepare data for Excel with dummy row to prevent header overlap
     const partsWithDummy = [
       {
         id: 0,
@@ -38,17 +38,49 @@ router.post("/export-to-excel", async (req, res) => {
       },
       ...parts,
     ];
+
     const excelData = partsWithDummy.map((part) => {
       // COMPUTING FOR INBOUND AND OUTBOUND TOTAL PERMONTH
       const getInOutQuantity = (month, year, dataType) => {
         if (dataType === "inbound") {
           const inboundQuantity = getInQuantity(part.inbounds, month, year);
-          return inboundQuantity > 0 ? `${inboundQuantity}` : "";
+          return inboundQuantity > 0 ? inboundQuantity : ""; // Return number or empty string
         } else {
           const outboundQuantity = getOutQuantity(part.outbounds, month, year);
-          return outboundQuantity > 0 ? `${outboundQuantity}` : "";
+          return outboundQuantity > 0 ? outboundQuantity : ""; // Return number or empty string
         }
       };
+
+      // Handle dummy row - return empty strings for all fields
+      if (part.id === 0) {
+        const monthInboundObject = Object.fromEntries(
+          monthList.map((m) => [m + "i", ""])
+        );
+        const monthOutboundObject = Object.fromEntries(
+          monthList.map((m) => [m + "o", ""])
+        );
+
+        return {
+          "Part number": "",
+          Specifications: "",
+          Category: "",
+          "Unit Price": "",
+          Company: "",
+          "STOCKS end of comparing month (ea)": "",
+          ...monthInboundObject,
+          "Total Inbound": "",
+          ...monthOutboundObject,
+          "Total Usage (ea)": "",
+          [`Average Monthly Usage: ${latestYear} (12 mos)`]: "",
+          "Average monthly usage": "",
+          "safety stock": "",
+          "STOCKS end of 2025(ea)": "",
+          "Securement rate": "",
+          "Excess/insufficient quantity": "",
+          "Urgent Request (Secure Rate Less than 50%)": "",
+          "Order Quantity (Regular Order)": "",
+        };
+      }
 
       const prevInbounds = getTotalByYearExcludingCurrentMonth(
         part.inbounds.map((i) => ({
@@ -134,7 +166,9 @@ router.post("/export-to-excel", async (req, res) => {
         ])
       );
 
-      const aveMonthlyUsage = Math.round(latestOutbounds / (latestMonth - 1));
+      // FIX: Prevent division by zero
+      const aveMonthlyUsage =
+        latestMonth > 1 ? Math.round(latestOutbounds / (latestMonth - 1)) : 0;
 
       const safetyStock = getSafetyStock(
         part.outbounds.map((o) => ({
@@ -144,44 +178,54 @@ router.post("/export-to-excel", async (req, res) => {
         latestYear,
         latestMonth - 1
       );
-      const securementRate = Math.round((stocksLeft / safetyStock) * 100);
+
+      // FIX: Prevent division by zero and handle edge cases
+      const securementRate =
+        safetyStock > 0 ? Math.round((stocksLeft / safetyStock) * 100) : "";
 
       const excessInsufficient = stocksLeft - safetyStock;
 
+      // FIX: Handle empty/zero values more carefully
+      const avgUsageLatestYear =
+        lastYearOutbounds > 0 ? Math.round(lastYearOutbounds / 11) : "";
+
       return {
-        "Part number": part.partNumber,
+        "Part number": part.partNumber || "",
         Specifications: part.specs || "N/A",
-        Category: part.category,
-        "Unit Price": part.unitPrice.toLocaleString(),
+        Category: part.category || "",
+        "Unit Price": part.unitPrice > 0 ? part.unitPrice.toLocaleString() : "",
         Company: part.company || "N/A",
 
         // MONTH LIST FOR INBOUND DATA
-        "STOCKS end of comparing month (ea)": prevInbounds - prevOutbounds || 0,
+        "STOCKS end of comparing month (ea)":
+          prevInbounds - prevOutbounds || "",
         ...monthInboundObject,
-        "Total Inbound": totalInbounds || 0,
+        "Total Inbound": totalInbounds || "",
 
         // MONTH LIST FOR OUTBOUND DATA
         ...monthOutboundObject,
-        "Total Usage (ea)": totalOutbounds || 0,
+        "Total Usage (ea)": totalOutbounds || "",
 
-        "Average Monthly Usage: 2024 (12 mos)": Math.round(
-          lastYearOutbounds / 11
-        ),
-        "Average monthly usage": aveMonthlyUsage,
+        [`Average Monthly Usage: ${latestYear} (12 mos)`]: avgUsageLatestYear,
+        "Average monthly usage": aveMonthlyUsage || "",
 
-        "safety stock": safetyStock,
+        "safety stock": safetyStock || "",
 
-        "STOCKS end of 2025(ea)": stocksLeft,
-        "Securement rate": securementRate !== 0 ? `${securementRate}%` : "", //END OF MONTH STOCK / SAFETY STOCK
+        "STOCKS end of 2025(ea)": stocksLeft || "",
+        "Securement rate": securementRate !== "" ? `${securementRate}%` : "",
 
         "Excess/insufficient quantity":
-          stocksLeft !== 0 ? excessInsufficient : "", //END OF MONTH STOCK - SAFETY STOCK
+          stocksLeft !== 0 ? excessInsufficient : "",
         "Urgent Request (Secure Rate Less than 50%)":
-          securementRate < 50 && securementRate !== 0
+          typeof securementRate === "number" &&
+          securementRate < 50 &&
+          securementRate !== 0
             ? Math.abs(excessInsufficient)
             : "",
         "Order Quantity (Regular Order)":
-          securementRate < 100 && securementRate !== 0
+          typeof securementRate === "number" &&
+          securementRate < 100 &&
+          securementRate !== 0
             ? Math.abs(excessInsufficient)
             : "",
       };
@@ -215,7 +259,9 @@ router.post("/export-to-excel", async (req, res) => {
 
           "Total Usage (ea)",
 
-          "Average Monthly Usage: 2024 (12 mos)\n월평균사용량 2024 (12mos)",
+          [
+            `Average Monthly Usage: ${latestYear} (12 mos)\n월평균사용량 ${latestYear} (12mos)`,
+          ],
           "Average monthly usage\n(월평균사용량)",
 
           "safety stock\n(안전재고)",
@@ -257,13 +303,17 @@ router.post("/export-to-excel", async (req, res) => {
     // APPLYING COLORS ON HEADERS
     const range = XLSX.utils.decode_range(worksheet["!ref"]);
     for (let C = range.s.c; C <= range.e.c; ++C) {
-      const color = columnColors[C] || "FFFFFF"; // Default to white if no color defined
+      const color = columnColors[C] || "FFFFFF";
 
       // Row 1 headers
       const address1 = XLSX.utils.encode_col(C) + "1";
       if (worksheet[address1]) {
         worksheet[address1].s = {
-          alignment: { horizontal: "center", vertical: "center" },
+          alignment: {
+            horizontal: "center",
+            vertical: "center",
+            wrapText: true,
+          },
           fill: { fgColor: { rgb: color } },
           font: { bold: true, color: { rgb: "000000" } },
           border: {
@@ -279,7 +329,11 @@ router.post("/export-to-excel", async (req, res) => {
       const address2 = XLSX.utils.encode_col(C) + "2";
       if (worksheet[address2]) {
         worksheet[address2].s = {
-          alignment: { horizontal: "center", vertical: "center" },
+          alignment: {
+            horizontal: "center",
+            vertical: "center",
+            wrapText: true,
+          },
           fill: { fgColor: { rgb: color } },
           font: { bold: true, color: { rgb: "000000" } },
           border: {
@@ -304,7 +358,7 @@ router.post("/export-to-excel", async (req, res) => {
       { s: { r: 0, c: 6 }, e: { r: 0, c: 17 } }, // G1:R1 (Inbound header across all months)
       { s: { r: 0, c: 18 }, e: { r: 1, c: 18 } }, // S1:S2 (Total Inbound)
 
-      { s: { r: 0, c: 19 }, e: { r: 0, c: 30 } }, // T1:AE1 (Inbound header across all months)
+      { s: { r: 0, c: 19 }, e: { r: 0, c: 30 } }, // T1:AE1 (Outbound header across all months)
       { s: { r: 0, c: 31 }, e: { r: 1, c: 31 } }, // AF1:AF2 (Total Usage (ea))
       { s: { r: 0, c: 32 }, e: { r: 1, c: 32 } }, // AG1:AG2 (Average Monthly Usage: 2024 (12 mos) 월평균사용량 2024 (12mos))
       { s: { r: 0, c: 33 }, e: { r: 1, c: 33 } }, // AH1:AH2 (Average monthly usage(월평균사용량))
@@ -318,27 +372,6 @@ router.post("/export-to-excel", async (req, res) => {
       { s: { r: 0, c: 38 }, e: { r: 1, c: 38 } }, // AM1:AM2 (Urgent Request (Secure Rate Less than 50%))
       { s: { r: 0, c: 39 }, e: { r: 1, c: 39 } }, // AN1:AN2 (Order Quantity (Regular Order))
     ];
-
-    // FOR CENTRALIZING ALL CELLS
-    const rangeAll = XLSX.utils.decode_range(worksheet["!ref"]);
-    for (let R = rangeAll.s.r; R <= rangeAll.e.r; ++R) {
-      for (let C = rangeAll.s.c; C <= rangeAll.e.c; ++C) {
-        const address = XLSX.utils.encode_cell({ r: R, c: C });
-
-        if (!worksheet[address]) continue; // Skip empty cells
-
-        // Initialize style object if missing
-        if (!worksheet[address].s) {
-          worksheet[address].s = {};
-        }
-
-        worksheet[address].s.alignment = {
-          horizontal: "center",
-          vertical: "center",
-          wrapText: true,
-        };
-      }
-    }
 
     // COLORS FOR DATA CELLS (using hex colors without #)
     const dataCellColors = [
@@ -368,21 +401,18 @@ router.post("/export-to-excel", async (req, res) => {
     ];
 
     // APPLYING BACKGROUND COLORS FOR DATA CELLS (rows 3 and below)
+    const rangeAll = XLSX.utils.decode_range(worksheet["!ref"]);
     for (let R = 2; R <= rangeAll.e.r; ++R) {
-      // row 2 = Excel row 3
       for (let C = rangeAll.s.c; C <= rangeAll.e.c; ++C) {
         const address = XLSX.utils.encode_cell({ r: R, c: C });
 
+        // FIX: Only apply styles to cells that actually exist
         if (!worksheet[address]) continue;
-
-        // Create style if missing
-        if (!worksheet[address].s) worksheet[address].s = {};
 
         const bgColor = dataCellColors[C] || "FFFFFF";
 
         // Apply background color + border + center alignment
         worksheet[address].s = {
-          ...worksheet[address].s,
           alignment: {
             horizontal: "center",
             vertical: "center",
@@ -399,14 +429,16 @@ router.post("/export-to-excel", async (req, res) => {
 
         // === MAKE "Order Quantity (Regular Order)" RED IF > 0 ===
         if (C === 39) {
-          // Column for Order Quantity (Regular Order)
-          const cellValue = Number(worksheet[address].v);
-          if (!isNaN(cellValue) && cellValue > 0) {
+          // FIX: Better validation of cell value
+          const cellValue = worksheet[address].v;
+          const numValue =
+            typeof cellValue === "number" ? cellValue : Number(cellValue);
+
+          if (!isNaN(numValue) && numValue > 0) {
             worksheet[address].s = {
               ...worksheet[address].s,
               fill: { fgColor: { rgb: "FFC6C6" } },
               font: {
-                ...worksheet[address].s.font,
                 color: { rgb: "740000" },
                 bold: true,
               },
@@ -467,7 +499,9 @@ router.post("/export-to-excel", async (req, res) => {
     return res.send(excelBuffer);
   } catch (error) {
     console.error("Export error:", error);
-    res.json({ error: "Failed to generate Excel" });
+    res
+      .status(500)
+      .json({ error: "Failed to generate Excel", details: error.message });
   }
 });
 

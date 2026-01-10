@@ -10,6 +10,9 @@ import {
   type InboundOutboundType,
 } from "../../../services/InboundOutbound.Service";
 import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
+import ZebraPrint from "../../../pages/AdminPages/Components/ZebraPrint";
+import { SwitchButton } from "../../button/SwitchButton";
+import { useZebraPrinter } from "../../../services/ZebraPrinter.Service";
 
 interface Props {
   item: Part;
@@ -25,6 +28,8 @@ interface Props {
   setInBounding: (value: boolean) => void;
   setModalShow: (value: boolean) => void;
   handleChange: (field: string, value: string) => void;
+  showPrinter: boolean;
+  setShowPrinter: (value: boolean) => void;
 }
 
 export const Inbounding = ({
@@ -41,7 +46,11 @@ export const Inbounding = ({
   setInBounding,
   setModalShow,
   handleChange,
+  showPrinter,
+  setShowPrinter,
 }: Props) => {
+  const [printLabel, setPrintLabel] = useState(false);
+  const [loadingPrinters, setLoadingPrinters] = useState(false);
   const [itemDetails, setItemDetails] = useState<addItemType>({
     // from: formData.from!,
     stockId: item.id!,
@@ -49,6 +58,27 @@ export const Inbounding = ({
     PRDate: "",
     receivedDate: formData.inboundDate!,
   });
+
+  const {
+    printers,
+    selectedPrinter,
+    setSelectedPrinter,
+    isConnected,
+    error,
+    getPrinters,
+    print,
+    checkBrowserPrint,
+  } = useZebraPrinter();
+
+  useEffect(() => {
+    const initialize = async () => {
+      const available = await checkBrowserPrint();
+      if (available) {
+        await getPrinters(setLoadingPrinters);
+      }
+    };
+    initialize();
+  }, [checkBrowserPrint, getPrinters]);
 
   useEffect(() => {
     setItemDetails((prev) => ({
@@ -77,7 +107,9 @@ export const Inbounding = ({
             setInboundShow,
             setModalShow,
             setData,
-            setFormData
+            setFormData,
+            print,
+            printLabel
           );
         }
       } else {
@@ -89,7 +121,9 @@ export const Inbounding = ({
           setInboundShow,
           setModalShow,
           setData,
-          setFormData
+          setFormData,
+          print,
+          printLabel
         );
       }
 
@@ -107,7 +141,14 @@ export const Inbounding = ({
   };
 
   const inboundFilled = () => {
-    return formData.quantity === "" || formData.inboundDate === "";
+    return (
+      formData.quantity === "" ||
+      formData.inboundDate === "" ||
+      (type === "it" && itemDetails.PRDate === "") ||
+      formData.from === "" ||
+      (type === "pin" && formData.lotNo === "") ||
+      (type === "pin" && loadingPrinters)
+    );
   };
 
   return (
@@ -118,15 +159,21 @@ export const Inbounding = ({
           setInboundShow(false);
           setModalShow(true);
         }}
-        title={`INBOUND ${
-          type === "pin"
-            ? "PIN"
-            : type === "it"
-              ? "ITEM"
-              : type === "material"
-                ? "MATERIAL"
-                : "INVALID TYPE"
-        } (${item.partNumber})`}
+        title={
+          <>
+            <h3 className="text-start">
+              INBOUND{" "}
+              {type === "pin"
+                ? "PIN"
+                : type === "it"
+                  ? "ITEM"
+                  : type === "material"
+                    ? "MATERIAL"
+                    : "INVALID TYPE"}{" "}
+              ({item.partNumber})
+            </h3>
+          </>
+        }
         size="md"
         footer={
           <>
@@ -143,100 +190,171 @@ export const Inbounding = ({
                 loadingText="INBOUNDING"
                 onClick={handleInbound}
                 isLoading={inbounding}
-                disabled={inbounding || inboundFilled()}
+                disabled={
+                  inbounding ||
+                  inboundFilled() ||
+                  (type === "pin" && printLabel && !isConnected)
+                }
               />
             </div>
           </>
         }
       >
-        <div className="text-start">
-          <div className="mb-1">
-            <label
-              htmlFor="INBOUNDING PERSONEL"
-              className="block font-medium text-gray-700"
-            >
-              <p>INBOUNDING PERSONEL</p>
-            </label>
-            <InputField
-              label="INBOUNDING PERSONEL"
-              type="text"
-              value={formData.from}
-              onChange={(value: string) => handleChange("from", value)}
-              autoComplete={`from`}
-            />
-          </div>
-          {type === "it" ? (
-            <>
+        {showPrinter ? (
+          <ZebraPrint
+            setShowPrinter={setShowPrinter}
+            printers={printers}
+            selectedPrinter={selectedPrinter}
+            setSelectedPrinter={setSelectedPrinter}
+            isConnected={isConnected}
+            error={error}
+            getPrinters={getPrinters}
+            print={print}
+            checkBrowserPrint={checkBrowserPrint}
+          />
+        ) : (
+          <div className="text-start">
+            {type === "pin" ? (
               <div className="mb-1">
                 <label
-                  htmlFor="SERIAL NUMBER"
+                  htmlFor="LOT NUMBER"
                   className="block font-medium text-gray-700"
                 >
-                  <p>SERIAL NUMBER</p>
+                  <p>LOT NUMBER</p>
                 </label>
                 <InputField
-                  label="SERIAL NUMBER"
+                  label="LOT NUMBER"
                   type="text"
-                  value={itemDetails.serialNumber!}
-                  onChange={(value: string) =>
-                    setItemDetails((prev) => ({ ...prev, serialNumber: value }))
-                  }
-                  autoComplete={`serialNumber`}
+                  value={formData.lotNo}
+                  onChange={(value: string) => handleChange("lotNo", value)}
+                  autoComplete={`lotNo`}
                 />
               </div>
-              <div className="mb-1">
-                <label
-                  htmlFor="PR DATE"
-                  className="block font-medium text-gray-700"
-                >
-                  <p>PR DATE</p>
-                </label>
-                <InputField
-                  label="PR DATE"
-                  type="text"
-                  value={itemDetails.PRDate!}
-                  onChange={(value: string) =>
-                    setItemDetails((prev) => ({ ...prev, PRDate: value }))
-                  }
-                  autoComplete={`PRDate`}
-                />
-              </div>
-            </>
-          ) : (
+            ) : null}
+
             <div className="mb-1">
               <label
-                htmlFor="QUANTITY"
+                htmlFor="INBOUNDING PERSONEL"
                 className="block font-medium text-gray-700"
               >
-                <p>QUANTITY</p>
+                <p>INBOUNDING PERSONEL</p>
               </label>
               <InputField
-                label="QUANTITY"
-                type="number"
-                value={formData.quantity}
-                onChange={(value: string) => handleChange("quantity", value)}
-                autoComplete={`quantity`}
+                label="INBOUNDING PERSONEL"
+                type="text"
+                value={formData.from}
+                onChange={(value: string) => handleChange("from", value)}
+                autoComplete={`from`}
               />
             </div>
-          )}
+            {type === "it" ? (
+              <>
+                <div className="mb-1">
+                  <label
+                    htmlFor="SERIAL NUMBER"
+                    className="block font-medium text-gray-700"
+                  >
+                    <p>SERIAL NUMBER</p>
+                  </label>
+                  <InputField
+                    label="SERIAL NUMBER"
+                    type="text"
+                    value={itemDetails.serialNumber!}
+                    onChange={(value: string) =>
+                      setItemDetails((prev) => ({
+                        ...prev,
+                        serialNumber: value,
+                      }))
+                    }
+                    autoComplete={`serialNumber`}
+                  />
+                </div>
+                <div className="mb-1">
+                  <label
+                    htmlFor="PR DATE"
+                    className="block font-medium text-gray-700"
+                  >
+                    <p>PR DATE</p>
+                  </label>
+                  <InputField
+                    label="PR DATE"
+                    type="text"
+                    value={itemDetails.PRDate!}
+                    onChange={(value: string) =>
+                      setItemDetails((prev) => ({ ...prev, PRDate: value }))
+                    }
+                    autoComplete={`PRDate`}
+                  />
+                </div>
+              </>
+            ) : (
+              <div className="mb-1">
+                <label
+                  htmlFor="QUANTITY"
+                  className="block font-medium text-gray-700"
+                >
+                  <p>QUANTITY</p>
+                </label>
+                <InputField
+                  label="QUANTITY"
+                  type="number"
+                  value={formData.quantity}
+                  onChange={(value: string) => handleChange("quantity", value)}
+                  autoComplete={`quantity`}
+                />
+              </div>
+            )}
+            <div className="mb-1">
+              <label
+                htmlFor="INBOUND DATE"
+                className="block font-medium text-gray-700"
+              >
+                <p>INBOUND DATE</p>
+              </label>
+              <InputField
+                label="INBOUND DATE"
+                type="date"
+                value={formData.inboundDate!}
+                required={true}
+                onChange={(value: string) => handleChange("inboundDate", value)}
+                autoComplete={`inboundDate`}
+              />
+            </div>
+            {type === "pin" ? (
+              <div className="flex items-center h-10 gap-1 mt-2">
+                <SwitchButton
+                  checked={printLabel}
+                  onChange={setPrintLabel}
+                  disabled={!isConnected || type !== "pin"}
+                  label="Print Label"
+                />
 
-          <div className="mb-1">
-            <label
-              htmlFor="INBOUND DATE"
-              className="block font-medium text-gray-700"
-            >
-              <p>INBOUND DATE</p>
-            </label>
-            <InputField
-              label="INBOUND DATE"
-              type="date"
-              value={formData.inboundDate!}
-              required={true}
-              onChange={(value: string) => handleChange("inboundDate", value)}
-              autoComplete={`inboundDate`}
-            />
+                {/* PRINTER REFRESH BUTTON */}
+                <div>
+                  <h2
+                    className={`text-green-700 cursor-pointer ${loadingPrinters ? "cursor-progress" : ""}`}
+                    onClick={() => getPrinters(setLoadingPrinters)}
+                  >
+                    <i
+                      className={`bx ${loadingPrinters ? "bx-loader" : "bx-refresh"} ${loadingPrinters ? "bx-spin" : ""}`}
+                    ></i>
+                  </h2>
+                </div>
+                {/* PRINTER SETTINGS BUTTON */}
+                <div>
+                  <h2
+                    className="text-sky-600 hover:text-sky-700 transition duration-300 ease-in-out cursor-pointer"
+                    onClick={() => {
+                      setShowPrinter(true);
+                    }}
+                  >
+                    <i className="bx bxs-cog"></i>
+                  </h2>
+                </div>
+              </div>
+            ) : null}
           </div>
-        </div>
+        )}
       </Modal>
     </>
   );

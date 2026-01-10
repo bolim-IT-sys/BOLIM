@@ -44,6 +44,7 @@ export default function Mainlayout() {
     localStorage.setItem("showSideBar", JSON.stringify(showSideBar));
   }, [showSideBar]);
 
+  // FOR VERIFYING AND FETCHING OF USERDATA
   const fetchUserDetails = useCallback(async () => {
     try {
       const token = sessionStorage.getItem("token");

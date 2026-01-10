@@ -47,6 +47,7 @@ export async function fetchUserData(token: string): Promise<UserResponse> {
         },
       }
     );
+
     const data = response.data;
     // console.log("User data: ", data);
     return data;

@@ -4,7 +4,7 @@ const getAllUsers = async (req, res, next) => {
   try {
     const users = await userService.getAllUsers();
     if (!users) {
-      console.log("No users found.");
+      // console.log("No users found.");
       res.json({
         success: false,
         message: "No users found.",

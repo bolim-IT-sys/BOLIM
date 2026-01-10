@@ -33,7 +33,7 @@ export const ImageModal = ({ part }: EditingProps) => {
       <Modal
         isOpen={modalShow}
         onClose={() => setModalShow(false)}
-        size="sm"
+        size="md"
         title={part.partNumber}
         footer={
           <>
@@ -41,11 +41,13 @@ export const ImageModal = ({ part }: EditingProps) => {
           </>
         }
       >
-        <img
-          className="h-full w-full object-cover"
-          src={`${import.meta.env.VITE_API_URL}/uploads/pinImage/${part.image}`}
-          alt=""
-        />
+        <div className="size-60 sm:size-90 lg:size-130 rounded-xl mx-auto">
+          <img
+            className="h-full w-full object-contain"
+            src={`${import.meta.env.VITE_API_URL}/uploads/pinImage/${part.image}`}
+            alt=""
+          />
+        </div>
       </Modal>
     </>
   );
