@@ -32,7 +32,8 @@ interface ContextType {
 }
 
 export default function Dashboard() {
-  const { user, parts, ITStocks, materials } = useOutletContext<ContextType>();
+  const { user, parts, setParts, ITStocks, materials } =
+    useOutletContext<ContextType>();
 
   const [dataType, setDataType] = useState<string>("");
   useEffect(() => {
