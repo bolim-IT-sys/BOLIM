@@ -12,7 +12,7 @@ import {
 import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
 import ZebraPrint from "../../../pages/AdminPages/Components/ZebraPrint";
 import { SwitchButton } from "../../button/SwitchButton";
-import { useZebraPrinter } from "../../../services/ZebraPrinter.Service";
+import { UseZebraPrinter } from "../../../services/ZebraPrinter.Service";
 
 interface Props {
   item: Part;
@@ -66,9 +66,10 @@ export const Inbounding = ({
     isConnected,
     error,
     getPrinters,
+    generateZPL,
     print,
     checkBrowserPrint,
-  } = useZebraPrinter();
+  } = UseZebraPrinter();
 
   useEffect(() => {
     const initialize = async () => {
@@ -108,6 +109,7 @@ export const Inbounding = ({
             setModalShow,
             setData,
             setFormData,
+            generateZPL,
             print,
             printLabel
           );
@@ -122,6 +124,7 @@ export const Inbounding = ({
           setModalShow,
           setData,
           setFormData,
+          generateZPL,
           print,
           printLabel
         );
@@ -209,7 +212,10 @@ export const Inbounding = ({
             isConnected={isConnected}
             error={error}
             getPrinters={getPrinters}
+            generateZPL={generateZPL}
             print={print}
+            loadingPrinters={loadingPrinters}
+            setLoadingPrinters={setLoadingPrinters}
             checkBrowserPrint={checkBrowserPrint}
           />
         ) : (

@@ -153,47 +153,17 @@ export async function inboundPart(
   setModalShow: (value: boolean) => void,
   setData: Dispatch<SetStateAction<Part[]>>,
   setFormData: Dispatch<SetStateAction<InboundOutboundType>>,
-  print: (value: string) => Promise<boolean>,
-  printLabel: boolean
-): Promise<InboundOutboundResponse> {
-  // Generate ZPL
-  const generateZPL = (
+  generateZPL: (
     part: string,
     lot: string,
     qty: string,
     user: string,
     date?: string
-  ): string => {
-    const qrData = `${part}|${lot}|${qty}`;
-    return `
-^XA
-
-^CF0,20
-^FO220,35
-^FD${part}^FS
-
-^CF0,15
-^FO220,65
-^FDLot: ${lot}^FS
-
-^FO220,85
-^FDQty: ${qty}^FS
-
-^FO220,105
-^FDUser: ${user}^FS
-
-^FO220,125
-^FDDate: ${date}^FS
-
-// FOR QR CODE
-^FO390,25
-^BQN,2,4
-^FDLA,${qrData}^FS
-
-^PQ1,0,1,Y
-^XZ
-`.trim();
-  };
+  ) => string,
+  print: (value: string) => Promise<boolean>,
+  printLabel: boolean
+): Promise<InboundOutboundResponse> {
+  // Generate ZPL
 
   const handlePrint = async (): Promise<void> => {
     const zpl = generateZPL(
