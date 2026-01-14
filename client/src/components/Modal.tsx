@@ -64,7 +64,7 @@ const Modal = ({
             <div
               className={`flex justify-between items-center pb-1 border-b border-neutral-300`}
             >
-              <div className="modal-title ">{title}</div>
+              <div className="w-full">{title}</div>
               <button
                 className="bg-red-300 hover:bg-red-400 text-neutral-50 transition rounded duration-200 size-9 cursor-pointer"
                 onClick={onClose}

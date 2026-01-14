@@ -24,6 +24,7 @@ import { useOutletContext } from "react-router-dom";
 import { computeStocks } from "../../../helper/table.helper";
 import { ItemStockTable } from "../../tables/ItemStockTable";
 import { InboundOutboundHistoryTable } from "../../tables/InboundOutboundHistoryTable";
+import { TransactionHistory } from "./TransactionHistory";
 
 interface Props {
   item: Part;
@@ -49,6 +50,7 @@ export const ViewPartStocks = ({ item, setData, type }: Props) => {
   const [outbounding, setOutBounding] = useState<boolean>(false);
 
   const [showPrinter, setShowPrinter] = useState(false);
+  const [showHistoryModal, setShowHistoryModal] = useState(false);
 
   const [stockItems, setStockItems] = useState<ITStocks[]>([]);
 
@@ -150,67 +152,80 @@ export const ViewPartStocks = ({ item, setData, type }: Props) => {
         onClose={() => setModalShow(false)}
         title={
           <>
-            <div className="flex items-center gap-2">
-              <h3 className="text-start">
-                {`${item.partNumber}`}:{" "}
-                <span
-                  className={`${
-                    computeStocks(item) <
-                    getSafetyStock(
-                      outbounds.map((o) => ({
-                        quantity: o.quantity,
-                        date: String(o.outboundDate),
-                      })),
-                      chosenYear,
-                      month
-                    )
-                      ? "bg-red-100 text-red-900"
-                      : "bg-emerald-100 text-emerald-800"
-                  } rounded px-2`}
-                >
-                  <b>{computeStocks(item)} </b>
-                  <i className="text-sm hidden sm:inline">
-                    {computeStocks(item) <
-                    getSafetyStock(
-                      outbounds.map((o) => ({
-                        quantity: o.quantity,
-                        date: String(o.outboundDate),
-                      })),
-                      chosenYear,
-                      month
-                    ) ? (
-                      <>Warning: Low stock!</>
-                    ) : null}
-                  </i>
-                </span>
-              </h3>
-              <h4 className="hidden md:block">
-                <select
-                  className="no-arrow rounded-lg hover:bg-neutral-200 transition duration-350 cursor-pointer px-2 py-.5 focus:bg-neutral-50  focus:ring-1 focus:ring-neutral-300 focus:outline-none"
-                  value={month}
-                  id="monthSelect"
-                  onChange={(e) => setMonth(Number(e.target.value))}
-                >
-                  {months.map((month, index) => (
-                    <option key={index} value={index}>
-                      {month}
-                    </option>
-                  ))}
-                </select>{" "}
-                -{" "}
-                <select
-                  className="no-arrow rounded-lg hover:bg-neutral-200 transition duration-350 cursor-pointer px-2 py-.5 focus:bg-neutral-50  focus:ring-1 focus:ring-neutral-300 focus:outline-none"
-                  value={chosenYear}
-                  id="yearSelect"
-                  onChange={(e) => setYear(Number(e.target.value))}
-                >
-                  {years.map((year) => (
-                    <option key={year} value={year}>
-                      {year}
-                    </option>
-                  ))}
-                </select>
-              </h4>
+            <div className="flex justify-between me-3">
+              <div className="flex items-center gap-2 ">
+                <h3 className="text-start">
+                  {`${item.partNumber}`}:{" "}
+                  <span
+                    className={`${
+                      computeStocks(item) <
+                      getSafetyStock(
+                        outbounds.map((o) => ({
+                          quantity: o.quantity,
+                          date: String(o.outboundDate),
+                        })),
+                        chosenYear,
+                        month
+                      )
+                        ? "bg-red-100 text-red-900"
+                        : "bg-emerald-100 text-emerald-800"
+                    } rounded px-2`}
+                  >
+                    <b>{computeStocks(item)} </b>
+                    <i className="text-sm hidden sm:inline">
+                      {computeStocks(item) <
+                      getSafetyStock(
+                        outbounds.map((o) => ({
+                          quantity: o.quantity,
+                          date: String(o.outboundDate),
+                        })),
+                        chosenYear,
+                        month
+                      ) ? (
+                        <>Warning: Low stock!</>
+                      ) : null}
+                    </i>
+                  </span>
+                </h3>
+                <h4 className="hidden md:block">
+                  <select
+                    className="no-arrow rounded-lg hover:bg-neutral-200 transition duration-350 cursor-pointer px-2 py-.5 focus:bg-neutral-50  focus:ring-1 focus:ring-neutral-300 focus:outline-none"
+                    value={month}
+                    id="monthSelect"
+                    onChange={(e) => setMonth(Number(e.target.value))}
+                  >
+                    {months.map((month, index) => (
+                      <option key={index} value={index}>
+                        {month}
+                      </option>
+                    ))}
+                  </select>{" "}
+                  -{" "}
+                  <select
+                    className="no-arrow rounded-lg hover:bg-neutral-200 transition duration-350 cursor-pointer px-2 py-.5 focus:bg-neutral-50  focus:ring-1 focus:ring-neutral-300 focus:outline-none"
+                    value={chosenYear}
+                    id="yearSelect"
+                    onChange={(e) => setYear(Number(e.target.value))}
+                  >
+                    {years.map((year) => (
+                      <option key={year} value={year}>
+                        {year}
+                      </option>
+                    ))}
+                  </select>
+                </h4>
+              </div>
+              <div
+                className="size-8 rounded hover:bg-neutral-200 transition duration-300 ease-in-out cursor-pointer"
+                onClick={() => {
+                  setShowHistoryModal(true);
+                  setModalShow(false);
+                }}
+              >
+                <h2 className="relative flex h-full w-full">
+                  <i className="absolute transform left-[47%] translate-x-[-50%] top-[52%] translate-y-[-50%] bx bx-history"></i>
+                </h2>
+              </div>
             </div>
           </>
         }
@@ -271,6 +286,15 @@ export const ViewPartStocks = ({ item, setData, type }: Props) => {
           ) : null}
         </div>
       </Modal>
+
+      <TransactionHistory
+        item={item}
+        inbounds={inbounds}
+        outbounds={outbounds}
+        setModalShow={setModalShow}
+        showHistoryModal={showHistoryModal}
+        setShowHistoryModal={setShowHistoryModal}
+      />
 
       {/* INBOUNDING */}
       <Inbounding

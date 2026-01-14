@@ -7,6 +7,7 @@ export interface Inbound {
   partId: number;
   quantity: number;
   inboundDate: Date;
+  createdAt?: Date;
 }
 
 export interface Outbound {
@@ -14,6 +15,7 @@ export interface Outbound {
   partId: number;
   quantity: number;
   outboundDate: Date;
+  createdAt?: Date;
 }
 
 export interface ITStocks {
@@ -41,6 +43,7 @@ export interface InboundOutboundType {
   quantity: string;
   inboundDate?: string;
   outboundDate?: string;
+  createdAt?: Date;
 }
 
 export interface addItemType {

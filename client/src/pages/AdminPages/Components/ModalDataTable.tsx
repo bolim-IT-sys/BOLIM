@@ -6,22 +6,12 @@ import {
 } from "../../../helper/helper";
 import { type Part } from "../../../services/Part.Service";
 import {
-  sortByExcessInsufficient,
-  sortByOrderQuantity,
   sortByPartNumber,
   sortByPrice,
-  sortBySecurementRate,
   sortByStocks,
-  sortByUrgentRequest,
 } from "../../../helper/sorting.helper";
 import { useSearchParams } from "react-router-dom";
-import {
-  computeExcessInsufficient,
-  computeOrderQuantity,
-  computeSecurementRate,
-  computeStocks,
-  computeUrgentRequest,
-} from "../../../helper/table.helper";
+import { computeStocks } from "../../../helper/table.helper";
 
 type Props = {
   data: Part[];
@@ -101,90 +91,6 @@ export const ModalDataTable = ({ data, setData, type }: Props) => {
     setSortBy("stocks");
     setData(sorted);
     setSortOrder(sortBy === "stocks" && sortOrder === "asc" ? "desc" : "asc");
-  };
-
-  const handleSortBySecurementRate = () => {
-    const sorted = sortBySecurementRate(
-      data,
-      sortBy === "securementRate" && sortOrder === "asc" ? "asc" : "desc"
-    );
-    // console.log("Sorted Parts by QTY: ", sorted);
-    const newParams = new URLSearchParams(searchParams);
-    newParams.set("sort", "securementRate");
-    newParams.set(
-      "order",
-      sortBy === "securementRate" && sortOrder === "asc" ? "desc" : "asc"
-    );
-    setSearchParams(newParams);
-
-    setSortBy("securementRate");
-    setData(sorted);
-    setSortOrder(
-      sortBy === "securementRate" && sortOrder === "asc" ? "desc" : "asc"
-    );
-  };
-
-  const handleSortByExcessInsufficient = () => {
-    const sorted = sortByExcessInsufficient(
-      data,
-      sortBy === "excessInsufficient" && sortOrder === "asc" ? "asc" : "desc"
-    );
-    // console.log("Sorted Parts by QTY: ", sorted);
-    const newParams = new URLSearchParams(searchParams);
-    newParams.set("sort", "excessInsufficient");
-    newParams.set(
-      "order",
-      sortBy === "excessInsufficient" && sortOrder === "asc" ? "desc" : "asc"
-    );
-    setSearchParams(newParams);
-
-    setSortBy("excessInsufficient");
-    setData(sorted);
-    setSortOrder(
-      sortBy === "excessInsufficient" && sortOrder === "asc" ? "desc" : "asc"
-    );
-  };
-
-  const handleSortByUrgentRequest = () => {
-    const sorted = sortByUrgentRequest(
-      data,
-      sortBy === "urgentRequest" && sortOrder === "asc" ? "asc" : "desc"
-    );
-    // console.log("Sorted Parts by QTY: ", sorted);
-    const newParams = new URLSearchParams(searchParams);
-    newParams.set("sort", "urgentRequest");
-    newParams.set(
-      "order",
-      sortBy === "urgentRequest" && sortOrder === "asc" ? "desc" : "asc"
-    );
-    setSearchParams(newParams);
-
-    setSortBy("urgentRequest");
-    setData(sorted);
-    setSortOrder(
-      sortBy === "urgentRequest" && sortOrder === "asc" ? "desc" : "asc"
-    );
-  };
-
-  const handleSortByOrderQuantity = () => {
-    const sorted = sortByOrderQuantity(
-      data,
-      sortBy === "orderQuantity" && sortOrder === "asc" ? "asc" : "desc"
-    );
-    // console.log("Sorted Parts by QTY: ", sorted);
-    const newParams = new URLSearchParams(searchParams);
-    newParams.set("sort", "orderQuantity");
-    newParams.set(
-      "order",
-      sortBy === "orderQuantity" && sortOrder === "asc" ? "desc" : "asc"
-    );
-    setSearchParams(newParams);
-
-    setSortBy("orderQuantity");
-    setData(sorted);
-    setSortOrder(
-      sortBy === "orderQuantity" && sortOrder === "asc" ? "desc" : "asc"
-    );
   };
 
   return (
@@ -274,70 +180,6 @@ export const ModalDataTable = ({ data, setData, type }: Props) => {
                     </h5>
                   </div>
                 </th>
-                <th
-                  className="hover:bg-sky-700 transition duration-200 cursor-pointer w-50 border border-neutral-300 text-center px-2 py-3"
-                  onClick={handleSortBySecurementRate}
-                >
-                  <div className="h-10 flex justify-center items-center flex-col">
-                    <h5 className="uppercase">
-                      Securement rate{" "}
-                      {sortBy === "securementRate"
-                        ? sortOrder === "asc"
-                          ? "▲"
-                          : "▼"
-                        : "⇅"}
-                    </h5>
-                    <h6>(확보율)</h6>
-                  </div>
-                </th>
-                <th
-                  className="hover:bg-sky-700 transition duration-200 cursor-pointer w-75 border border-neutral-300 text-center px-2 py-3"
-                  onClick={handleSortByExcessInsufficient}
-                >
-                  <div className="h-10 flex justify-center items-center flex-col">
-                    <h5 className="uppercase">
-                      Excess/insufficient quantity{" "}
-                      {sortBy === "excessInsufficient"
-                        ? sortOrder === "asc"
-                          ? "▲"
-                          : "▼"
-                        : "⇅"}
-                    </h5>
-                    <h6>(과/부족수량)</h6>
-                  </div>
-                </th>
-                <th
-                  className="hover:bg-sky-700 transition duration-200 cursor-pointer w-110 border border-neutral-300 text-center px-2 py-3"
-                  onClick={handleSortByUrgentRequest}
-                >
-                  <div className="h-10 flex justify-center items-center flex-col">
-                    <h5 className="uppercase">
-                      Urgent Request (Secure Rate Less than 50%){" "}
-                      {sortBy === "urgentRequest"
-                        ? sortOrder === "asc"
-                          ? "▲"
-                          : "▼"
-                        : "⇅"}
-                    </h5>
-                    <h6>긴급 요청(확보율 50%이하)</h6>
-                  </div>
-                </th>
-                <th
-                  className="hover:bg-sky-700 transition duration-200 cursor-pointer border border-neutral-300 text-center px-2 py-3"
-                  onClick={handleSortByOrderQuantity}
-                >
-                  <div className="h-10 flex justify-center items-center flex-col">
-                    <h5 className="uppercase">
-                      Order Quantity (Regular Order){" "}
-                      {sortBy === "orderQuantity"
-                        ? sortOrder === "asc"
-                          ? "▲"
-                          : "▼"
-                        : "⇅"}
-                    </h5>
-                    <h6>발주 수량(정기발주)</h6>
-                  </div>
-                </th>
               </tr>
             </thead>
             <tbody>
@@ -380,21 +222,6 @@ export const ModalDataTable = ({ data, setData, type }: Props) => {
                             <b>{computeStocks(item)}</b>
                           </h6>
                         </div>
-                      </td>
-
-                      <td className="text-center border border-neutral-300 px-3 py-2">
-                        <h6>{computeSecurementRate(item)}%</h6>
-                      </td>
-                      <td className="text-center border border-neutral-300 px-3 py-2">
-                        <h6>{computeExcessInsufficient(item)}</h6>
-                      </td>
-                      <td className="text-center border border-neutral-300 px-3 py-2">
-                        <h6>{computeUrgentRequest(item)}</h6>
-                      </td>
-                      <td
-                        className={`${computeOrderQuantity(item) > 0 ? "bg-red-100 text-red-900 font-bold" : ""} text-center border border-neutral-300 px-3 py-2`}
-                      >
-                        <h6>{computeOrderQuantity(item)}</h6>
                       </td>
                     </tr>
                   ))}
