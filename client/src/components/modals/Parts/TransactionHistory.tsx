@@ -33,34 +33,60 @@ export const TransactionHistory = ({
   setShowHistoryModal,
 }: Props) => {
   const [transactions, setTransactions] = useState<Transactions[]>([]);
+  const [filteredTransactions, setFilteredTransactions] = useState<
+    Transactions[]
+  >([]);
   const [startDate, setStartDate] = useState<string>();
   const [endDate, setEndDate] = useState<string>();
 
+  const FilterByDate = (
+    transactions: Transactions[],
+    startDate: Date | string,
+    endDate: Date | string
+  ) => {
+    if (!startDate || !endDate || !transactions) return;
+
+    const start = new Date(startDate);
+    start.setHours(0, 0, 0, 0);
+    const end = new Date(endDate);
+    end.setHours(23, 59, 59, 999);
+
+    const filteredTransactions = transactions.filter((transaction) => {
+      const date = new Date(transaction.createdAt!);
+      date.setHours(0, 0, 0, 0);
+      return date >= start && date <= end;
+    });
+    console.log("Filtered transactions: ", filteredTransactions);
+    return filteredTransactions;
+  };
+
   useEffect(() => {
-    if (!showHistoryModal) return;
+    if (!startDate || !endDate) return;
+    console.log("Triggered by date");
+    setFilteredTransactions(FilterByDate(transactions, startDate, endDate)!);
+  }, [transactions, startDate, endDate]);
+
+  useEffect(() => {
+    if ((!inbounds && !outbounds) || !showHistoryModal) return;
+    console.log("triggered by button");
+
     const today = new Date();
     const start = new Date(today.getFullYear(), today.getMonth(), 2);
     const end = new Date(today.getFullYear(), today.getMonth() + 1, 1);
 
-    console.log("Start: ", start);
-    console.log("End: ", end);
-
     setStartDate(start.toISOString().split("T")[0]);
     setEndDate(end.toISOString().split("T")[0]);
-  }, [showHistoryModal]);
 
-  useEffect(() => {
-    if (!inbounds && !outbounds) return console.log("No transactions.");
-
+    console.log("Procesing transactions...");
     const toTimestamp = (value?: string | Date) =>
       value ? new Date(value).getTime() : 0;
 
     const transations = [...inbounds, ...outbounds].sort(
       (a, b) => toTimestamp(b.createdAt) - toTimestamp(a.createdAt)
     );
-    setTransactions(transations);
-    // console.log("Transactions: ", transations);
-  }, [inbounds, outbounds]);
+
+    setTransactions(FilterByDate(transations, start, end)!);
+  }, [inbounds, outbounds, showHistoryModal]);
   return (
     <>
       <Modal
@@ -124,7 +150,7 @@ export const TransactionHistory = ({
           </div>
         </div>
         <div className="flex flex-col gap-2 h-80 overflow-y-auto">
-          {transactions.map((transaction, index) => (
+          {filteredTransactions?.map((transaction, index) => (
             <div
               className={`rounded flex gap-4 ${transaction.inboundDate ? "bg-green-100 text-green-800 border-s-2 border-green-500" : "bg-red-100 text-red-800 border-s-2 border-red-500"} p-3`}
               key={index}
