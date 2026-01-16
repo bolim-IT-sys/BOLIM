@@ -10,7 +10,7 @@ interface InputFieldProps {
   onKeyPress?: () => void;
 }
 
-export default function InputField({
+export default function InputFieldSmall({
   label,
   type,
   value,
@@ -32,7 +32,7 @@ export default function InputField({
         required={required ?? false}
         autoComplete={autoComplete}
         onKeyDown={(e) => handleKeyDown(e, onKeyPress)}
-        className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="w-full text-xs text-center rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
     </div>
   );

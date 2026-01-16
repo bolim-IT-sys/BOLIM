@@ -580,11 +580,55 @@ const addingItem = async (req, res) => {
   }
 };
 
+const updateItem = async (req, res) => {
+  try {
+    console.log("Data in backend: ", req.body);
+
+    if (
+      !req.body.id ||
+      !req.body.stockId ||
+      !req.body.serialNumber ||
+      !req.body.PRDate ||
+      !req.body.receivedDate
+    ) {
+      return res.json({
+        message: "Please fill in all required fields.",
+      });
+    }
+
+    // Check if part exists
+    const isPartExisting = await partService.findById(req.body.stockId);
+
+    if (!isPartExisting) {
+      return res.json({
+        success: false,
+        message: "Part does not exist.",
+      });
+    }
+
+    // MARKING ITEM AS AVAILABLE
+    const deployItem = await partService.updateItem(req.body);
+
+    // Return consistent response structure
+    res.status(200).json({
+      success: true,
+      message: "Item updated successfully.",
+      data: deployItem,
+    });
+  } catch (err) {
+    // You can add specific error handling here if needed
+    res.json({
+      success: false,
+      message: err.message || "Item update failed.",
+    });
+  }
+};
+
 const markItemAvailable = async (req, res) => {
   try {
     const serialNumber = req.params.serialNumber;
 
-    console.log("Data in backend: ", req.body);
+    // console.log("Data in backend: ", req.body);
 
     if (
       !req.body.from ||
@@ -769,6 +813,7 @@ module.exports = {
   deletePart,
   inboundPart,
   addingItem,
+  updateItem,
   markItemAvailable,
   outboundItem,
   getItem,
