@@ -19,7 +19,7 @@ interface BrowserPrintResponse {
   printer?: ZebraPrinter[];
 }
 
-export const useZebraPrinter = () => {
+export const UseZebraPrinter = () => {
   const [printers, setPrinters] = useState<ZebraPrinter[]>([]);
   const [selectedPrinter, setSelectedPrinter] = useState<ZebraPrinter | null>(
     null
@@ -66,14 +66,65 @@ export const useZebraPrinter = () => {
     []
   );
 
+  // Generate ZPL
+  const generateZPL = (
+    part: string,
+    lot: string,
+    qty: string,
+    user: string,
+    date?: string
+  ): string => {
+    const qrData = `${part}|${lot}|${qty}`;
+    const text_scale_value = localStorage.getItem("text_scale");
+    const text_scale = text_scale_value
+      ? Number(localStorage.getItem("text_scale"))
+      : 0;
+    const x_axis_value = localStorage.getItem("text_x_axis");
+    const text_x_axis = x_axis_value
+      ? Number(localStorage.getItem("text_x_axis"))
+      : 0;
+    return `
+^XA
+
+^CF0,${20 + text_scale}
+^FO${20 + text_x_axis},35
+^FD${part}^FS
+
+^CF0,15
+^FO${20 + text_x_axis},65
+^FDLot: ${lot}^FS
+
+^FO${20 + text_x_axis},85
+^FDQty: ${qty}^FS
+
+^FO${20 + text_x_axis},105
+^FDUser: ${user}^FS
+
+^FO${20 + text_x_axis},125
+^FDDate: ${date}^FS
+
+// FOR QR CODE
+^FO170,25
+^BQN,2,4
+^FDLA,${qrData}^FS
+
+^PQ1,0,1,Y
+^XZ
+`.trim();
+  };
+
   const print = useCallback(
-    async (zpl: string): Promise<boolean> => {
+    async (
+      zpl: string,
+      setIsPrinting?: Dispatch<SetStateAction<boolean>>
+    ): Promise<boolean> => {
       if (!selectedPrinter) {
         setError("No printer selected");
         return false;
       }
 
       try {
+        if (setIsPrinting) setIsPrinting(true);
         const response = await fetch("http://localhost:9100/write", {
           method: "POST",
           headers: {
@@ -96,6 +147,8 @@ export const useZebraPrinter = () => {
           err instanceof Error ? err.message : "Failed to write to device"
         );
         return false;
+      } finally {
+        if (setIsPrinting) setIsPrinting(false);
       }
     },
     [selectedPrinter]
@@ -108,6 +161,7 @@ export const useZebraPrinter = () => {
     isConnected,
     error,
     getPrinters,
+    generateZPL,
     print,
     checkBrowserPrint,
   };

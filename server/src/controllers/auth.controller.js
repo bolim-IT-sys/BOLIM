@@ -82,7 +82,7 @@ const authenticateToken = async (req, res) => {
     // console.log("Token: ", token);
 
     if (!token) {
-      return res.json({ message: "Access token required" });
+      return res.status(401).json({ message: "Access token required" });
     }
 
     // VERIFICATION AND DECODING OF TOKEN
@@ -96,14 +96,14 @@ const authenticateToken = async (req, res) => {
     const user = await userService.findById(userId);
 
     if (!user) {
-      return res.json({ error: "User not found" });
+      return res.status(404).json({ error: "User not found" });
     }
 
     const { password, ...userWithoutPassword } = user;
 
     // console.log("User: ", user);
 
-    return res.json({
+    return res.status(200).json({
       success: true,
       data: {
         id: user.id,
@@ -115,13 +115,13 @@ const authenticateToken = async (req, res) => {
     });
   } catch (error) {
     if (error.name === "JsonWebTokenError") {
-      return res.json({ error: "Invalid Token" });
+      return res.status(401).json({ error: "Invalid Token" });
     }
     if (error.name === "TokenExpiredError") {
-      return res.json({ error: "Token Expired" });
+      return res.status(401).json({ error: "Token Expired" });
     }
     console.error("Token Verification Error: ", error);
-    res.json({ error: "Server Error" });
+    res.status(500).json({ error: "Server Error" });
   }
 };
 

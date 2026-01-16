@@ -35,15 +35,6 @@ type Props = {
   currentData: Part[];
 };
 
-type SortKey =
-  | "partNumber"
-  | "unitPrice"
-  | "stocks"
-  | "securementRate"
-  | "excessInsufficient"
-  | "urgentRequest"
-  | "orderQuantity";
-
 export const DataTable = ({
   data,
   setData,
@@ -64,33 +55,149 @@ export const DataTable = ({
   const year = currentYear();
   const month = currentMonth();
 
-  const sortFunctionMap: Record<
-    SortKey,
-    (data: Part[], order: "asc" | "desc") => Part[]
-  > = {
-    partNumber: sortByPartNumber,
-    unitPrice: sortByPrice,
-    stocks: sortByStocks,
-    securementRate: sortBySecurementRate,
-    excessInsufficient: sortByExcessInsufficient,
-    urgentRequest: sortByUrgentRequest,
-    orderQuantity: sortByOrderQuantity,
-  };
-
-  const handleSort = (key: SortKey) => {
-    const nextOrder: "asc" | "desc" =
-      sortBy === key && sortOrder === "asc" ? "desc" : "asc";
-
-    const sorted = sortFunctionMap[key](data, nextOrder);
-
+  const handleSortByPartNumber = () => {
+    const sorted = sortByPartNumber(
+      data,
+      sortBy === "partNumber" && sortOrder === "asc" ? "desc" : "asc"
+    );
+    // console.log("Sorted Parts by Part Number: ", sorted);
     const newParams = new URLSearchParams(searchParams);
-    newParams.set("sort", key);
-    newParams.set("order", nextOrder);
+    newParams.set("sort", "partNumber");
+    newParams.set(
+      "order",
+      sortBy === "partNumber" && sortOrder === "asc" ? "desc" : "asc"
+    );
     setSearchParams(newParams);
 
-    setSortBy(key);
-    setSortOrder(nextOrder);
+    setSortBy("partNumber");
     setData(sorted);
+    setSortOrder(
+      sortBy === "partNumber" && sortOrder === "asc" ? "desc" : "asc"
+    );
+  };
+
+  const handleSortByUnitPrice = () => {
+    const sorted = sortByPrice(
+      data,
+      sortBy === "unitPrice" && sortOrder === "asc" ? "asc" : "desc"
+    );
+    // console.log("Sorted Parts by Unit Price: ", sorted, " by: ", sortOrder);
+    const newParams = new URLSearchParams(searchParams);
+    newParams.set("sort", "unitPrice");
+    newParams.set(
+      "order",
+      sortBy === "unitPrice" && sortOrder === "asc" ? "desc" : "asc"
+    );
+    setSearchParams(newParams);
+
+    setSortBy("unitPrice");
+    setData(sorted);
+    setSortOrder(
+      sortBy === "unitPrice" && sortOrder === "asc" ? "desc" : "asc"
+    );
+  };
+
+  const handleSortByStocks = () => {
+    const sorted = sortByStocks(
+      data,
+      sortBy === "stocks" && sortOrder === "asc" ? "asc" : "desc"
+    );
+    // console.log("Sorted Parts by QTY: ", sorted);
+    const newParams = new URLSearchParams(searchParams);
+    newParams.set("sort", "stocks");
+    newParams.set(
+      "order",
+      sortBy === "stocks" && sortOrder === "asc" ? "desc" : "asc"
+    );
+    setSearchParams(newParams);
+
+    setSortBy("stocks");
+    setData(sorted);
+    setSortOrder(sortBy === "stocks" && sortOrder === "asc" ? "desc" : "asc");
+  };
+
+  const handleSortBySecurementRate = () => {
+    const sorted = sortBySecurementRate(
+      data,
+      sortBy === "securementRate" && sortOrder === "asc" ? "asc" : "desc"
+    );
+    // console.log("Sorted Parts by QTY: ", sorted);
+    const newParams = new URLSearchParams(searchParams);
+    newParams.set("sort", "securementRate");
+    newParams.set(
+      "order",
+      sortBy === "securementRate" && sortOrder === "asc" ? "desc" : "asc"
+    );
+    setSearchParams(newParams);
+
+    setSortBy("securementRate");
+    setData(sorted);
+    setSortOrder(
+      sortBy === "securementRate" && sortOrder === "asc" ? "desc" : "asc"
+    );
+  };
+
+  const handleSortByExcessInsufficient = () => {
+    const sorted = sortByExcessInsufficient(
+      data,
+      sortBy === "excessInsufficient" && sortOrder === "asc" ? "asc" : "desc"
+    );
+    // console.log("Sorted Parts by QTY: ", sorted);
+    const newParams = new URLSearchParams(searchParams);
+    newParams.set("sort", "excessInsufficient");
+    newParams.set(
+      "order",
+      sortBy === "excessInsufficient" && sortOrder === "asc" ? "desc" : "asc"
+    );
+    setSearchParams(newParams);
+
+    setSortBy("excessInsufficient");
+    setData(sorted);
+    setSortOrder(
+      sortBy === "excessInsufficient" && sortOrder === "asc" ? "desc" : "asc"
+    );
+  };
+
+  const handleSortByUrgentRequest = () => {
+    const sorted = sortByUrgentRequest(
+      data,
+      sortBy === "urgentRequest" && sortOrder === "asc" ? "asc" : "desc"
+    );
+    // console.log("Sorted Parts by QTY: ", sorted);
+    const newParams = new URLSearchParams(searchParams);
+    newParams.set("sort", "urgentRequest");
+    newParams.set(
+      "order",
+      sortBy === "urgentRequest" && sortOrder === "asc" ? "desc" : "asc"
+    );
+    setSearchParams(newParams);
+
+    setSortBy("urgentRequest");
+    setData(sorted);
+    setSortOrder(
+      sortBy === "urgentRequest" && sortOrder === "asc" ? "desc" : "asc"
+    );
+  };
+
+  const handleSortByOrderQuantity = () => {
+    const sorted = sortByOrderQuantity(
+      data,
+      sortBy === "orderQuantity" && sortOrder === "asc" ? "asc" : "desc"
+    );
+    // console.log("Sorted Parts by QTY: ", sorted);
+    const newParams = new URLSearchParams(searchParams);
+    newParams.set("sort", "orderQuantity");
+    newParams.set(
+      "order",
+      sortBy === "orderQuantity" && sortOrder === "asc" ? "desc" : "asc"
+    );
+    setSearchParams(newParams);
+
+    setSortBy("orderQuantity");
+    setData(sorted);
+    setSortOrder(
+      sortBy === "orderQuantity" && sortOrder === "asc" ? "desc" : "asc"
+    );
   };
 
   const handleDelete = async (partId: number) => {
@@ -170,14 +277,17 @@ export const DataTable = ({
               style={{ zIndex: 5, top: "-.1px" }}
             >
               <tr>
-                <th className="hover:bg-sky-700 transition duration-200 border border-neutral-300 text-center px-2 py-3 cursor-pointer">
+                <th
+                  className="hover:bg-sky-700 transition duration-200 border border-neutral-300 text-center px-2 py-3 cursor-pointer"
+                  onClick={handleSortByPartNumber}
+                >
                   <div className="h-10 flex justify-center items-center">
                     <h5>IMAGE</h5>
                   </div>
                 </th>
                 <th
                   className="w-50 hover:bg-sky-700 transition duration-200 border border-neutral-300 text-center px-2 py-3 cursor-pointer"
-                  onClick={() => handleSort("partNumber")}
+                  onClick={handleSortByPartNumber}
                 >
                   <div className="h-10 flex justify-center items-center flex-col">
                     <h5>
@@ -210,7 +320,7 @@ export const DataTable = ({
                 </th>
                 <th
                   className="hover:bg-sky-700 transition duration-200 border border-neutral-300 text-center px-2 py-3 cursor-pointer"
-                  onClick={() => handleSort("unitPrice")}
+                  onClick={handleSortByUnitPrice}
                 >
                   <div className="h-10 flex justify-center items-center">
                     <h5>
@@ -231,7 +341,7 @@ export const DataTable = ({
                 </th>
                 <th
                   className="hover:bg-sky-700 transition duration-200 border border-neutral-300 text-center px-2 py-3 cursor-pointer"
-                  onClick={() => handleSort("stocks")}
+                  onClick={handleSortByStocks}
                 >
                   <div className="h-10 flex justify-center items-center">
                     <h5>
@@ -252,7 +362,7 @@ export const DataTable = ({
                 </th>
                 <th
                   className="hover:bg-sky-700 transition duration-200 cursor-pointer w-50 border border-neutral-300 text-center px-2 py-3"
-                  onClick={() => handleSort("securementRate")}
+                  onClick={handleSortBySecurementRate}
                 >
                   <div className="h-10 flex justify-center items-center flex-col">
                     <h5 className="uppercase">
@@ -268,7 +378,7 @@ export const DataTable = ({
                 </th>
                 <th
                   className="hover:bg-sky-700 transition duration-200 cursor-pointer w-75 border border-neutral-300 text-center px-2 py-3"
-                  onClick={() => handleSort("excessInsufficient")}
+                  onClick={handleSortByExcessInsufficient}
                 >
                   <div className="h-10 flex justify-center items-center flex-col">
                     <h5 className="uppercase">
@@ -284,7 +394,7 @@ export const DataTable = ({
                 </th>
                 <th
                   className="hover:bg-sky-700 transition duration-200 cursor-pointer w-110 border border-neutral-300 text-center px-2 py-3"
-                  onClick={() => handleSort("urgentRequest")}
+                  onClick={handleSortByUrgentRequest}
                 >
                   <div className="h-10 flex justify-center items-center flex-col">
                     <h5 className="uppercase">
@@ -300,7 +410,7 @@ export const DataTable = ({
                 </th>
                 <th
                   className="hover:bg-sky-700 transition duration-200 cursor-pointer border border-neutral-300 text-center px-2 py-3"
-                  onClick={() => handleSort("orderQuantity")}
+                  onClick={handleSortByOrderQuantity}
                 >
                   <div className="h-10 flex justify-center items-center flex-col">
                     <h5 className="uppercase">

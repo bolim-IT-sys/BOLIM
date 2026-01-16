@@ -7,6 +7,7 @@ export interface Inbound {
   partId: number;
   quantity: number;
   inboundDate: Date;
+  createdAt?: Date;
 }
 
 export interface Outbound {
@@ -14,6 +15,7 @@ export interface Outbound {
   partId: number;
   quantity: number;
   outboundDate: Date;
+  createdAt?: Date;
 }
 
 export interface ITStocks {
@@ -41,6 +43,7 @@ export interface InboundOutboundType {
   quantity: string;
   inboundDate?: string;
   outboundDate?: string;
+  createdAt?: Date;
 }
 
 export interface addItemType {
@@ -153,47 +156,17 @@ export async function inboundPart(
   setModalShow: (value: boolean) => void,
   setData: Dispatch<SetStateAction<Part[]>>,
   setFormData: Dispatch<SetStateAction<InboundOutboundType>>,
-  print: (value: string) => Promise<boolean>,
-  printLabel: boolean
-): Promise<InboundOutboundResponse> {
-  // Generate ZPL
-  const generateZPL = (
+  generateZPL: (
     part: string,
     lot: string,
     qty: string,
     user: string,
     date?: string
-  ): string => {
-    const qrData = `${part}|${lot}|${qty}`;
-    return `
-^XA
-
-^CF0,20
-^FO220,35
-^FD${part}^FS
-
-^CF0,15
-^FO220,65
-^FDLot: ${lot}^FS
-
-^FO220,85
-^FDQty: ${qty}^FS
-
-^FO220,105
-^FDUser: ${user}^FS
-
-^FO220,125
-^FDDate: ${date}^FS
-
-// FOR QR CODE
-^FO390,25
-^BQN,2,4
-^FDLA,${qrData}^FS
-
-^PQ1,0,1,Y
-^XZ
-`.trim();
-  };
+  ) => string,
+  print: (value: string) => Promise<boolean>,
+  printLabel: boolean
+): Promise<InboundOutboundResponse> {
+  // Generate ZPL
 
   const handlePrint = async (): Promise<void> => {
     const zpl = generateZPL(
@@ -435,6 +408,30 @@ export async function addingItem(
       success: false,
       message:
         "Something went wrong while fetching parts. Check your internet connection and try again.",
+    };
+  }
+}
+
+export async function markItemAsAvailable(
+  item: ITStocks
+): Promise<outboundItemResponse> {
+  try {
+    const response = await axios.put(
+      `${API_URL}/parts/mark-item-available/${item.serialNumber}`,
+      item
+    );
+    // console.log("editing user details");
+    if (response.status === 200) {
+      return response.data;
+    } else {
+      return response.data;
+    }
+  } catch (error) {
+    console.log(error);
+    return {
+      success: false,
+      message:
+        "Something went wrong while outbounding item. Check your internet connection and try again.",
     };
   }
 }

@@ -9,7 +9,7 @@ const Inbound = sequelize.define("Inbound", {
   },
   lotNo: {
     type: DataTypes.STRING(150),
-    allowNull: false,
+    allowNull: true,
   },
   from: {
     type: DataTypes.STRING(150),

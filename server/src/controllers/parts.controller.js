@@ -310,7 +310,7 @@ const inboundPart = async (req, res) => {
     // console.log("Data received in Controller: ", req.body);
     // Optional: Validate request body first
     if (
-      !req.body.lotNo ||
+      // !req.body.lotNo ||
       !req.body.from ||
       !req.body.partId ||
       !req.body.quantity ||
@@ -580,6 +580,106 @@ const addingItem = async (req, res) => {
   }
 };
 
+const markItemAvailable = async (req, res) => {
+  try {
+    const serialNumber = req.params.serialNumber;
+
+    console.log("Data in backend: ", req.body);
+
+    if (
+      !req.body.from ||
+      !req.body.serialNumber ||
+      !req.body.stockId ||
+      !req.body.receivedDate
+    ) {
+      return res.json({
+        message: "Please fill in all required fields.",
+      });
+    }
+
+    // Check if part exists
+    const isPartExisting = await partService.findById(req.body.stockId);
+
+    if (!isPartExisting) {
+      return res.json({
+        success: false,
+        message: "Part does not exist.",
+      });
+    }
+
+    // DATA FOR INBOUNDING
+    const inboundData = {
+      partId: req.body.stockId,
+      from: req.body.from,
+      quantity: 1,
+      inboundDate: new Date().toISOString().split("T")[0],
+    };
+
+    // Check if part exists
+    const existingItem = await partService.findItemBySerialNumber(serialNumber);
+
+    // console.log("Existing match: ", existingItem);
+    if (!existingItem) {
+      return res.json({
+        success: false,
+        message: "Item not found.",
+      });
+    }
+
+    // CHECK IF THE ITEM IS ALREADY AVAILABLE
+    if (existingItem.remarks === "available") {
+      return res.json({
+        success: false,
+        message: "Item is already available.",
+      });
+    }
+
+    // DATA FOR UPDATING STOCK QUANTITY
+    const updateData = {
+      quantity: 1 + isPartExisting.quantity,
+    };
+
+    // INBOUNDING ITEM
+    const inbound = await partService.inboundPart(inboundData);
+
+    if (!inbound.success) {
+      return res.json({
+        success: false,
+        message: "Inbound failed.",
+      });
+    }
+
+    // UPDATING STOCK QUANTITY
+    const updatePartQty = await partService.updatePart(
+      req.body.stockId,
+      updateData
+    );
+
+    if (!updatePartQty.success) {
+      return res.json({
+        success: false,
+        message: "Updating quantity failed.",
+      });
+    }
+
+    // MARKING ITEM AS AVAILABLE
+    const deployItem = await partService.markItemAvailable(req.body);
+
+    // Return consistent response structure
+    res.status(200).json({
+      success: true,
+      message: "Item deployed successfully",
+      data: deployItem,
+    });
+  } catch (err) {
+    // You can add specific error handling here if needed
+    res.json({
+      success: false,
+      message: err.message || "Item deployment failed",
+    });
+  }
+};
+
 const outboundItem = async (req, res) => {
   try {
     const serialNumber = req.params.serialNumber;
@@ -669,6 +769,7 @@ module.exports = {
   deletePart,
   inboundPart,
   addingItem,
+  markItemAvailable,
   outboundItem,
   getItem,
   getAllInbounds,
