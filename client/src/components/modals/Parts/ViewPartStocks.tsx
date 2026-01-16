@@ -282,7 +282,7 @@ export const ViewPartStocks = ({ item, setData, type }: Props) => {
 
           {/* STOCK DEPLOYMENT RECORD TABLE */}
           {type === "it" ? (
-            <div className="relative w-10/10 max-h-60 overflow-x-auto border border-gray-400">
+            <div className="relative w-10/10 max-h-60 md:max-h-80 overflow-x-auto border border-gray-400">
               <ItemStockTable
                 setSerialNumber={setSerialNumber}
                 fetchAllParts={fetchAllParts}

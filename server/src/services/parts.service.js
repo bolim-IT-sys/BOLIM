@@ -228,6 +228,82 @@ const inboundPart = async (inboundData) => {
   }
 };
 
+const getAllInbounds = async () => {
+  try {
+    const inbounds = await Inbound.findAll({});
+    // console.log("Inbounds fetched: ", inbounds);
+    return inbounds;
+  } catch (error) {
+    console.log("Error inbounds: ", error);
+    throw error;
+  }
+};
+
+const getInbounds = async (id) => {
+  try {
+    const inbounds = await Inbound.findAll({
+      where: { partId: id },
+      raw: true,
+    });
+    // console.log("Inbounds fetched: ", inbounds);
+    return inbounds;
+  } catch (error) {
+    console.log("Error Finding Part: ", error);
+    throw error;
+  }
+};
+
+const outboundPart = async (outboundData) => {
+  try {
+    const { from, to, partId, quantity, outboundDate } = outboundData;
+
+    // Hash password before storing
+    // console.log("Data received in outbounding: ", outboundData);
+
+    // console.log("Inbounding part.");
+    const outbound = await Outbound.create({
+      from: from,
+      to: to,
+      partId: partId,
+      quantity: quantity,
+      outboundDate: outboundDate,
+    });
+
+    // Return parts without password
+    return {
+      id: outbound.id,
+      quantity: outbound.quantity,
+    };
+  } catch (error) {
+    throw error;
+  }
+};
+
+const getAllOutbounds = async () => {
+  try {
+    const allOutbounds = await Outbound.findAll({});
+    // console.log("Outbounds fetched: ", outbounds);
+    return allOutbounds;
+  } catch (error) {
+    console.log("Error Outbounds: ", error);
+    throw error;
+  }
+};
+
+const getOutbounds = async (id) => {
+  try {
+    const outbounds = await Outbound.findAll({
+      where: { partId: id },
+      raw: true,
+    });
+    // console.log("Outbounds fetched: ", outbounds);
+    return outbounds;
+  } catch (error) {
+    console.log("Error Finding Part Outbounds: ", error);
+    throw error;
+  }
+};
+
 const addItem = async (itemDetails) => {
   try {
     const { from, stockId, serialNumber, PRDate, receivedDate } = itemDetails;
@@ -250,6 +326,73 @@ const addItem = async (itemDetails) => {
       quantity: addItem.serialNumber,
     };
   } catch (error) {
+    throw error;
+  }
+};
+
+const updateItem = async (itemData) => {
+  try {
+    const item = await ITStock.findOne({
+      where: { id: itemData.id },
+    });
+
+    // console.log("Item found: ", item);
+
+    if (!item) {
+      throw new Error("Item not found.");
+    }
+
+    // prepare the data
+    const updateData = {
+      remarks: "available",
+    };
+
+    if (itemData.serialNumber) {
+      updateData.serialNumber = itemData.serialNumber;
+    }
+
+    if (itemData.PRDate) {
+      updateData.PRDate = itemData.PRDate;
+    }
+
+    if (itemData.receivedDate) {
+      updateData.receivedDate = itemData.receivedDate;
+    }
+
+    if (itemData.deployedDate) {
+      updateData.deployedDate = itemData.deployedDate;
+    }
+
+    if (itemData.station) {
+      updateData.station = itemData.station;
+    }
+
+    if (itemData.department) {
+      updateData.department = itemData.department;
+    }
+
+    if (itemData.from) {
+      updateData.from = itemData.from;
+    }
+
+    if (itemData.to) {
+      updateData.to = itemData.to;
+    }
+
+    if (itemData.remarks) {
+      updateData.remarks = itemData.remarks;
+    }
+
+    await item.update(updateData);
+
+    // console.log("Item deployed successfully.");
+
+    // Return parts without password
+    return {
+      serialNumber: item.serialNumber,
+    };
+  } catch (error) {
+    console.error("Error Updating item: ", error);
     throw error;
   }
 };
@@ -346,82 +489,6 @@ const getItems = async (id) => {
   }
 };
 
-const getAllInbounds = async () => {
-  try {
-    const inbounds = await Inbound.findAll({});
-    // console.log("Inbounds fetched: ", inbounds);
-    return inbounds;
-  } catch (error) {
-    console.log("Error inbounds: ", error);
-    throw error;
-  }
-};
-
-const getInbounds = async (id) => {
-  try {
-    const inbounds = await Inbound.findAll({
-      where: { partId: id },
-      raw: true,
-    });
-    // console.log("Inbounds fetched: ", inbounds);
-    return inbounds;
-  } catch (error) {
-    console.log("Error Finding Part: ", error);
-    throw error;
-  }
-};
-
-const outboundPart = async (outboundData) => {
-  try {
-    const { from, to, partId, quantity, outboundDate } = outboundData;
-
-    // Hash password before storing
-    // console.log("Data received in outbounding: ", outboundData);
-
-    // console.log("Inbounding part.");
-    const outbound = await Outbound.create({
-      from: from,
-      to: to,
-      partId: partId,
-      quantity: quantity,
-      outboundDate: outboundDate,
-    });
-
-    // Return parts without password
-    return {
-      id: outbound.id,
-      quantity: outbound.quantity,
-    };
-  } catch (error) {
-    throw error;
-  }
-};
-
-const getAllOutbounds = async () => {
-  try {
-    const allOutbounds = await Outbound.findAll({});
-    // console.log("Outbounds fetched: ", outbounds);
-    return allOutbounds;
-  } catch (error) {
-    console.log("Error Outbounds: ", error);
-    throw error;
-  }
-};
-
-const getOutbounds = async (id) => {
-  try {
-    const outbounds = await Outbound.findAll({
-      where: { partId: id },
-      raw: true,
-    });
-    // console.log("Outbounds fetched: ", outbounds);
-    return outbounds;
-  } catch (error) {
-    console.log("Error Finding Part Outbounds: ", error);
-    throw error;
-  }
-};
-
 module.exports = {
   findPartByPartname,
   findPartByPartNumber,
@@ -433,13 +500,14 @@ module.exports = {
   findById,
   findItemBySerialNumber,
   inboundPart,
-  addItem,
-  markItemAvailable,
-  deployItem,
-  getItems,
   getAllInbounds,
   getInbounds,
   outboundPart,
   getAllOutbounds,
   getOutbounds,
+  addItem,
+  updateItem,
+  markItemAvailable,
+  deployItem,
+  getItems,
 };
