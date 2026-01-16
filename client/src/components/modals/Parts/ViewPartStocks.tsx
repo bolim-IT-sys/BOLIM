@@ -67,6 +67,8 @@ export const ViewPartStocks = ({ item, setData, type }: Props) => {
     outboundDate: new Date().toISOString().split("T")[0],
   });
 
+  const [serialNumber, setSerialNumber] = useState<string>("");
+
   const currentMonthOption = currentMonth();
   const [month, setMonth] = useState<number>(currentMonthOption);
   const currentYearOption = currentYear();
@@ -281,7 +283,15 @@ export const ViewPartStocks = ({ item, setData, type }: Props) => {
           {/* STOCK DEPLOYMENT RECORD TABLE */}
           {type === "it" ? (
             <div className="relative w-10/10 max-h-60 overflow-x-auto border border-gray-400">
-              <ItemStockTable isLoading={isLoading} stockItems={stockItems} />
+              <ItemStockTable
+                setSerialNumber={setSerialNumber}
+                fetchAllParts={fetchAllParts}
+                fetchTransactions={fetchTransactions}
+                setModalShow={setModalShow}
+                setOutboundShow={setOutboundShow}
+                isLoading={isLoading}
+                stockItems={stockItems}
+              />
             </div>
           ) : null}
         </div>
@@ -319,6 +329,7 @@ export const ViewPartStocks = ({ item, setData, type }: Props) => {
       <Outbounding
         item={item}
         type={type}
+        serialNumber={serialNumber}
         fetchAllParts={fetchAllParts!}
         setData={setData}
         formData={formData}

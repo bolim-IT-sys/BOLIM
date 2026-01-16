@@ -159,6 +159,7 @@ const updatePart = async (partsId, PartData) => {
 
     // Return parts without password
     return {
+      success: true,
       id: parts.id,
       name: parts.name,
     };
@@ -218,6 +219,7 @@ const inboundPart = async (inboundData) => {
 
     // Return parts without password
     return {
+      success: true,
       id: inbound.id,
       quantity: inbound.quantity,
     };
@@ -248,6 +250,37 @@ const addItem = async (itemDetails) => {
       quantity: addItem.serialNumber,
     };
   } catch (error) {
+    throw error;
+  }
+};
+
+const markItemAvailable = async (itemData) => {
+  try {
+    const item = await ITStock.findOne({
+      where: { serialNumber: itemData.serialNumber },
+    });
+
+    // console.log("Item found: ", item);
+
+    if (!item) {
+      throw new Error("Item not found.");
+    }
+
+    // prepare the data
+    const updateData = {
+      remarks: "available",
+    };
+
+    await item.update(updateData);
+
+    // console.log("Item deployed successfully.");
+
+    // Return parts without password
+    return {
+      serialNumber: item.serialNumber,
+    };
+  } catch (error) {
+    console.error("Error deploying item: ", error);
     throw error;
   }
 };
@@ -401,6 +434,7 @@ module.exports = {
   findItemBySerialNumber,
   inboundPart,
   addItem,
+  markItemAvailable,
   deployItem,
   getItems,
   getAllInbounds,

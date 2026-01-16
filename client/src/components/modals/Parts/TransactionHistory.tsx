@@ -56,19 +56,19 @@ export const TransactionHistory = ({
       date.setHours(0, 0, 0, 0);
       return date >= start && date <= end;
     });
-    console.log("Filtered transactions: ", filteredTransactions);
+    // console.log("Filtered transactions: ", filteredTransactions);
     return filteredTransactions;
   };
 
   useEffect(() => {
     if (!startDate || !endDate) return;
-    console.log("Triggered by date");
+    // console.log("Triggered by date");
     setFilteredTransactions(FilterByDate(transactions, startDate, endDate)!);
   }, [transactions, startDate, endDate]);
 
   useEffect(() => {
     if ((!inbounds && !outbounds) || !showHistoryModal) return;
-    console.log("triggered by button");
+    // console.log("triggered by button");
 
     const today = new Date();
     const start = new Date(today.getFullYear(), today.getMonth(), 2);
@@ -77,7 +77,7 @@ export const TransactionHistory = ({
     setStartDate(start.toISOString().split("T")[0]);
     setEndDate(end.toISOString().split("T")[0]);
 
-    console.log("Procesing transactions...");
+    // console.log("Procesing transactions...");
     const toTimestamp = (value?: string | Date) =>
       value ? new Date(value).getTime() : 0;
 

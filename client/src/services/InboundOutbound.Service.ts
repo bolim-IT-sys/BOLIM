@@ -412,6 +412,30 @@ export async function addingItem(
   }
 }
 
+export async function markItemAsAvailable(
+  item: ITStocks
+): Promise<outboundItemResponse> {
+  try {
+    const response = await axios.put(
+      `${API_URL}/parts/mark-item-available/${item.serialNumber}`,
+      item
+    );
+    // console.log("editing user details");
+    if (response.status === 200) {
+      return response.data;
+    } else {
+      return response.data;
+    }
+  } catch (error) {
+    console.log(error);
+    return {
+      success: false,
+      message:
+        "Something went wrong while outbounding item. Check your internet connection and try again.",
+    };
+  }
+}
+
 export async function outboundItem(
   formData: deployItemType
 ): Promise<outboundItemResponse> {

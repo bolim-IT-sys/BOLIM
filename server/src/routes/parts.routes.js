@@ -13,6 +13,7 @@ const {
   getAllInbounds,
   addingItem,
   getItem,
+  markItemAvailable,
   outboundItem,
 } = require("../controllers/parts.controller");
 
@@ -26,7 +27,9 @@ router.delete("/delete-part/:id", deletePart);
 router.post("/inbound", inboundPart);
 router.get("/fetch-all-inbounds", getAllInbounds);
 router.get("/fetch-inbounds/:id", getInbounds);
+
 router.post("/add-item", addingItem);
+router.put("/mark-item-available/:serialNumber", markItemAvailable);
 router.put("/outbound-item/:serialNumber", outboundItem);
 router.get("/fetch-items/:id", getItem);
 

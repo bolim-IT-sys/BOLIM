@@ -14,6 +14,7 @@ import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
 interface Props {
   item: Part;
   type: string;
+  serialNumber: string;
   fetchAllParts: () => void;
   setData: Dispatch<SetStateAction<Part[]>>;
   formData: InboundOutboundType;
@@ -30,6 +31,7 @@ interface Props {
 export const Outbounding = ({
   item,
   type,
+  serialNumber,
   fetchAllParts,
   setData,
   formData,
@@ -57,11 +59,12 @@ export const Outbounding = ({
       ...prev,
       from: formData.from!,
       to: formData.to!,
+      serialNumber: serialNumber ? serialNumber : ``,
       deployedDate: formData.outboundDate!,
       station: prev.station,
       department: prev.department,
     }));
-  }, [formData, item]);
+  }, [formData, item, serialNumber]);
 
   const handleOutbound = async () => {
     setOutBounding(true);
@@ -218,7 +221,7 @@ export const Outbounding = ({
                   htmlFor="SERIAL NUMBER"
                   className="block font-medium text-gray-700"
                 >
-                  <p>SERIAL NUMBER </p>
+                  <p>SERIAL NUMBER</p>
                 </label>
                 <InputField
                   label="SERIAL NUMBER"
