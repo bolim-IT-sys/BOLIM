@@ -23,6 +23,8 @@ export const DownloadPartData = ({ parts }: ItemDataProp) => {
   const [latestMonth, setLatestMonth] = useState<number>(0);
   const [latestYear, setLatestYear] = useState<number>(0);
 
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000/api";
+
   useEffect(() => {
     const cDate = new Date(currentDate);
     setLatestYear(cDate.getFullYear());
@@ -46,7 +48,7 @@ export const DownloadPartData = ({ parts }: ItemDataProp) => {
 
   const handleExportToExcel = async () => {
     try {
-      const res = await fetch("http://localhost:4000/api/export-to-excel", {
+      const res = await fetch(`${API_URL}/export-to-excel`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
