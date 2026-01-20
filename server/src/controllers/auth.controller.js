@@ -49,7 +49,7 @@ const login = async (req, res) => {
       });
     }
 
-    // console.log("Generating jwt for user: ", user.id);
+    console.log("Generating jwt for user: ", user.id);
     // Generate JWT token
     const token = jwt.sign(
       {
