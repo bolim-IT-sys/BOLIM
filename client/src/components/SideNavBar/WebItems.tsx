@@ -1,7 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import type { User } from "../../services/User.Service";
 import { SideNavBarToolTip } from "./SideNavBarToolTip";
-import { MoreOptionDropDown } from "./MoreOptionDropDown";
+// import { MoreOptionDropDown } from "./MoreOptionDropDown";
 import type { Dispatch, SetStateAction } from "react";
 import type { Inventory } from "../../services/Inventory.Service";
 
@@ -18,13 +18,13 @@ type Props = {
 
 export const WebItems = ({
   user,
-  inventories,
+  // inventories,
   isHidden,
   isShowing,
   isSuperAdmin,
-  setShowSideBar,
-  collapse,
-  setCollapse,
+  // setShowSideBar,
+  // collapse,
+  // setCollapse,
 }: Props) => {
   const location = useLocation();
 
@@ -97,18 +97,18 @@ export const WebItems = ({
           </Link>
         ) : null}
 
-        <MoreOptionDropDown
+        {/* <MoreOptionDropDown
           inventories={inventories}
           isHidden={isHidden}
           isShowing={isShowing}
           setShowSideBar={setShowSideBar}
           collapse={collapse}
           setCollapse={setCollapse}
-        />
+        /> */}
 
         {isSuperAdmin ? (
           <>
-            <Link
+            {/* <Link
               className={`group relative p-2 flex items-center ${location.pathname === "/inventory" ? "bg-neutral-50 text-neutral-800" : "hover:hover:bg-cyan-400"} transition duration-150 w-full rounded cursor-pointer`}
               to="/inventory"
             >
@@ -124,7 +124,7 @@ export const WebItems = ({
               >
                 Inventory Management
               </h4>
-            </Link>
+            </Link> */}
             <Link
               className={`group relative p-2 flex items-center ${location.pathname === "/users" ? "bg-neutral-50 text-neutral-800" : "hover:hover:bg-cyan-400"} transition duration-150 w-full rounded cursor-pointer`}
               to="/users"

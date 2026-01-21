@@ -142,7 +142,7 @@ const updatePart = async (req, res) => {
       if (existingPart.image) {
         const oldImagePath = path.join(
           __dirname,
-          "../../uploads/pinImage",
+          "../uploads/pinImage",
           existingPart.image
         );
 
@@ -274,7 +274,7 @@ const deletePart = async (req, res) => {
       if (existingPart.image) {
         const oldImagePath = path.join(
           __dirname,
-          "../../uploads/pinImage",
+          "../uploads/pinImage",
           existingPart.image
         );
 
