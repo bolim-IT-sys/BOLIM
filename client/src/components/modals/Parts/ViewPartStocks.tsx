@@ -1,4 +1,4 @@
-import { useState, type Dispatch, type SetStateAction } from "react";
+import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
 import { Modal } from "../../Modal";
 import SecondaryButton from "../../button/SecondaryButton";
 import PrimaryButton from "../../button/PrimaryButton";
@@ -25,6 +25,8 @@ import { computeStocks } from "../../../helper/table.helper";
 import { ItemStockTable } from "../../tables/ItemStockTable";
 import { InboundOutboundHistoryTable } from "../../tables/InboundOutboundHistoryTable";
 import { TransactionHistory } from "./TransactionHistory";
+import InputField from "../../InputField";
+import { DownloadStockData } from "../../downloadButton/DownloadStockData";
 
 interface Props {
   item: Part;
@@ -74,6 +76,31 @@ export const ViewPartStocks = ({ item, setData, type }: Props) => {
   const currentYearOption = currentYear();
   const [chosenYear, setYear] = useState<number>(currentYearOption);
 
+  // FOR SEACHING FEATURE
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchedParts, setSearchedParts] = useState<ITStocks[]>([]);
+
+  useEffect(() => {
+    if (searchTerm !== "") {
+      setSearchedParts(
+        stockItems.filter((item) => {
+          const term = searchTerm.toLowerCase();
+
+          return (
+            item.serialNumber.toLowerCase().includes(term) ||
+            item.station?.toLowerCase().includes(term) ||
+            item.department?.toLowerCase().includes(term) ||
+            item.from?.toLowerCase().includes(term) ||
+            item.to?.toLowerCase().includes(term) ||
+            item.remarks?.toLowerCase().includes(term)
+          );
+        }),
+      );
+    } else {
+      return;
+    }
+  }, [searchTerm, stockItems]);
+
   const fetchTransactions = async () => {
     try {
       setIsLoading(true);
@@ -98,7 +125,7 @@ export const ViewPartStocks = ({ item, setData, type }: Props) => {
             setStockItems(itemResult.data!);
           }
         },
-        import.meta.env.VITE_TIME_OUT
+        import.meta.env.VITE_TIME_OUT,
       );
     } catch (err) {
       console.error("Error fetching inbounds and outbounds: ", err);
@@ -107,7 +134,7 @@ export const ViewPartStocks = ({ item, setData, type }: Props) => {
         () => {
           setIsLoading(false);
         },
-        import.meta.env.VITE_TIME_OUT
+        import.meta.env.VITE_TIME_OUT,
       );
     }
   };
@@ -167,7 +194,7 @@ export const ViewPartStocks = ({ item, setData, type }: Props) => {
                           date: String(o.outboundDate),
                         })),
                         chosenYear,
-                        month
+                        month,
                       )
                         ? "bg-red-100 text-red-900"
                         : "bg-emerald-100 text-emerald-800"
@@ -182,7 +209,7 @@ export const ViewPartStocks = ({ item, setData, type }: Props) => {
                           date: String(o.outboundDate),
                         })),
                         chosenYear,
-                        month
+                        month,
                       ) ? (
                         <>Warning: Low stock!</>
                       ) : null}
@@ -282,17 +309,40 @@ export const ViewPartStocks = ({ item, setData, type }: Props) => {
 
           {/* STOCK DEPLOYMENT RECORD TABLE */}
           {type === "it" ? (
-            <div className="relative w-10/10 max-h-60 md:max-h-80 overflow-x-auto border border-gray-400">
-              <ItemStockTable
-                setSerialNumber={setSerialNumber}
-                fetchAllParts={fetchAllParts}
-                fetchTransactions={fetchTransactions}
-                setModalShow={setModalShow}
-                setOutboundShow={setOutboundShow}
-                isLoading={isLoading}
-                stockItems={stockItems}
-              />
-            </div>
+            <>
+              <div>
+                <div className="mb-1">
+                  <div className="flex flex-col sm:flex-row gap-1 md:gap-2">
+                    <div className="w-full sm:w-7/10">
+                      <InputField
+                        label="Search(serial number, station, department, outbound personel, receiver, remarks)"
+                        type="text"
+                        value={searchTerm}
+                        onChange={(value: string) => setSearchTerm(value)}
+                      />
+                    </div>
+                    <div className="w-full h-10 sm:w-3/10 flex gap-2">
+                      <DownloadStockData
+                        data={searchTerm ? searchedParts : stockItems}
+                        item={item}
+                        isLoading={isLoading}
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="relative w-10/10 h-60 md:h-80 overflow-y-scroll border border-gray-400">
+                  <ItemStockTable
+                    setSerialNumber={setSerialNumber}
+                    fetchAllParts={fetchAllParts}
+                    fetchTransactions={fetchTransactions}
+                    setModalShow={setModalShow}
+                    setOutboundShow={setOutboundShow}
+                    isLoading={isLoading}
+                    stockItems={searchTerm ? searchedParts : stockItems}
+                  />
+                </div>
+              </div>
+            </>
           ) : null}
         </div>
       </Modal>

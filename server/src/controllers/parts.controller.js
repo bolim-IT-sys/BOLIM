@@ -47,7 +47,7 @@ const createPart = async (req, res) => {
 
     // Check if user already exists
     const existingPart = await partService.findPartByPartNumber(
-      req.body.partNumber
+      req.body.partNumber,
     );
 
     if (existingPart) {
@@ -57,10 +57,10 @@ const createPart = async (req, res) => {
           type === "pin"
             ? "Pin"
             : type === "it"
-            ? "Item"
-            : type === "material"
-            ? "Material"
-            : "INVALID TYPE"
+              ? "Item"
+              : type === "material"
+                ? "Material"
+                : "INVALID TYPE"
         } already exists.`,
       });
     }
@@ -74,10 +74,10 @@ const createPart = async (req, res) => {
         type === "pin"
           ? "pin"
           : type === "it"
-          ? "item"
-          : type === "material"
-          ? "material"
-          : "INVALID TYPE"
+            ? "item"
+            : type === "material"
+              ? "material"
+              : "INVALID TYPE"
       } created successfully.`,
       data: user,
     });
@@ -91,10 +91,10 @@ const createPart = async (req, res) => {
           type === "pin"
             ? "Pin"
             : type === "it"
-            ? "Item"
-            : type === "material"
-            ? "Material"
-            : "INVALID TYPE"
+              ? "Item"
+              : type === "material"
+                ? "Material"
+                : "INVALID TYPE"
         } creation failed`,
     });
   }
@@ -143,7 +143,7 @@ const updatePart = async (req, res) => {
         const oldImagePath = path.join(
           __dirname,
           "../uploads/pinImage",
-          existingPart.image
+          existingPart.image,
         );
 
         fs.unlink(oldImagePath, (err) => {
@@ -167,10 +167,10 @@ const updatePart = async (req, res) => {
           type === "pin"
             ? "Pin"
             : type === "it"
-            ? "Item"
-            : type === "material"
-            ? "Material"
-            : "INVALID TYPE"
+              ? "Item"
+              : type === "material"
+                ? "Material"
+                : "INVALID TYPE"
         } not found.`,
       });
     }
@@ -194,7 +194,7 @@ const updatePart = async (req, res) => {
     //checking if the username is already taken
     if (data.partNumber !== existingPart.partNumber) {
       const userWithSamePartNumber = await partService.findPartByPartNumber(
-        data.partNumber
+        data.partNumber,
       );
 
       if (userWithSamePartNumber) {
@@ -205,10 +205,10 @@ const updatePart = async (req, res) => {
             type === "pin"
               ? "Pin number"
               : type === "it"
-              ? "Item name"
-              : type === "material"
-              ? "Material name"
-              : "INVALID TYPE"
+                ? "Item name"
+                : type === "material"
+                  ? "Material name"
+                  : "INVALID TYPE"
           } already taken.`,
         });
       }
@@ -223,10 +223,10 @@ const updatePart = async (req, res) => {
         type === "pin"
           ? "Pin"
           : type === "it"
-          ? "Item"
-          : type === "material"
-          ? "Material"
-          : "INVALID TYPE"
+            ? "Item"
+            : type === "material"
+              ? "Material"
+              : "INVALID TYPE"
       } updated successfully.`,
       data: updatePart,
     });
@@ -240,10 +240,10 @@ const updatePart = async (req, res) => {
           type === "pin"
             ? "Pin"
             : type === "it"
-            ? "Item"
-            : type === "material"
-            ? "Material"
-            : "INVALID TYPE"
+              ? "Item"
+              : type === "material"
+                ? "Material"
+                : "INVALID TYPE"
         } update failed.`,
     });
   }
@@ -275,7 +275,7 @@ const deletePart = async (req, res) => {
         const oldImagePath = path.join(
           __dirname,
           "../uploads/pinImage",
-          existingPart.image
+          existingPart.image,
         );
 
         fs.unlink(oldImagePath, (err) => {
@@ -340,7 +340,7 @@ const inboundPart = async (req, res) => {
 
     const updatePartQty = await partService.updatePart(
       req.body.partId,
-      updateData
+      updateData,
     );
 
     // Return consistent response structure
@@ -455,7 +455,7 @@ const outboundPart = async (req, res) => {
 
     const updatePartQty = await partService.updatePart(
       req.body.partId,
-      updateData
+      updateData,
     );
 
     // Return consistent response structure
@@ -551,7 +551,7 @@ const addingItem = async (req, res) => {
 
     // Check if part exists
     const isPartExisting = await partService.findItemBySerialNumber(
-      req.body.serialNumber
+      req.body.serialNumber,
     );
 
     if (isPartExisting) {
@@ -582,7 +582,7 @@ const addingItem = async (req, res) => {
 
 const updateItem = async (req, res) => {
   try {
-    console.log("Data in backend: ", req.body);
+    // console.log("Data in backend: ", req.body);
 
     if (
       !req.body.id ||
@@ -696,7 +696,7 @@ const markItemAvailable = async (req, res) => {
     // UPDATING STOCK QUANTITY
     const updatePartQty = await partService.updatePart(
       req.body.stockId,
-      updateData
+      updateData,
     );
 
     if (!updatePartQty.success) {
