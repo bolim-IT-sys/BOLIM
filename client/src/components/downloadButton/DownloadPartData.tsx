@@ -13,10 +13,10 @@ interface ItemDataProp {
 export const DownloadPartData = ({ parts }: ItemDataProp) => {
   const [modalShow, setShowModal] = useState(false);
   const [prevDate, setPrevDate] = useState<string>(
-    new Date().toISOString().split("T")[0]
+    new Date().toISOString().split("T")[0],
   );
   const [currentDate, setCurrentDate] = useState<string>(
-    new Date().toISOString().split("T")[0]
+    new Date().toISOString().split("T")[0],
   );
   const [previousMonth, setPreviousMonth] = useState<number>(0);
   const [previousYear, setPreviousYear] = useState<number>(0);
@@ -48,7 +48,7 @@ export const DownloadPartData = ({ parts }: ItemDataProp) => {
 
   const handleExportToExcel = async () => {
     try {
-      const res = await fetch(`${API_URL}/export-to-excel`, {
+      const res = await fetch(`${API_URL}/export-inventory-to-excel`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

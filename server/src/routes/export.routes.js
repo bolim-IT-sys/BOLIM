@@ -11,7 +11,7 @@ const {
 
 const router = express.Router();
 
-router.post("/export-to-excel", async (req, res) => {
+router.post("/export-inventory-to-excel", async (req, res) => {
   try {
     const {
       parts,
@@ -54,10 +54,10 @@ router.post("/export-to-excel", async (req, res) => {
       // Handle dummy row - return empty strings for all fields
       if (part.id === 0) {
         const monthInboundObject = Object.fromEntries(
-          monthList.map((m) => [m + "i", ""])
+          monthList.map((m) => [m + "i", ""]),
         );
         const monthOutboundObject = Object.fromEntries(
-          monthList.map((m) => [m + "o", ""])
+          monthList.map((m) => [m + "o", ""]),
         );
 
         return {
@@ -88,7 +88,7 @@ router.post("/export-to-excel", async (req, res) => {
           date: String(i.inboundDate),
         })),
         previousYear,
-        previousMonth
+        previousMonth,
       );
       const prevOutbounds = getTotalByYearExcludingCurrentMonth(
         part.outbounds.map((o) => ({
@@ -96,7 +96,7 @@ router.post("/export-to-excel", async (req, res) => {
           date: String(o.outboundDate),
         })),
         previousYear,
-        previousMonth
+        previousMonth,
       );
       const latestOutbounds = getTotalByYearExcludingCurrentMonth(
         part.outbounds.map((o) => ({
@@ -104,7 +104,7 @@ router.post("/export-to-excel", async (req, res) => {
           date: String(o.outboundDate),
         })),
         latestYear,
-        latestMonth - 1
+        latestMonth - 1,
       );
 
       const overallInboundsWithCurrentMonth = getTotal(
@@ -113,7 +113,7 @@ router.post("/export-to-excel", async (req, res) => {
           date: String(i.inboundDate),
         })),
         latestYear,
-        latestMonth
+        latestMonth,
       );
       const overallOutboundsWithCurrentMonth = getTotal(
         part.outbounds.map((o) => ({
@@ -121,7 +121,7 @@ router.post("/export-to-excel", async (req, res) => {
           date: String(o.outboundDate),
         })),
         latestYear,
-        latestMonth
+        latestMonth,
       );
 
       const stocksLeft =
@@ -133,7 +133,7 @@ router.post("/export-to-excel", async (req, res) => {
           date: String(o.outboundDate),
         })),
         currentYear() - 1,
-        12
+        12,
       );
       const totalInbounds = getTotalByYearExcludingCurrentMonth(
         part.inbounds.map((o) => ({
@@ -141,7 +141,7 @@ router.post("/export-to-excel", async (req, res) => {
           date: String(o.inboundDate),
         })),
         latestYear,
-        12
+        12,
       );
 
       const totalOutbounds = getTotalByYearExcludingCurrentMonth(
@@ -150,20 +150,20 @@ router.post("/export-to-excel", async (req, res) => {
           date: String(o.outboundDate),
         })),
         latestYear,
-        12
+        12,
       );
 
       const monthInboundObject = Object.fromEntries(
         monthList.map((m) => [
           m + "i",
           getInOutQuantity(m, latestYear, "inbound"),
-        ])
+        ]),
       );
       const monthOutboundObject = Object.fromEntries(
         monthList.map((m) => [
           m + "o",
           getInOutQuantity(m, latestYear, "outbound"),
-        ])
+        ]),
       );
 
       // FIX: Prevent division by zero
@@ -176,7 +176,7 @@ router.post("/export-to-excel", async (req, res) => {
           date: String(o.outboundDate),
         })),
         latestYear,
-        latestMonth - 1
+        latestMonth - 1,
       );
 
       // FIX: Prevent division by zero and handle edge cases
@@ -275,7 +275,7 @@ router.post("/export-to-excel", async (req, res) => {
         ],
         ["", "", "", "", "", "", ...monthList, "", ...monthList],
       ],
-      { origin: "A1" }
+      { origin: "A1" },
     );
 
     // COLORS FOR COLUMN HEADERS (using hex colors without #)
@@ -489,11 +489,198 @@ router.post("/export-to-excel", async (req, res) => {
 
     res.setHeader(
       "Content-Disposition",
-      `attachment; filename=Stock_Report_${latestMonth}_${latestYear}.xlsx`
+      `attachment; filename=Stock_Report_${latestMonth}_${latestYear}.xlsx`,
     );
     res.setHeader(
       "Content-Type",
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    );
+
+    return res.send(excelBuffer);
+  } catch (error) {
+    console.error("Export error:", error);
+    res
+      .status(500)
+      .json({ error: "Failed to generate Excel", details: error.message });
+  }
+});
+
+router.post("/export-items-to-excel", async (req, res) => {
+  try {
+    const { data } = req.body;
+
+    const excelData = data.map((item) => {
+      return {
+        "Serial Number": item.serialNumber,
+        "PR Date": item.PRDate ? item.PRDate : "N/A",
+        "Received Date": item.receivedDate,
+        "Deployed Date": item.deployedDate ? item.deployedDate : "N/A",
+        Station: item.station ? item.station : "N/A",
+        Department: item.department ? item.department : "N/A",
+        "Outbound Personel": item.from ? item.from : "N/A",
+        Receiver: item.to ? item.to : "N/A",
+        Remarks: item.remarks.toUpperCase(),
+      };
+    });
+
+    // Create worksheet
+    const worksheet = XLSX.utils.json_to_sheet(excelData);
+
+    // Insert custom header rows at the top
+    XLSX.utils.sheet_add_aoa(
+      worksheet,
+      [
+        [
+          "Serial Number",
+          "PR Date",
+          "Received Date",
+          "Deployed Date",
+          "Station",
+          "Department",
+          "Outbound Personel",
+          "Receiver",
+          "Remarks",
+        ],
+      ],
+      { origin: "A1" },
+    );
+
+    // COLORS FOR COLUMN HEADERS (using hex colors without #)
+    const columnColors = [
+      "a6e0f7", // Serial Number
+      "a6e0f7", // PR Date
+      "a6e0f7", // Received Date
+      "a6e0f7", // Deployed Date
+      "a6e0f7", // Station
+      "a6e0f7", // Department
+      "a6e0f7", // Outbound Personel
+      "a6e0f7", // Receiver
+      "49abf5", // Remarks
+    ];
+
+    // APPLYING COLORS ON HEADERS
+    const range = XLSX.utils.decode_range(worksheet["!ref"]);
+    for (let C = range.s.c; C <= range.e.c; ++C) {
+      const color = columnColors[C] || "FFFFFF";
+
+      // Row 1 headers
+      const address1 = XLSX.utils.encode_col(C) + "1";
+      if (worksheet[address1]) {
+        worksheet[address1].s = {
+          alignment: {
+            horizontal: "center",
+            vertical: "center",
+            wrapText: true,
+          },
+          fill: { fgColor: { rgb: color } },
+          font: { bold: true, color: { rgb: "000000" } },
+          border: {
+            top: { style: "thin", color: { rgb: "000000" } },
+            bottom: { style: "thin", color: { rgb: "000000" } },
+            left: { style: "thin", color: { rgb: "000000" } },
+            right: { style: "thin", color: { rgb: "000000" } },
+          },
+        };
+      }
+    }
+
+    // APPLYING BACKGROUND COLORS FOR DATA CELLS (rows 3 and below)
+    const rangeAll = XLSX.utils.decode_range(worksheet["!ref"]);
+    for (let R = 1; R <= rangeAll.e.r; ++R) {
+      for (let C = rangeAll.s.c; C <= rangeAll.e.c; ++C) {
+        const address = XLSX.utils.encode_cell({ r: R, c: C });
+
+        // FIX: Only apply styles to cells that actually exist
+        if (!worksheet[address]) continue;
+
+        // Apply background color + border + center alignment
+        worksheet[address].s = {
+          alignment: {
+            horizontal: "center",
+            vertical: "center",
+            wrapText: true,
+          },
+          border: {
+            top: { style: "thin", color: { rgb: "000000" } },
+            bottom: { style: "thin", color: { rgb: "000000" } },
+            left: { style: "thin", color: { rgb: "000000" } },
+            right: { style: "thin", color: { rgb: "000000" } },
+          },
+        };
+
+        if (C < 8) {
+          // FIX: Better validation of cell value
+          const cellValue = worksheet[address].v;
+          const strValue = String(cellValue).toUpperCase();
+
+          if (strValue === "N/A") {
+            worksheet[address].s = {
+              ...worksheet[address].s,
+              font: {
+                color: { rgb: "b0b0b0" },
+                bold: true,
+              },
+            };
+          }
+        }
+
+        // === MAKE "Remarks" GREEN IF === "available" and RED if not ===
+        if (C === 8) {
+          // FIX: Better validation of cell value
+          const cellValue = worksheet[address].v;
+          const strValue = String(cellValue).toLowerCase();
+
+          if (strValue === "available") {
+            worksheet[address].s = {
+              ...worksheet[address].s,
+              fill: { fgColor: { rgb: "d9fce8" } },
+              font: {
+                color: { rgb: "004a24" },
+                bold: true,
+              },
+            };
+          } else {
+            worksheet[address].s = {
+              ...worksheet[address].s,
+              fill: { fgColor: { rgb: "fcd7d7" } },
+              font: {
+                color: { rgb: "400101" },
+                bold: true,
+              },
+            };
+          }
+        }
+      }
+    }
+
+    // Set column widths
+    worksheet["!cols"] = [
+      { wch: 30 }, // Serial Number
+      { wch: 20 }, // PR Date
+      { wch: 20 }, // Received Date
+      { wch: 20 }, // Deployed Date
+      { wch: 25 }, // Station
+      { wch: 25 }, // Department
+      { wch: 15 }, // Outbound Personel
+      { wch: 15 }, // Receiver
+      { wch: 20 }, // Remarks
+    ];
+
+    worksheet["!rows"] = [{ hpt: 40 }];
+
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Stock Report");
+
+    // Generate file buffer
+    const excelBuffer = XLSX.write(workbook, {
+      type: "buffer",
+      bookType: "xlsx",
+    });
+
+    res.setHeader("Content-Disposition", `attachment; filename=Sample`);
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     );
 
     return res.send(excelBuffer);

@@ -95,7 +95,7 @@ export const ItemStockTable = ({
     }
 
     const confirmed = window.confirm(
-      "Are you sure you want to mark this stock as avaiable?"
+      "Are you sure you want to mark this stock as avaiable?",
     );
 
     if (!confirmed) return;
@@ -228,7 +228,7 @@ export const ItemStockTable = ({
                             label="PR DATE"
                             type="text"
                             value={new Date(
-                              formData.receivedDate
+                              formData.receivedDate,
                             ).toLocaleDateString()}
                             required={true}
                             onChange={(value: string) =>
@@ -252,7 +252,7 @@ export const ItemStockTable = ({
                             label="PR DATE"
                             type="text"
                             value={new Date(
-                              formData.deployedDate
+                              formData.deployedDate,
                             ).toLocaleDateString()}
                             required={true}
                             onChange={(value: string) =>
