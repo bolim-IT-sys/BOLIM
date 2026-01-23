@@ -8,6 +8,9 @@ import SuccessButton from "../button/SuccessButton";
 import InputFieldSmall from "../InputFieldSmall";
 import PrimaryButton from "../button/PrimaryButton";
 import SecondaryButton from "../button/SecondaryButton";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { formatStockDate } from "../../helper/date.helper";
 
 type Props = {
   setSerialNumber: Dispatch<SetStateAction<string>>;
@@ -35,7 +38,7 @@ export const ItemStockTable = ({
     stockId: 0,
     serialNumber: "",
     PRDate: "",
-    receivedDate: new Date(),
+    receivedDate: null,
     deployedDate: null,
     station: "",
     department: "",
@@ -46,6 +49,7 @@ export const ItemStockTable = ({
 
   useEffect(() => {
     console.log(formData);
+    // console.log("Items: ", stockItems);
   }, [formData]);
 
   const HandleSetUpdateStock = (stock: ITStocks) => {
@@ -110,7 +114,8 @@ export const ItemStockTable = ({
       alert(response.message);
     }
   };
-  const handleChange = (field: string, value: string) => {
+  const handleChange = (field: string, value: string | Date | null) => {
+    console.log("field: ", value);
     setFormData((prev) => ({
       ...prev,
       [field]: value,
@@ -121,8 +126,8 @@ export const ItemStockTable = ({
     return (
       stock.serialNumber === formData.serialNumber &&
       stock.PRDate === formData.PRDate &&
-      new Date(stock.receivedDate).toLocaleDateString() ===
-        new Date(formData.receivedDate).toLocaleDateString() &&
+      // new Date(stock.receivedDate).toLocaleDateString() ===
+      //   new Date(formData.receivedDate).toLocaleDateString() &&
       new Date(stock.deployedDate!).toLocaleDateString() ===
         new Date(formData.deployedDate!).toLocaleDateString() &&
       stock.station === formData.station &&
@@ -206,38 +211,45 @@ export const ItemStockTable = ({
                     <td className="border border-neutral-400 px-3 py-2">
                       <div className="flex justify-center items-center flex-col gap-1">
                         {toBeUpdated === stock.id ? (
-                          <InputFieldSmall
-                            label="PR DATE"
-                            type="text"
-                            value={formData.PRDate}
-                            required={true}
-                            onChange={(value: string) =>
-                              handleChange("PRDate", value)
-                            }
-                            autoComplete={`PRDate`}
-                          />
+                          <>
+                            <InputFieldSmall
+                              label="PR DATE"
+                              type="text"
+                              value={formData.PRDate!}
+                              required={true}
+                              onChange={(value: string) =>
+                                handleChange("PRDate", value)
+                              }
+                              autoComplete={`PRDate`}
+                            />
+                          </>
                         ) : (
-                          <h6>{String(stock.PRDate)}</h6>
+                          <h6
+                            className={` ${
+                              stock.PRDate === "N/A" ? "text-neutral-400" : ""
+                            }`}
+                          >
+                            {stock.PRDate === "N/A"
+                              ? "N/A"
+                              : String(stock.PRDate)}
+                          </h6>
                         )}
                       </div>
                     </td>
                     <td className="border border-neutral-400 px-3 py-2">
                       <div className="flex justify-center items-center flex-col gap-1">
                         {toBeUpdated === stock.id ? (
-                          <InputFieldSmall
-                            label="PR DATE"
-                            type="text"
-                            value={new Date(
-                              formData.receivedDate,
-                            ).toLocaleDateString()}
-                            required={true}
-                            onChange={(value: string) =>
+                          <DatePicker
+                            className="w-full text-xs rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            selected={formData.receivedDate}
+                            onChange={(value: Date | null) =>
                               handleChange("receivedDate", value)
                             }
-                            autoComplete={`receivedDate`}
+                            placeholderText="Select a date"
+                            dateFormat="MM/dd/yyyy"
                           />
                         ) : (
-                          <h6>{String(stock.receivedDate)}</h6>
+                          <h6>{formatStockDate(String(stock.receivedDate))}</h6>
                         )}
                       </div>
                     </td>
@@ -248,22 +260,19 @@ export const ItemStockTable = ({
                         }`}
                       >
                         {toBeUpdated === stock.id && formData.deployedDate ? (
-                          <InputFieldSmall
-                            label="PR DATE"
-                            type="text"
-                            value={new Date(
-                              formData.deployedDate,
-                            ).toLocaleDateString()}
-                            required={true}
-                            onChange={(value: string) =>
+                          <DatePicker
+                            className="w-full text-xs rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            selected={formData.deployedDate}
+                            onChange={(value: Date | null) =>
                               handleChange("deployedDate", value)
                             }
-                            autoComplete={`deployedDate`}
+                            placeholderText="Select a date"
+                            dateFormat="MM/dd/yyyy"
                           />
                         ) : (
                           <h6>
                             {stock.deployedDate
-                              ? String(stock.deployedDate)
+                              ? formatStockDate(String(stock.deployedDate))
                               : "N/A"}
                           </h6>
                         )}
@@ -319,11 +328,13 @@ export const ItemStockTable = ({
                           stock.from ? null : "text-neutral-400"
                         }`}
                       >
-                        {toBeUpdated === stock.id && formData.from ? (
+                        {(toBeUpdated === stock.id && formData.from) ||
+                        (toBeUpdated === stock.id && stock.remarks) ===
+                          "deployed" ? (
                           <InputFieldSmall
-                            label="PR DATE"
+                            label="OUTBOUND PERSONEL"
                             type="text"
-                            value={formData.from}
+                            value={formData.from ? formData.from : ""}
                             required={true}
                             onChange={(value: string) =>
                               handleChange("from", value)
@@ -341,11 +352,13 @@ export const ItemStockTable = ({
                           stock.to ? null : "text-neutral-400"
                         }`}
                       >
-                        {toBeUpdated === stock.id && formData.to ? (
+                        {(toBeUpdated === stock.id && formData.to) ||
+                        (toBeUpdated === stock.id && stock.remarks) ===
+                          "deployed" ? (
                           <InputFieldSmall
-                            label="PR DATE"
+                            label="RECEIVER"
                             type="text"
-                            value={formData.to}
+                            value={formData.to ? formData.to : ""}
                             required={true}
                             onChange={(value: string) =>
                               handleChange("to", value)
