@@ -98,7 +98,7 @@ export const MobileItems = ({
               <h4
                 className={`absolute w-45 mt-1 start-12 font-bold ${isShowing ? "opacity-100" : "opacity-0"} ${isHidden ? "pointer-events-none" : ""} transition-all duration-250 ease-in-out`}
               >
-                Users
+                User Management
               </h4>
             </Link>
           </>

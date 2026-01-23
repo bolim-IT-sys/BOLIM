@@ -13,7 +13,7 @@ const login = async (req, res) => {
     if (!username || !password) {
       return res.json({
         success: false,
-        message: "Username and password are required",
+        message: "Username and password are required.",
       });
     }
 
@@ -22,7 +22,7 @@ const login = async (req, res) => {
     if (!user) {
       return res.json({
         success: false,
-        message: "Invalid credentials",
+        message: "Invalid credentials.",
       });
     }
 
@@ -45,11 +45,11 @@ const login = async (req, res) => {
     if (!isValidPassword) {
       return res.json({
         success: false,
-        message: "Invalid credentials",
+        message: "Invalid credentials.",
       });
     }
 
-    // console.log("Generating jwt for user: ", user.id);
+    console.log("Generating jwt for user: ", user.id);
     // Generate JWT token
     const token = jwt.sign(
       {
@@ -57,7 +57,7 @@ const login = async (req, res) => {
         // username: user.username,
       },
       JWT_SECRET,
-      { expiresIn: JWT_EXPIRES_IN }
+      { expiresIn: JWT_EXPIRES_IN },
     );
 
     // Send token to frontend
@@ -69,7 +69,7 @@ const login = async (req, res) => {
     console.error("Login error:", error);
     return res.json({
       success: false,
-      message: "Internal server error",
+      message: "Internal server error.",
     });
   }
 };

@@ -1,15 +1,21 @@
 // server.js
 const express = require("express");
 const cors = require("cors");
-const dotenv = require("dotenv");
 const sequelize = require("./database/index.js");
 const app = express();
 
-dotenv.config();
+const dotenv = require("dotenv");
+const path = require("path");
+
+dotenv.config({
+  path: path.resolve(process.cwd(), ".env"),
+});
+
 const PORT = process.env.PORT;
+const HOST = "0.0.0.0";
 
 const corsOptions = {
-  origin: [process.env.FRONTEND_URL], // allowed origins
+  origin: [[process.env.FRONTEND_URL]], // allowed origins
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true, // if you need cookies or auth headers
 };
@@ -19,7 +25,10 @@ app.use(express.json(corsOptions));
 app.use(cors());
 
 // API ROUTES
-app.use("/api/uploads", express.static("uploads"));
+app.use(
+  "/api/uploads/pinImage",
+  express.static(path.join(__dirname, "uploads/pinImage")),
+);
 
 const exportRoutes = require("./routes/export.routes.js");
 app.use("/api", exportRoutes);
@@ -66,8 +75,8 @@ async function startServer() {
     await sequelize.sync(); // sync models
     console.log("🧱 Models synchronized.");
 
-    app.listen(PORT, () => {
-      console.log(`🚀 Server running at http://localhost:${PORT}`);
+    app.listen(PORT, HOST, () => {
+      console.log(`🚀 Server running at http://${HOST}:${PORT}`);
     });
   } catch (error) {
     console.error("❌ Failed to start server:", error.message);

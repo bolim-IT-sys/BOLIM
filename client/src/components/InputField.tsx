@@ -20,7 +20,7 @@ export default function InputField({
   onKeyPress,
 }: InputFieldProps) {
   return (
-    <div className="caret-pink-500">
+    <div className="">
       <input
         type={type}
         id={label}
