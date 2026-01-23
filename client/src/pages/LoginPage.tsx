@@ -6,6 +6,7 @@ import { fetchUserData } from "../services/User.Service";
 import PrimaryButton from "../components/button/PrimaryButton";
 import logo from "/logowithtext.png";
 import background from "/bolim_image.png";
+import Swal from "sweetalert2";
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({
@@ -47,27 +48,44 @@ export default function LoginPage() {
       if (result.success) {
         setTimeout(
           () => {
-            navigate("/dashboard");
-            alert("Loggin Success");
+            Swal.fire({
+              icon: "success",
+              title: "Login Successful",
+              text: "You have logged in successfully.",
+              timer: 1500,
+              showConfirmButton: false,
+            }).then(() => {
+              navigate("/dashboard");
+            });
           },
-          import.meta.env.VITE_TIME_OUT
+          import.meta.env.VITE_TIME_OUT,
         );
       } else {
         setTimeout(
           () => {
-            alert("Invalid credentials");
+            Swal.fire({
+              icon: "error",
+              title: "Login Failed",
+              text: "Invalid credentials.",
+            });
           },
-          import.meta.env.VITE_TIME_OUT
+          import.meta.env.VITE_TIME_OUT,
         );
       }
     } catch (error) {
-      console.error("Unexpected error occured: ", error);
+      console.error("Unexpected error occurred: ", error);
+
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Something went wrong. Please try again later.",
+      });
     } finally {
       setTimeout(
         () => {
           setIsLoading(false);
         },
-        import.meta.env.VITE_TIME_OUT
+        import.meta.env.VITE_TIME_OUT,
       );
     }
   };

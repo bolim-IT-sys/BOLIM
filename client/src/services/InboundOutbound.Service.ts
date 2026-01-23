@@ -1,6 +1,7 @@
 import axios from "axios";
 import type { Dispatch, SetStateAction } from "react";
 import type { Part } from "./Part.Service";
+import Swal from "sweetalert2";
 
 export interface Inbound {
   id?: number;
@@ -166,8 +167,7 @@ export async function inboundPart(
   print: (value: string) => Promise<boolean>,
   printLabel: boolean,
 ): Promise<InboundOutboundResponse> {
-  // Generate ZPL
-
+  // FOR ZEBRA PRINTING
   const handlePrint = async (): Promise<void> => {
     const zpl = generateZPL(
       formData.partNumber,
@@ -178,7 +178,13 @@ export async function inboundPart(
     );
     const success = await print(zpl);
     if (success) {
-      // alert("Print job sent successfully!");
+      Swal.fire({
+        icon: "success",
+        title: "Print Sent",
+        text: "Label print job was sent successfully.",
+        timer: 1500,
+        showConfirmButton: false,
+      });
     }
   };
   try {
@@ -191,11 +197,19 @@ export async function inboundPart(
     if (response.status === 201) {
       setTimeout(
         () => {
-          alert(response.data.message);
+          setInboundShow(false);
+          Swal.fire({
+            icon: "success",
+            title: "Inbound Successful",
+            text: response.data.message,
+            timer: 5000,
+            showConfirmButton: false,
+          }).then(() => {
+            setModalShow(true);
+          });
+
           fetchTransactions();
           fetchAllParts();
-          setInboundShow(false);
-          setModalShow(true);
           if (printLabel) {
             handlePrint();
           }
@@ -222,7 +236,14 @@ export async function inboundPart(
     } else {
       setTimeout(
         () => {
-          alert(response.data.message);
+          setInboundShow(false);
+          Swal.fire({
+            icon: "error",
+            title: "Inbound Failed",
+            text: response.data.message,
+          }).then(() => {
+            setModalShow(true);
+          });
         },
         import.meta.env.VITE_TIME_OUT,
       );
@@ -312,9 +333,17 @@ export async function outboundPart(
     if (response.status === 201) {
       setTimeout(
         () => {
-          alert(response.data.message);
           setOutboundShow(false);
-          setModalShow(true);
+          Swal.fire({
+            icon: "success",
+            title: "Outbound Successful",
+            text: response.data.message,
+            timer: 5000,
+            showConfirmButton: false,
+          }).then(() => {
+            setModalShow(true);
+          });
+
           fetchTransactions();
           fetchAllParts();
           // UPDATING THE QUANTITY OF THE INBOUNDED PART
@@ -344,7 +373,14 @@ export async function outboundPart(
     } else {
       setTimeout(
         () => {
-          alert(`Error: ${response.data.message}`);
+          setOutboundShow(false);
+          Swal.fire({
+            icon: "error",
+            title: "Inbound Failed",
+            text: response.data.message,
+          }).then(() => {
+            setModalShow(true);
+          });
         },
         import.meta.env.VITE_TIME_OUT,
       );

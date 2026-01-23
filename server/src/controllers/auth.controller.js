@@ -13,7 +13,7 @@ const login = async (req, res) => {
     if (!username || !password) {
       return res.json({
         success: false,
-        message: "Username and password are required",
+        message: "Username and password are required.",
       });
     }
 
@@ -22,14 +22,14 @@ const login = async (req, res) => {
     if (!user) {
       return res.json({
         success: false,
-        message: "Invalid credentials",
+        message: "Invalid credentials.",
       });
     }
 
     // DEBUG: Log to see what fields the user has
-    console.log("User object:", user.username);
-    console.log("Password from request:", password);
-    console.log("PasswordHash from DB:", user.password);
+    // console.log("User object:", user.username);
+    // console.log("Password from request:", password);
+    // console.log("PasswordHash from DB:", user.password);
 
     // Check if passwordHash exists
     if (!user.password) {
@@ -45,7 +45,7 @@ const login = async (req, res) => {
     if (!isValidPassword) {
       return res.json({
         success: false,
-        message: "Invalid credentials",
+        message: "Invalid credentials.",
       });
     }
 
@@ -57,7 +57,7 @@ const login = async (req, res) => {
         // username: user.username,
       },
       JWT_SECRET,
-      { expiresIn: JWT_EXPIRES_IN }
+      { expiresIn: JWT_EXPIRES_IN },
     );
 
     // Send token to frontend
@@ -69,7 +69,7 @@ const login = async (req, res) => {
     console.error("Login error:", error);
     return res.json({
       success: false,
-      message: "Internal server error",
+      message: "Internal server error.",
     });
   }
 };
