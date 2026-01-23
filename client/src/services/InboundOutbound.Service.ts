@@ -22,8 +22,8 @@ export interface ITStocks {
   id?: number;
   stockId?: number;
   serialNumber: string;
-  PRDate: string;
-  receivedDate: Date;
+  PRDate: string | null;
+  receivedDate: Date | null;
   deployedDate?: Date | null;
   station?: string;
   department?: string;
@@ -120,7 +120,7 @@ export async function fetchAllInbounds(): Promise<FetchingInboundsResponse> {
 }
 
 export async function fetchInbounds(
-  partId: number
+  partId: number,
 ): Promise<FetchingInboundsResponse> {
   try {
     const response = await axios.get(
@@ -129,7 +129,7 @@ export async function fetchInbounds(
         headers: {
           "Content-Type": "application/json",
         },
-      }
+      },
     );
     if (response.status === 200) {
       // console.log("Parts Inbounds Fetched: ", response.data);
@@ -161,10 +161,10 @@ export async function inboundPart(
     lot: string,
     qty: string,
     user: string,
-    date?: string
+    date?: string,
   ) => string,
   print: (value: string) => Promise<boolean>,
-  printLabel: boolean
+  printLabel: boolean,
 ): Promise<InboundOutboundResponse> {
   // Generate ZPL
 
@@ -174,7 +174,7 @@ export async function inboundPart(
       formData.lotNo,
       formData.quantity,
       formData.from,
-      formData.inboundDate
+      formData.inboundDate,
     );
     const success = await print(zpl);
     if (success) {
@@ -204,8 +204,8 @@ export async function inboundPart(
             prevParts.map((p) =>
               p.id === formData.partId
                 ? { ...p, quantity: p.quantity + Number(formData.quantity) }
-                : p
-            )
+                : p,
+            ),
           );
           // RESETTING FORMDATA AFTER INBOUND
           setFormData((prev) => ({
@@ -217,14 +217,14 @@ export async function inboundPart(
             quantity: "1",
           }));
         },
-        import.meta.env.VITE_TIME_OUT
+        import.meta.env.VITE_TIME_OUT,
       );
     } else {
       setTimeout(
         () => {
           alert(response.data.message);
         },
-        import.meta.env.VITE_TIME_OUT
+        import.meta.env.VITE_TIME_OUT,
       );
     }
 
@@ -267,7 +267,7 @@ export async function fetchAllOutbounds(): Promise<FetchingOutboundsResponse> {
 }
 
 export async function fetchOutbounds(
-  partId: number
+  partId: number,
 ): Promise<FetchingOutboundsResponse> {
   try {
     const response = await axios.get(
@@ -276,7 +276,7 @@ export async function fetchOutbounds(
         headers: {
           "Content-Type": "application/json",
         },
-      }
+      },
     );
 
     // console.log("Parts Outbounds Fetched: ", response.data);
@@ -300,7 +300,7 @@ export async function outboundPart(
   fetchTransactions: () => void,
   fetchAllParts: () => void,
   setData: Dispatch<SetStateAction<Part[]>>,
-  setItemDetails: Dispatch<SetStateAction<deployItemType>>
+  setItemDetails: Dispatch<SetStateAction<deployItemType>>,
 ): Promise<InboundOutboundResponse> {
   try {
     const response = await axios.post(`${API_URL}/parts/outbound`, formData, {
@@ -322,8 +322,8 @@ export async function outboundPart(
             prevParts.map((p) =>
               p.id === formData.partId
                 ? { ...p, quantity: p.quantity - Number(formData.quantity) }
-                : p
-            )
+                : p,
+            ),
           );
           // RESETTING FORMDATA AFTER INBOUND
           setFormData((prev) => ({
@@ -339,14 +339,14 @@ export async function outboundPart(
             quantity: "1",
           }));
         },
-        import.meta.env.VITE_TIME_OUT
+        import.meta.env.VITE_TIME_OUT,
       );
     } else {
       setTimeout(
         () => {
           alert(`Error: ${response.data.message}`);
         },
-        import.meta.env.VITE_TIME_OUT
+        import.meta.env.VITE_TIME_OUT,
       );
     }
 
@@ -365,7 +365,7 @@ export async function outboundPart(
 }
 
 export async function fetchITStocks(
-  partId: number
+  partId: number,
 ): Promise<FetchingItemsResponse> {
   try {
     const response = await axios.get(`${API_URL}/parts/fetch-items/${partId}`, {
@@ -388,7 +388,7 @@ export async function fetchITStocks(
 }
 
 export async function addingItem(
-  formData: addItemType
+  formData: addItemType,
 ): Promise<InboundOutboundResponse> {
   try {
     // console.log("data received at service: ", formData);
@@ -413,7 +413,7 @@ export async function addingItem(
 }
 
 export async function updateItem(
-  item: ITStocks
+  item: ITStocks,
 ): Promise<outboundItemResponse> {
   try {
     const response = await axios.put(`${API_URL}/parts/update-item`, item);
@@ -434,12 +434,12 @@ export async function updateItem(
 }
 
 export async function markItemAsAvailable(
-  item: ITStocks
+  item: ITStocks,
 ): Promise<outboundItemResponse> {
   try {
     const response = await axios.put(
       `${API_URL}/parts/mark-item-available/${item.serialNumber}`,
-      item
+      item,
     );
     // console.log("editing user details");
     if (response.status === 200) {
@@ -458,12 +458,12 @@ export async function markItemAsAvailable(
 }
 
 export async function outboundItem(
-  formData: deployItemType
+  formData: deployItemType,
 ): Promise<outboundItemResponse> {
   try {
     const response = await axios.put(
       `${API_URL}/parts/outbound-item/${formData.serialNumber}`,
-      formData
+      formData,
     );
     // console.log("editing user details");
     if (response.status === 200) {
