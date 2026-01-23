@@ -1,4 +1,4 @@
-import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
+import { useState, type Dispatch, type SetStateAction } from "react";
 import {
   markItemAsAvailable,
   updateItem,
@@ -47,10 +47,10 @@ export const ItemStockTable = ({
     remarks: "",
   });
 
-  useEffect(() => {
-    console.log(formData);
-    // console.log("Items: ", stockItems);
-  }, [formData]);
+  // useEffect(() => {
+  //   console.log(formData);
+  //   // console.log("Items: ", stockItems);
+  // }, [formData]);
 
   const HandleSetUpdateStock = (stock: ITStocks) => {
     setToBeUpdated(stock.id!);
@@ -115,7 +115,7 @@ export const ItemStockTable = ({
     }
   };
   const handleChange = (field: string, value: string | Date | null) => {
-    console.log("field: ", value);
+    // console.log("field: ", value);
     setFormData((prev) => ({
       ...prev,
       [field]: value,
@@ -242,6 +242,7 @@ export const ItemStockTable = ({
                           <DatePicker
                             className="w-full text-xs rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                             selected={formData.receivedDate}
+                            name={`${formData.receivedDate}`}
                             onChange={(value: Date | null) =>
                               handleChange("receivedDate", value)
                             }
@@ -263,6 +264,7 @@ export const ItemStockTable = ({
                           <DatePicker
                             className="w-full text-xs rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                             selected={formData.deployedDate}
+                            name={`${formData.deployedDate}`}
                             onChange={(value: Date | null) =>
                               handleChange("deployedDate", value)
                             }
@@ -286,7 +288,7 @@ export const ItemStockTable = ({
                       >
                         {toBeUpdated === stock.id && formData.station ? (
                           <InputFieldSmall
-                            label="PR DATE"
+                            label="STATION"
                             type="text"
                             value={formData.station}
                             required={true}
@@ -308,7 +310,7 @@ export const ItemStockTable = ({
                       >
                         {toBeUpdated === stock.id && formData.department ? (
                           <InputFieldSmall
-                            label="PR DATE"
+                            label="DEPARTMENT"
                             type="text"
                             value={formData.department}
                             required={true}
@@ -324,9 +326,7 @@ export const ItemStockTable = ({
                     </td>
                     <td className="border border-neutral-400 px-3 py-2">
                       <div
-                        className={`flex justify-center items-center flex-col gap-1 ${
-                          stock.from ? null : "text-neutral-400"
-                        }`}
+                        className={`flex justify-center items-center flex-col gap-1 `}
                       >
                         {(toBeUpdated === stock.id && formData.from) ||
                         (toBeUpdated === stock.id && stock.remarks) ===
@@ -342,15 +342,19 @@ export const ItemStockTable = ({
                             autoComplete={`from`}
                           />
                         ) : (
-                          <h6>{stock.from ? stock.from : "N/A"}</h6>
+                          <h6
+                            className={`${
+                              stock.from ? null : "text-neutral-400"
+                            }`}
+                          >
+                            {stock.from ? stock.from : "N/A"}
+                          </h6>
                         )}
                       </div>
                     </td>
                     <td className="border border-neutral-400 px-3 py-2">
                       <div
-                        className={`flex justify-center items-center flex-col gap-1 ${
-                          stock.to ? null : "text-neutral-400"
-                        }`}
+                        className={`flex justify-center items-center flex-col gap-1`}
                       >
                         {(toBeUpdated === stock.id && formData.to) ||
                         (toBeUpdated === stock.id && stock.remarks) ===
@@ -366,7 +370,13 @@ export const ItemStockTable = ({
                             autoComplete={`to`}
                           />
                         ) : (
-                          <h6>{stock.to ? stock.to : "N/A"}</h6>
+                          <h6
+                            className={`${
+                              stock.to ? null : "text-neutral-400"
+                            }`}
+                          >
+                            {stock.to ? stock.to : "N/A"}
+                          </h6>
                         )}
                       </div>
                     </td>

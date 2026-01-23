@@ -322,6 +322,12 @@ const inboundPart = async (req, res) => {
       });
     }
 
+    if (req.body.quantity < 1) {
+      return res.json({
+        message: "Please enter a quantity of 1 or more.",
+      });
+    }
+
     // Check if part exists
     const isPartExisting = await partService.findById(req.body.partId);
 
@@ -427,6 +433,12 @@ const outboundPart = async (req, res) => {
       // console.log("Please fill in all required fields.");
       return res.json({
         message: "Please fill in all required fields.",
+      });
+    }
+
+    if (req.body.quantity < 1) {
+      return res.json({
+        message: "Please enter a quantity of 1 or more.",
       });
     }
 
