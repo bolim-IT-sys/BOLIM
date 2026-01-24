@@ -640,7 +640,7 @@ const markItemAvailable = async (req, res) => {
   try {
     const serialNumber = req.params.serialNumber;
 
-    // console.log("Data in backend: ", req.body);
+    console.log("Data in backend: ", req.body);
 
     if (
       !req.body.from ||
@@ -749,6 +749,7 @@ const outboundItem = async (req, res) => {
       !req.body.deployedDate ||
       !req.body.station ||
       !req.body.department ||
+      !req.body.reason ||
       !req.body.remarks
     ) {
       return res.json({

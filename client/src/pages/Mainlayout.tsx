@@ -41,6 +41,7 @@ export default function Mainlayout() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // SAVING THE SIDEBAR STATE ON LOCALSTORAGE
     localStorage.setItem("showSideBar", JSON.stringify(showSideBar));
   }, [showSideBar]);
 
@@ -112,7 +113,7 @@ export default function Mainlayout() {
           // console.log(`Sorting by part number and by ${order}`);
           const sorted = sortByPartNumber(
             partWithInboundOutbound,
-            sort === "partNumber" && order === "asc" ? "asc" : "desc"
+            sort === "partNumber" && order === "asc" ? "asc" : "desc",
           );
 
           const pins = sorted.filter((item) => item.type === "pin");
@@ -130,7 +131,7 @@ export default function Mainlayout() {
           // console.log(`Sorting by stocks and by ${order}`);
           const sorted = sortByStocks(
             partWithInboundOutbound,
-            sort === "stocks" && order === "asc" ? "desc" : "asc"
+            sort === "stocks" && order === "asc" ? "desc" : "asc",
           );
 
           const pins = sorted.filter((item) => item.type === "pin");
@@ -144,7 +145,7 @@ export default function Mainlayout() {
           // console.log(`Sorting by unit price and by ${order}`);
           const sorted = sortByPrice(
             partWithInboundOutbound,
-            sort === "unitPrice" && order === "asc" ? "desc" : "asc"
+            sort === "unitPrice" && order === "asc" ? "desc" : "asc",
           );
 
           const pins = sorted.filter((item) => item.type === "pin");
@@ -158,7 +159,7 @@ export default function Mainlayout() {
           // console.log(`Sorting by part number and by ${order}`);
           const sorted = sortByPartNumber(
             partWithInboundOutbound,
-            sort === "partNumber" && order === "asc" ? "desc" : "asc"
+            sort === "partNumber" && order === "asc" ? "desc" : "asc",
           );
 
           const pins = sorted.filter((item) => item.type === "pin");
@@ -196,7 +197,7 @@ export default function Mainlayout() {
         () => {
           setIsFetching(false);
         },
-        import.meta.env.VITE_TIME_OUT
+        import.meta.env.VITE_TIME_OUT,
       );
     }
   }, [fetchAllParts]);

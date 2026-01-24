@@ -1,3 +1,4 @@
+// FOR IT STOCKS MANAGEMENT PAGE
 import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
 import { type Part } from "../../services/Part.Service";
 import { AddingPart } from "../../components/modals/Parts/AddingPart";
@@ -57,7 +58,7 @@ export default function ITStocks() {
             item.category.toLowerCase().includes(term) ||
             String(item.unitPrice).toLowerCase().includes(term)
           );
-        })
+        }),
       );
     } else {
       return;

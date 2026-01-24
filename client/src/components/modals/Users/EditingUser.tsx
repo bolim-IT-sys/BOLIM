@@ -1,4 +1,5 @@
-import { useState } from "react";
+// FOR EDITING USER
+import { useEffect, useState } from "react";
 import InputField from "../../InputField";
 import { Modal } from "../../Modal";
 import SuccessButton from "../../button/SuccessButton";
@@ -9,6 +10,7 @@ import {
   type User,
 } from "../../../services/User.Service";
 import { useOutletContext } from "react-router-dom";
+import Swal from "sweetalert2";
 
 interface EditingProps {
   user: User;
@@ -23,12 +25,24 @@ export const EditingUser = ({ user, fetchAllUsers }: EditingProps) => {
   const { fetchUserDetails } = useOutletContext<ContextType>();
   const [modalShow, setModalShow] = useState<boolean>(false);
   const [formData, setFormData] = useState<CreateUserType>({
-    username: user.username,
+    username: "",
     password: "",
-    pins: user.pins,
-    it_stocks: user.it_stocks,
-    materials: user.materials,
+    pins: 0,
+    it_stocks: 0,
+    materials: 0,
   });
+
+  // PUTTING USER DETAILS ON CLICK
+  useEffect(() => {
+    setFormData((prev) => ({
+      ...prev,
+      username: user.username,
+      password: "",
+      pins: user.pins,
+      it_stocks: user.it_stocks,
+      materials: user.materials,
+    }));
+  }, [user]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const handleChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -41,42 +55,62 @@ export const EditingUser = ({ user, fetchAllUsers }: EditingProps) => {
       if (!id) return;
 
       const result = await editUser(id, formData);
-      // console.log("creating part");
-
       if (result.success) {
         setTimeout(
           () => {
-            alert(result.message);
+            setModalShow(false);
+            Swal.fire({
+              icon: "success",
+              title: `UPDATE SUCCESS`,
+              text: result.message,
+              timer: 5000,
+              showConfirmButton: false,
+            }).then(() => {});
             fetchAllUsers();
             fetchUserDetails();
-            setModalShow(false);
-            setFormData({
-              username: formData.username,
-              password: "",
-              pins: formData.pins,
-              it_stocks: formData.it_stocks,
-              materials: formData.materials,
-            });
           },
-          import.meta.env.VITE_TIME_OUT
+          import.meta.env.VITE_TIME_OUT,
         );
         // Redirect or update UI
       } else {
         setTimeout(
           () => {
-            alert(`${result.message}`);
+            setModalShow(false);
+            Swal.fire({
+              icon: "error",
+              title: "UPDATE FAILED",
+              text: result.message,
+            }).then(() => {
+              setModalShow(true);
+              setFormData((prev) => ({
+                ...prev,
+                username: user.username,
+                password: "",
+                pins: user.pins,
+                it_stocks: user.it_stocks,
+                materials: user.materials,
+              }));
+            });
           },
-          import.meta.env.VITE_TIME_OUT
+          import.meta.env.VITE_TIME_OUT,
         );
       }
     } catch (error) {
       console.error("Unexpecter error occured: ", error);
+      setModalShow(false);
+      Swal.fire({
+        icon: "error",
+        title: "UPDATE FAILED",
+        text: `Unexpecter error occured: ${error}`,
+      }).then(() => {
+        setModalShow(true);
+      });
     } finally {
       setTimeout(
         () => {
           setIsLoading(false);
         },
-        import.meta.env.VITE_TIME_OUT
+        import.meta.env.VITE_TIME_OUT,
       );
     }
   };
@@ -116,7 +150,13 @@ export const EditingUser = ({ user, fetchAllUsers }: EditingProps) => {
         isOpen={modalShow}
         onClose={() => setModalShow(false)}
         size="md"
-        title={`EDIT ${user.username.toLocaleUpperCase()} DETAILS `}
+        title={
+          <>
+            <h3 className="text-start">
+              EDIT {user.username.toLocaleUpperCase()} DETAILS
+            </h3>
+          </>
+        }
         footer={
           <>
             <div className="h-10 flex gap-2 ">

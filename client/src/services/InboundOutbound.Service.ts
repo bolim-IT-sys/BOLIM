@@ -28,6 +28,7 @@ export interface ITStocks {
   deployedDate?: Date | null;
   station?: string;
   department?: string;
+  reason?: string;
   from?: string;
   to?: string;
   remarks?: string;
@@ -61,6 +62,7 @@ export interface deployItemType {
   deployedDate: string;
   station: string;
   department: string;
+  reason: string;
   remarks: string;
 }
 
@@ -376,7 +378,7 @@ export async function outboundPart(
           setOutboundShow(false);
           Swal.fire({
             icon: "error",
-            title: "Inbound Failed",
+            title: "Outbound Failed",
             text: response.data.message,
           }).then(() => {
             setModalShow(true);
