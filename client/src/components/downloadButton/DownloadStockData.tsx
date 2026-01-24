@@ -1,3 +1,4 @@
+// FOR DOWNLOADING STOCK ITEMS IN EXCEL
 import SuccessButton from "../button/SuccessButton";
 import type { ITStocks } from "../../services/InboundOutbound.Service";
 import type { Part } from "../../services/Part.Service";
@@ -29,7 +30,7 @@ export const DownloadStockData = ({ data, item, isLoading }: DataProp) => {
 
       const a = document.createElement("a");
       a.href = url;
-      a.download = `${item.partNumber.toUpperCase()}_SUMMARY.xlsx`;
+      a.download = `${item.partNumber.toUpperCase()} SUMMARY.xlsx`;
       a.click();
       window.URL.revokeObjectURL(url);
     } catch (err) {

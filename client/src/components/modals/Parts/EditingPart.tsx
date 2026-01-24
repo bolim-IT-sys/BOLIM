@@ -1,3 +1,4 @@
+// FOR EDITING INVENTORY STOCKS
 import { useRef, useState } from "react";
 import InputField from "../../InputField";
 import { Modal } from "../../Modal";
@@ -8,6 +9,7 @@ import {
   type Part,
 } from "../../../services/Part.Service";
 import SecondaryButton from "../../button/SecondaryButton";
+import Swal from "sweetalert2";
 
 interface EditingProps {
   fetchAllParts: () => void;
@@ -70,9 +72,16 @@ export const EditingPart = ({ fetchAllParts, item, type }: EditingProps) => {
       if (result.success) {
         setTimeout(
           () => {
-            alert(result.message);
+            Swal.fire({
+              icon: "success",
+              title: `UPDATE SUCCESS`,
+              text: result.message,
+              timer: 5000,
+              showConfirmButton: false,
+            }).then(() => {
+              setModalShow(false);
+            });
             fetchAllParts();
-            setModalShow(false);
             setFormData({
               type: formData.type,
               partNumber: formData.partNumber,
@@ -82,25 +91,34 @@ export const EditingPart = ({ fetchAllParts, item, type }: EditingProps) => {
               company: formData.company,
             });
           },
-          import.meta.env.VITE_TIME_OUT
+          import.meta.env.VITE_TIME_OUT,
         );
         // Redirect or update UI
       } else {
         setTimeout(
           () => {
-            alert(`${result.message}`);
+            Swal.fire({
+              icon: "error",
+              title: "UPDATE FAILED",
+              text: result.message,
+            });
           },
-          import.meta.env.VITE_TIME_OUT
+          import.meta.env.VITE_TIME_OUT,
         );
       }
     } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "UPDATE FAILED",
+        text: `Unexpecter error occured: ${error}`,
+      });
       console.error("Unexpecter error occured: ", error);
     } finally {
       setTimeout(
         () => {
           setIsLoading(false);
         },
-        import.meta.env.VITE_TIME_OUT
+        import.meta.env.VITE_TIME_OUT,
       );
     }
   };
@@ -127,15 +145,21 @@ export const EditingPart = ({ fetchAllParts, item, type }: EditingProps) => {
         isOpen={modalShow}
         onClose={() => setModalShow(false)}
         size="md"
-        title={`EDIT ${
-          type === "pin"
-            ? "PIN"
-            : type === "it"
-              ? "ITEM"
-              : type === "material"
-                ? "MATERIAL"
-                : "INVALID TYPE"
-        } DETAILS `}
+        title={
+          <>
+            <h3 className="text-start">
+              EDIT{" "}
+              {type === "pin"
+                ? "PIN"
+                : type === "it"
+                  ? "ITEM"
+                  : type === "material"
+                    ? "MATERIAL"
+                    : "INVALID TYPE"}{" "}
+              DETAILS
+            </h3>
+          </>
+        }
         footer={
           <>
             <div className="h-10 flex gap-2">

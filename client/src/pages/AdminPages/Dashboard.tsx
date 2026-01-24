@@ -1,3 +1,4 @@
+// FOR DASHBOARD PAGE
 import type { Part } from "../../services/Part.Service";
 import { useOutletContext } from "react-router-dom";
 import InputField from "../../components/InputField";
@@ -117,7 +118,7 @@ export default function Dashboard() {
 
       const totalOutbound = filteredOutbounds.reduce(
         (sum, outbound) => sum + outbound.quantity,
-        0
+        0,
       );
 
       return {
@@ -130,7 +131,7 @@ export default function Dashboard() {
 
     // Filter parts that have both inbounds and outbounds
     const partsWithBoth = processedParts.filter(
-      (part) => part.totalOutbound > 0
+      (part) => part.totalOutbound > 0,
     );
 
     // Sort by total outbound (usage) descending

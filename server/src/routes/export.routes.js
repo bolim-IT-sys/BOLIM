@@ -519,6 +519,7 @@ router.post("/export-items-to-excel", async (req, res) => {
         Department: item.department ? item.department : "N/A",
         "Outbound Personel": item.from ? item.from : "N/A",
         Receiver: item.to ? item.to : "N/A",
+        reason: item.reason ? item.reason : "N/A",
         Remarks: item.remarks.toUpperCase(),
       };
     });
@@ -539,6 +540,7 @@ router.post("/export-items-to-excel", async (req, res) => {
           "Department",
           "Outbound Personel",
           "Receiver",
+          "Reason",
           "Remarks",
         ],
       ],
@@ -555,6 +557,7 @@ router.post("/export-items-to-excel", async (req, res) => {
       "a6e0f7", // Department
       "a6e0f7", // Outbound Personel
       "a6e0f7", // Receiver
+      "a6e0f7", // Reason
       "49abf5", // Remarks
     ];
 
@@ -608,7 +611,7 @@ router.post("/export-items-to-excel", async (req, res) => {
           },
         };
 
-        if (C < 8) {
+        if (C < 9) {
           // FIX: Better validation of cell value
           const cellValue = worksheet[address].v;
           const strValue = String(cellValue).toUpperCase();
@@ -625,7 +628,7 @@ router.post("/export-items-to-excel", async (req, res) => {
         }
 
         // === MAKE "Remarks" GREEN IF === "available" and RED if not ===
-        if (C === 8) {
+        if (C === 9) {
           // FIX: Better validation of cell value
           const cellValue = worksheet[address].v;
           const strValue = String(cellValue).toLowerCase();
@@ -663,6 +666,7 @@ router.post("/export-items-to-excel", async (req, res) => {
       { wch: 25 }, // Department
       { wch: 15 }, // Outbound Personel
       { wch: 15 }, // Receiver
+      { wch: 45 }, // Reason
       { wch: 20 }, // Remarks
     ];
 

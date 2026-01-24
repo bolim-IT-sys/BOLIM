@@ -1,3 +1,4 @@
+// FOR PIN MANAGEMENT PAGE
 import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
 import { type Part } from "../../services/Part.Service";
 import { AddingPart } from "../../components/modals/Parts/AddingPart";
@@ -57,7 +58,7 @@ export default function Pins() {
             part.category.toLowerCase().includes(term) ||
             String(part.unitPrice).toLowerCase().includes(term)
           );
-        })
+        }),
       );
     } else {
       return;

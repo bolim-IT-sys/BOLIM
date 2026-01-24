@@ -34,7 +34,11 @@ export const ImageModal = ({ part }: EditingProps) => {
         isOpen={modalShow}
         onClose={() => setModalShow(false)}
         size="md"
-        title={part.partNumber}
+        title={
+          <>
+            <h3 className="text-start">{part.partNumber}</h3>
+          </>
+        }
         footer={
           <>
             <SecondaryButton text="CLOSE" onClick={() => setModalShow(false)} />

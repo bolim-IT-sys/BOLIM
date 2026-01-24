@@ -18,11 +18,11 @@ type Props = {
     lot: string,
     qty: string,
     user: string,
-    date?: string
+    date?: string,
   ) => string;
   print: (
     value1: string,
-    value2?: Dispatch<SetStateAction<boolean>>
+    value2?: Dispatch<SetStateAction<boolean>>,
   ) => Promise<boolean>;
   loadingPrinters: boolean;
   setLoadingPrinters: Dispatch<SetStateAction<boolean>>;
@@ -55,10 +55,12 @@ const ZebraPrint = ({
 
   const handleChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
+    // FOR SAVING THE CONFIGURATION ON LOCALSTORAGE
     localStorage.setItem(field, value);
   };
 
   useEffect(() => {
+    // AUTOMATIC DETECTION IF PRINTER IS CONNECTED
     const initialize = async () => {
       const available = await checkBrowserPrint();
       if (available) {
@@ -68,6 +70,7 @@ const ZebraPrint = ({
     initialize();
   }, [checkBrowserPrint, getPrinters, setLoadingPrinters]);
 
+  // HANDLING SAMPLE PRINTING
   const handlePrint = async (): Promise<void> => {
     const zpl = generateZPL("SAMPLE", "SAMPLE", "SAMPLE", "SAMPLE", "SAMPLE");
     const success = await print(zpl, setIsPrinting);

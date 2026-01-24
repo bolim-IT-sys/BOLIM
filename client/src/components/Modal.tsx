@@ -53,7 +53,7 @@ const Modal = ({
       <div
         className={`fixed h-dvh w-dvw px-3 left-0 top-0 flex justify-center items-center ${isAnimating ? "modal_fade_in " : "modal_fade_out"}`}
         onClick={onClose}
-        style={{ backgroundColor: "rgb(0, 0, 0,.5)", zIndex: 99999 }}
+        style={{ backgroundColor: "rgb(0, 0, 0,.5)", zIndex: 999 }}
       >
         <div
           className={`bg-neutral-50 p-5 rounded visibl w-full ${sizeClass} ${isAnimating ? "modal_fade_up" : "modal_fade_down"}`}

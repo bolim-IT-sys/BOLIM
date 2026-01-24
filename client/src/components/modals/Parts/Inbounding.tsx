@@ -1,3 +1,4 @@
+// THIS IS FOR INBOUNDING STOCKS ON INVENTORY
 import SuccessButton from "../../button/SuccessButton";
 import SecondaryButton from "../../button/SecondaryButton";
 import InputField from "../../InputField";
@@ -71,6 +72,7 @@ export const Inbounding = ({
     checkBrowserPrint,
   } = UseZebraPrinter();
 
+  // DETECTING ZEBRA PRINTER AVAILABLE ON RENDER
   useEffect(() => {
     const initialize = async () => {
       const available = await checkBrowserPrint();
@@ -81,10 +83,10 @@ export const Inbounding = ({
     initialize();
   }, [checkBrowserPrint, getPrinters]);
 
+  // SETTING DATA FOR STOCK ITEMS
   useEffect(() => {
     setItemDetails((prev) => ({
       ...prev,
-      // from: formData.from!,
       serialNumber: `${item.partNumber} ${item.inbounds!.length + 1}`,
       receivedDate: formData.inboundDate!,
       PRDate: prev.PRDate,
@@ -111,7 +113,7 @@ export const Inbounding = ({
             setFormData,
             generateZPL,
             print,
-            printLabel
+            printLabel,
           );
         }
       } else {
@@ -126,7 +128,7 @@ export const Inbounding = ({
           setFormData,
           generateZPL,
           print,
-          printLabel
+          printLabel,
         );
       }
 
@@ -138,11 +140,12 @@ export const Inbounding = ({
         () => {
           setInBounding(false);
         },
-        import.meta.env.VITE_TIME_OUT
+        import.meta.env.VITE_TIME_OUT,
       );
     }
   };
 
+  // CHECKING OF ALL FIELDS ARE FILLED TO ENABLE SUBMIT BUTTON
   const inboundFilled = () => {
     return (
       formData.quantity === "" ||
@@ -204,6 +207,7 @@ export const Inbounding = ({
         }
       >
         {showPrinter ? (
+          // FOR ZEBRA PRINTER CONFIGURATION
           <ZebraPrint
             setShowPrinter={setShowPrinter}
             printers={printers}
@@ -221,6 +225,7 @@ export const Inbounding = ({
         ) : (
           <div className="text-start">
             {type === "pin" ? (
+              // THIS FIELD WHEN ONLY DISPLAY IF THE INVENTORY IS FOR PINS
               <div className="mb-1">
                 <label
                   htmlFor="LOT NUMBER"
@@ -255,6 +260,7 @@ export const Inbounding = ({
             </div>
             {type === "it" ? (
               <>
+                {/* THIS FIELDS WILL ONLY DISPLAY IF THE INVENTORY IS FOR IT STOCKS */}
                 <div className="mb-1">
                   <label
                     htmlFor="SERIAL NUMBER"
@@ -327,6 +333,7 @@ export const Inbounding = ({
               />
             </div>
             {type === "pin" ? (
+              // THIS FEATURE FOR ZEBRA PRINTER WILL ONLY DISPLAY ON PIN INVENTORY
               <div className="flex items-center h-10 gap-1 mt-2">
                 <SwitchButton
                   checked={printLabel}
