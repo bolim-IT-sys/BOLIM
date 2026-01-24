@@ -1,3 +1,4 @@
+// FOR OTHER INVENTORY BUT ITS NOT IMPLEMENTED
 import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
 import { type Part } from "../../services/Part.Service";
 import { AddingPart } from "../../components/modals/Parts/AddingPart";
@@ -60,7 +61,7 @@ export default function Others() {
             part.category.toLowerCase().includes(term) ||
             String(part.unitPrice).toLowerCase().includes(term)
           );
-        })
+        }),
       );
     } else {
       return;

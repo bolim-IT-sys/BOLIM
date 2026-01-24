@@ -48,7 +48,7 @@ const find = async (name) => {
     });
     console.log(
       "Checking parts existense... ",
-      parts ? `Found` : "Cannot Found"
+      parts ? `Found` : "Cannot Found",
     );
     return parts;
   } catch (error) {
@@ -76,9 +76,9 @@ const findPartByPartname = async (name) => {
         sequelize.fn(
           "JSON_CONTAINS",
           sequelize.col("availableItems"),
-          JSON.stringify(name)
+          JSON.stringify(name),
         ),
-        1
+        1,
       ),
     });
     // console.log("Checking name: ", name);
@@ -371,6 +371,10 @@ const updateItem = async (itemData) => {
       updateData.department = itemData.department;
     }
 
+    if (itemData.reason) {
+      updateData.reason = itemData.reason;
+    }
+
     if (itemData.from) {
       updateData.from = itemData.from;
     }
@@ -454,6 +458,9 @@ const deployItem = async (itemData) => {
     }
     if (itemData.department) {
       updateData.department = itemData.department;
+    }
+    if (itemData.reason) {
+      updateData.reason = itemData.reason;
     }
     if (itemData.remarks) {
       updateData.remarks = itemData.remarks;

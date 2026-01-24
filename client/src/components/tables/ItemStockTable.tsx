@@ -11,6 +11,7 @@ import SecondaryButton from "../button/SecondaryButton";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { formatStockDate } from "../../helper/date.helper";
+import Swal from "sweetalert2";
 
 type Props = {
   setSerialNumber: Dispatch<SetStateAction<string>>;
@@ -42,6 +43,7 @@ export const ItemStockTable = ({
     deployedDate: null,
     station: "",
     department: "",
+    reason: "",
     from: "",
     to: "",
     remarks: "",
@@ -53,6 +55,7 @@ export const ItemStockTable = ({
   // }, [formData]);
 
   const HandleSetUpdateStock = (stock: ITStocks) => {
+    // SETTING FORMDATA TO BE VALUE OF THE SELECTED STOCKS
     setToBeUpdated(stock.id!);
 
     setFormData((prev) => ({
@@ -65,6 +68,7 @@ export const ItemStockTable = ({
       deployedDate: stock.deployedDate,
       station: stock.station,
       department: stock.department,
+      reason: stock.reason,
       from: stock.from,
       to: stock.to,
       remarks: stock.remarks,
@@ -72,25 +76,57 @@ export const ItemStockTable = ({
   };
 
   const HandleSubmit = async () => {
+    // HANDLES SENDING CHANGES TO THE BACKEND
     try {
       setIsSaving(true);
       const response = await updateItem(formData);
 
       if (response.success) {
-        fetchTransactions();
-        setToBeUpdated(0);
-        alert(response.message);
+        setTimeout(
+          () => {
+            fetchTransactions();
+            setToBeUpdated(0);
+            Swal.fire({
+              icon: "success",
+              title: `UPDATE SUCCESS`,
+              text: response.message,
+              timer: 5000,
+              showConfirmButton: false,
+            });
+          },
+          import.meta.env.VITE_TIME_OUT,
+        );
       } else {
-        alert(response.message);
+        setTimeout(
+          () => {
+            Swal.fire({
+              icon: "error",
+              title: "UPDATE FAILED",
+              text: response.message,
+            });
+          },
+          import.meta.env.VITE_TIME_OUT,
+        );
       }
     } catch (err) {
-      console.log("Error: ", err);
+      setTimeout(
+        () => {
+          console.log("Error: ", err);
+        },
+        import.meta.env.VITE_TIME_OUT,
+      );
     } finally {
-      setIsSaving(false);
+      setTimeout(
+        () => {
+          setIsSaving(false);
+        },
+        import.meta.env.VITE_TIME_OUT,
+      );
     }
   };
 
   const UpdateItemStatus = async (stock: ITStocks) => {
+    // HANDLES CHANGING ITEM'S REMARKS BETWEEN "AVAILABLE" AND "DEPLOYED"
     if (stock.remarks === "available") {
       setSerialNumber(stock.serialNumber);
       setModalShow(false);
@@ -98,20 +134,38 @@ export const ItemStockTable = ({
       return;
     }
 
-    const confirmed = window.confirm(
-      "Are you sure you want to mark this stock as avaiable?",
-    );
+    const resultConfirm = await Swal.fire({
+      icon: "warning",
+      title: `UPDATE STATUS?`,
+      text: "Mark this stock as avaiable.",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it",
+      cancelButtonText: "Cancel",
+      confirmButtonColor: "#d33",
+    });
 
-    if (!confirmed) return;
+    if (!resultConfirm.isConfirmed) {
+      return;
+    }
 
     const response = await markItemAsAvailable(stock);
     if (response.success) {
       // FETCHED LATEST DATA
       fetchTransactions();
       fetchAllParts();
-      alert(`stock ${stock.serialNumber} is now available for outbound.`);
+      Swal.fire({
+        icon: "success",
+        title: `UPDATE SUCCESS`,
+        text: `Stock ${stock.serialNumber} is now available for outbound.`,
+        timer: 5000,
+        showConfirmButton: false,
+      });
     } else {
-      alert(response.message);
+      Swal.fire({
+        icon: "error",
+        title: "UPDATE FAILED",
+        text: response.message,
+      });
     }
   };
   const handleChange = (field: string, value: string | Date | null) => {
@@ -122,6 +176,7 @@ export const ItemStockTable = ({
     }));
   };
 
+  // CHECKING IT THERE'S CHANGES TO ENABLE THE BUTTON
   const NoChanges = (stock: ITStocks) => {
     return (
       stock.serialNumber === formData.serialNumber &&
@@ -132,13 +187,14 @@ export const ItemStockTable = ({
         new Date(formData.deployedDate!).toLocaleDateString() &&
       stock.station === formData.station &&
       stock.department === formData.department &&
+      stock.reason === formData.reason &&
       stock.from === formData.from &&
       stock.to === formData.to
     );
   };
   return (
     <>
-      <table className="w-250 md:w-full table-fixed border border-gray-300">
+      <table className="w-400 md:w-20/10 lg:w-15/10 table-fixed border border-gray-300">
         <thead className="sticky top-0 bg-sky-200 ">
           <tr>
             <th className="w-4/30 bg-sky-200 border border-neutral-400 px-3 py-2 text-neutral-900 text-center">
@@ -165,6 +221,9 @@ export const ItemStockTable = ({
             <th className="bg-sky-200 border border-neutral-400 px-3 py-2 text-neutral-900 text-center">
               <h5>RECIEVER</h5>
             </th>
+            <th className="md:w-3/20 lg:w-2/10  bg-sky-200 border border-neutral-400 px-3 py-2 text-neutral-900 text-center">
+              <h5>REASON</h5>
+            </th>
             <th className="bg-sky-2 00 border border-neutral-400 px-3 py-2 text-neutral-900 text-center">
               <h5>REMARKS</h5>
             </th>
@@ -176,7 +235,7 @@ export const ItemStockTable = ({
         <tbody>
           {isLoading ? (
             <tr>
-              <td colSpan={10} className="border border-neutral-400 px-3 py-2">
+              <td colSpan={11} className="border border-neutral-400 px-3 py-2">
                 <div className="flex justify-center items-center gap-1">
                   <h5>
                     <i className="bx bx-loader-circle bx-spin" />
@@ -382,6 +441,32 @@ export const ItemStockTable = ({
                     </td>
                     <td className="border border-neutral-400 px-3 py-2">
                       <div
+                        className={`w-full flex justify-center items-center flex-col gap-1 `}
+                      >
+                        {toBeUpdated === stock.id && formData.department ? (
+                          <InputFieldSmall
+                            label="REASON"
+                            type="text"
+                            value={formData.reason ? formData.reason : ""}
+                            required={true}
+                            onChange={(value: string) =>
+                              handleChange("reason", value)
+                            }
+                            autoComplete={`reason`}
+                          />
+                        ) : (
+                          <h6
+                            className={`${
+                              stock.reason ? null : "text-neutral-400"
+                            }`}
+                          >
+                            {stock.reason ? stock.reason : "N/A"}
+                          </h6>
+                        )}
+                      </div>
+                    </td>
+                    <td className="border border-neutral-400 px-3 py-2">
+                      <div
                         className={`flex justify-center items-center flex-col gap-1 p-1.5 rounded ${
                           stock.remarks === "available"
                             ? "hover:bg-emerald-500 hover:text-neutral-50 text-green-700"
@@ -425,7 +510,7 @@ export const ItemStockTable = ({
               ) : (
                 <tr>
                   <td
-                    colSpan={10}
+                    colSpan={11}
                     className="border border-neutral-400 px-3 py-2"
                   >
                     <div className="flex justify-center items-center gap-1">

@@ -1,3 +1,4 @@
+// USER MANAGEMENT PAGE
 import { useEffect, useState } from "react";
 import { DataPagination } from "./Components/DataPagination";
 import InputField from "../../components/InputField";
@@ -6,6 +7,7 @@ import DangerButton from "../../components/button/DangerButton";
 import { AddingUser } from "../../components/modals/Users/AddingUser";
 import { fetchUsers, removeUser, type User } from "../../services/User.Service";
 import { EditingUser } from "../../components/modals/Users/EditingUser";
+import Swal from "sweetalert2";
 
 export default function Users() {
   const [users, setUsers] = useState<User[]>([]);
@@ -41,7 +43,7 @@ export default function Users() {
         () => {
           setIsLoading(false);
         },
-        import.meta.env.VITE_TIME_OUT
+        import.meta.env.VITE_TIME_OUT,
       );
     }
   };
@@ -57,7 +59,7 @@ export default function Users() {
           const term = searchTerm.toLowerCase();
 
           return user.username.toLowerCase().includes(term);
-        })
+        }),
       );
     } else {
       return;
@@ -80,11 +82,17 @@ export default function Users() {
   ]);
 
   const handleDelete = async (id: number) => {
-    const isConfirm = window.confirm(
-      `Are you sure you want to remove this user? This action cannot be undone.`
-    );
+    const resultConfirm = await Swal.fire({
+      icon: "warning",
+      title: `Delete User?`,
+      text: "This action cannot be undone.",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it",
+      cancelButtonText: "Cancel",
+      confirmButtonColor: "#d33",
+    });
 
-    if (!isConfirm) {
+    if (!resultConfirm.isConfirmed) {
       return;
     }
 
@@ -96,27 +104,43 @@ export default function Users() {
       if (result.success) {
         setTimeout(
           () => {
-            alert(`User removed successfully.`);
-            fetchAllUsers();
+            Swal.fire({
+              icon: "success",
+              title: "Deleted",
+              text: `${result.message}`,
+              timer: 5000,
+              showConfirmButton: false,
+            }).then(() => {
+              fetchAllUsers();
+            });
           },
-          import.meta.env.VITE_TIME_OUT
+          import.meta.env.VITE_TIME_OUT,
         );
       } else {
         setTimeout(
           () => {
-            alert(result.message);
+            Swal.fire({
+              icon: "error",
+              title: "Delete Failed",
+              text: result.message,
+            });
           },
-          import.meta.env.VITE_TIME_OUT
+          import.meta.env.VITE_TIME_OUT,
         );
       }
     } catch (error) {
       console.error("Error occured: ", error);
+      Swal.fire({
+        icon: "error",
+        title: "Delete Failed",
+        text: `Error occured: ${error}`,
+      });
     } finally {
       setTimeout(
         () => {
           setIsDeleting(0);
         },
-        import.meta.env.VITE_TIME_OUT
+        import.meta.env.VITE_TIME_OUT,
       );
     }
   };

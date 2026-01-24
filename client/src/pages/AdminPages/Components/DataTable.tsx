@@ -1,3 +1,4 @@
+// USED AS MAIN TABLE IN ALL INVENTORY
 import { useState, type Dispatch, type SetStateAction } from "react";
 import {
   currentMonth,
@@ -26,6 +27,7 @@ import {
   computeStocks,
   computeUrgentRequest,
 } from "../../../helper/table.helper";
+import Swal from "sweetalert2";
 
 type Props = {
   data: Part[];
@@ -47,7 +49,7 @@ export const DataTable = ({
   const order = searchParams.get("order") || "asc";
 
   const [sortOrder, setSortOrder] = useState<"asc" | "desc" | string>(
-    `${order}`
+    `${order}`,
   );
   const [sortBy, setSortBy] = useState<string>(sort);
   const [isDeleting, setIsDeleting] = useState<number>(0);
@@ -55,59 +57,60 @@ export const DataTable = ({
   const year = currentYear();
   const month = currentMonth();
 
+  // FOR SORTING DATA
   const handleSortByPartNumber = () => {
     const sorted = sortByPartNumber(
       data,
-      sortBy === "partNumber" && sortOrder === "asc" ? "desc" : "asc"
+      sortBy === "partNumber" && sortOrder === "asc" ? "desc" : "asc",
     );
     // console.log("Sorted Parts by Part Number: ", sorted);
     const newParams = new URLSearchParams(searchParams);
     newParams.set("sort", "partNumber");
     newParams.set(
       "order",
-      sortBy === "partNumber" && sortOrder === "asc" ? "desc" : "asc"
+      sortBy === "partNumber" && sortOrder === "asc" ? "desc" : "asc",
     );
     setSearchParams(newParams);
 
     setSortBy("partNumber");
     setData(sorted);
     setSortOrder(
-      sortBy === "partNumber" && sortOrder === "asc" ? "desc" : "asc"
+      sortBy === "partNumber" && sortOrder === "asc" ? "desc" : "asc",
     );
   };
 
   const handleSortByUnitPrice = () => {
     const sorted = sortByPrice(
       data,
-      sortBy === "unitPrice" && sortOrder === "asc" ? "asc" : "desc"
+      sortBy === "unitPrice" && sortOrder === "asc" ? "asc" : "desc",
     );
     // console.log("Sorted Parts by Unit Price: ", sorted, " by: ", sortOrder);
     const newParams = new URLSearchParams(searchParams);
     newParams.set("sort", "unitPrice");
     newParams.set(
       "order",
-      sortBy === "unitPrice" && sortOrder === "asc" ? "desc" : "asc"
+      sortBy === "unitPrice" && sortOrder === "asc" ? "desc" : "asc",
     );
     setSearchParams(newParams);
 
     setSortBy("unitPrice");
     setData(sorted);
     setSortOrder(
-      sortBy === "unitPrice" && sortOrder === "asc" ? "desc" : "asc"
+      sortBy === "unitPrice" && sortOrder === "asc" ? "desc" : "asc",
     );
   };
 
   const handleSortByStocks = () => {
     const sorted = sortByStocks(
       data,
-      sortBy === "stocks" && sortOrder === "asc" ? "asc" : "desc"
+      sortBy === "stocks" && sortOrder === "asc" ? "asc" : "desc",
     );
     // console.log("Sorted Parts by QTY: ", sorted);
     const newParams = new URLSearchParams(searchParams);
     newParams.set("sort", "stocks");
     newParams.set(
       "order",
-      sortBy === "stocks" && sortOrder === "asc" ? "desc" : "asc"
+      sortBy === "stocks" && sortOrder === "asc" ? "desc" : "asc",
     );
     setSearchParams(newParams);
 
@@ -119,143 +122,157 @@ export const DataTable = ({
   const handleSortBySecurementRate = () => {
     const sorted = sortBySecurementRate(
       data,
-      sortBy === "securementRate" && sortOrder === "asc" ? "asc" : "desc"
+      sortBy === "securementRate" && sortOrder === "asc" ? "asc" : "desc",
     );
     // console.log("Sorted Parts by QTY: ", sorted);
     const newParams = new URLSearchParams(searchParams);
     newParams.set("sort", "securementRate");
     newParams.set(
       "order",
-      sortBy === "securementRate" && sortOrder === "asc" ? "desc" : "asc"
+      sortBy === "securementRate" && sortOrder === "asc" ? "desc" : "asc",
     );
     setSearchParams(newParams);
 
     setSortBy("securementRate");
     setData(sorted);
     setSortOrder(
-      sortBy === "securementRate" && sortOrder === "asc" ? "desc" : "asc"
+      sortBy === "securementRate" && sortOrder === "asc" ? "desc" : "asc",
     );
   };
 
   const handleSortByExcessInsufficient = () => {
     const sorted = sortByExcessInsufficient(
       data,
-      sortBy === "excessInsufficient" && sortOrder === "asc" ? "asc" : "desc"
+      sortBy === "excessInsufficient" && sortOrder === "asc" ? "asc" : "desc",
     );
     // console.log("Sorted Parts by QTY: ", sorted);
     const newParams = new URLSearchParams(searchParams);
     newParams.set("sort", "excessInsufficient");
     newParams.set(
       "order",
-      sortBy === "excessInsufficient" && sortOrder === "asc" ? "desc" : "asc"
+      sortBy === "excessInsufficient" && sortOrder === "asc" ? "desc" : "asc",
     );
     setSearchParams(newParams);
 
     setSortBy("excessInsufficient");
     setData(sorted);
     setSortOrder(
-      sortBy === "excessInsufficient" && sortOrder === "asc" ? "desc" : "asc"
+      sortBy === "excessInsufficient" && sortOrder === "asc" ? "desc" : "asc",
     );
   };
 
   const handleSortByUrgentRequest = () => {
     const sorted = sortByUrgentRequest(
       data,
-      sortBy === "urgentRequest" && sortOrder === "asc" ? "asc" : "desc"
+      sortBy === "urgentRequest" && sortOrder === "asc" ? "asc" : "desc",
     );
     // console.log("Sorted Parts by QTY: ", sorted);
     const newParams = new URLSearchParams(searchParams);
     newParams.set("sort", "urgentRequest");
     newParams.set(
       "order",
-      sortBy === "urgentRequest" && sortOrder === "asc" ? "desc" : "asc"
+      sortBy === "urgentRequest" && sortOrder === "asc" ? "desc" : "asc",
     );
     setSearchParams(newParams);
 
     setSortBy("urgentRequest");
     setData(sorted);
     setSortOrder(
-      sortBy === "urgentRequest" && sortOrder === "asc" ? "desc" : "asc"
+      sortBy === "urgentRequest" && sortOrder === "asc" ? "desc" : "asc",
     );
   };
 
   const handleSortByOrderQuantity = () => {
     const sorted = sortByOrderQuantity(
       data,
-      sortBy === "orderQuantity" && sortOrder === "asc" ? "asc" : "desc"
+      sortBy === "orderQuantity" && sortOrder === "asc" ? "asc" : "desc",
     );
     // console.log("Sorted Parts by QTY: ", sorted);
     const newParams = new URLSearchParams(searchParams);
     newParams.set("sort", "orderQuantity");
     newParams.set(
       "order",
-      sortBy === "orderQuantity" && sortOrder === "asc" ? "desc" : "asc"
+      sortBy === "orderQuantity" && sortOrder === "asc" ? "desc" : "asc",
     );
     setSearchParams(newParams);
 
     setSortBy("orderQuantity");
     setData(sorted);
     setSortOrder(
-      sortBy === "orderQuantity" && sortOrder === "asc" ? "desc" : "asc"
+      sortBy === "orderQuantity" && sortOrder === "asc" ? "desc" : "asc",
     );
   };
 
+  // FOR DELETING STOCKS IN INVENTORY
   const handleDelete = async (partId: number) => {
-    const isConfirm = window.confirm(
-      `Are you sure you want to delete this ${
-        type === "pin"
-          ? "pin"
-          : type === "it"
-            ? "item"
-            : type === "material"
-              ? "material"
-              : "INVALID TYPE"
-      }? This action cannot be undone.`
-    );
+    const typeLabel =
+      type === "pin"
+        ? "Pin"
+        : type === "it"
+          ? "Item"
+          : type === "material"
+            ? "Material"
+            : "INVALID TYPE";
 
-    if (!isConfirm) {
+    const resultConfirm = await Swal.fire({
+      icon: "warning",
+      title: `Delete ${typeLabel}?`,
+      text: "This action cannot be undone.",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it",
+      cancelButtonText: "Cancel",
+      confirmButtonColor: "#d33",
+    });
+
+    if (!resultConfirm.isConfirmed) {
       return;
     }
 
     try {
       setIsDeleting(partId);
-      // console.log("removing stock");
       const result = await removePart(partId);
 
       if (result.success) {
         setTimeout(
           () => {
-            alert(
-              ` ${
-                type === "pin"
-                  ? "Pin"
-                  : type === "it"
-                    ? "Item"
-                    : type === "material"
-                      ? "Material"
-                      : "INVALID TYPE"
-              } deleted successfully.`
-            );
-            fetchAllParts();
+            Swal.fire({
+              icon: "success",
+              title: "Deleted",
+              text: `${typeLabel} deleted successfully.`,
+              timer: 1500,
+              showConfirmButton: false,
+            }).then(() => {
+              fetchAllParts();
+            });
           },
-          import.meta.env.VITE_TIME_OUT
+          import.meta.env.VITE_TIME_OUT,
         );
       } else {
         setTimeout(
           () => {
-            alert(result.message);
+            Swal.fire({
+              icon: "error",
+              title: "Delete Failed",
+              text: result.message,
+            });
           },
-          import.meta.env.VITE_TIME_OUT
+          import.meta.env.VITE_TIME_OUT,
         );
       }
     } catch (error) {
-      console.error("Error occured: ", error);
+      console.error("Error occurred: ", error);
+
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Something went wrong while deleting. Please try again.",
+      });
     } finally {
       setTimeout(
         () => {
           setIsDeleting(0);
         },
-        import.meta.env.VITE_TIME_OUT
+        import.meta.env.VITE_TIME_OUT,
       );
     }
   };
@@ -460,7 +477,7 @@ export const DataTable = ({
                               date: String(o.outboundDate),
                             })),
                             year,
-                            month
+                            month,
                           )
                             ? "bg-red-100 text-red-900"
                             : "bg-emerald-100 text-emerald-800"

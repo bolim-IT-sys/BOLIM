@@ -38,10 +38,11 @@ export const EditingInventory = ({
       setIsLoading,
       load_inventories,
       setModalShow,
-      setFormData
+      setFormData,
     );
   };
 
+  // CHECKING IF THE FORM IS COMPLETED
   const NoChanges = () => {
     // Disable if inventory_name empty
     if (formData.inventory_name.trim() === "") {

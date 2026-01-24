@@ -46,6 +46,11 @@ const ITStock = sequelize.define("ITStock", {
     allowNull: true,
     defaultValue: null,
   },
+  reason: {
+    type: DataTypes.STRING(100),
+    allowNull: true,
+    defaultValue: null,
+  },
   remarks: {
     type: DataTypes.STRING(100),
     allowNull: true,

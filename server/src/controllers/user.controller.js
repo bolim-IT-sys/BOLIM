@@ -35,13 +35,13 @@ const createUser = async (req, res) => {
 
     // Check if user already exists
     const existingUser = await userService.findUserByUsername(
-      req.body.username
+      req.body.username,
     );
 
     if (existingUser) {
       return res.json({
         success: false,
-        message: "User already exists",
+        message: "User already exists.",
       });
     }
 
@@ -50,14 +50,14 @@ const createUser = async (req, res) => {
     // Return consistent response structure
     res.status(201).json({
       success: true,
-      message: "User created successfully",
+      message: "User created successfully.",
       data: user,
     });
   } catch (err) {
     // You can add specific error handling here if needed
     res.json({
       success: false,
-      message: err.message || "User creation failed",
+      message: err.message || "User creation failed.",
     });
   }
 };
@@ -79,7 +79,7 @@ const updateUser = async (req, res) => {
     //checking if the username is already taken
     if (req.body.username) {
       const userWithSameUsername = await userService.findUserByUsername(
-        req.body.username
+        req.body.username,
       );
 
       if (userWithSameUsername) {
@@ -101,14 +101,14 @@ const updateUser = async (req, res) => {
     // Return consistent response structure
     res.status(200).json({
       success: true,
-      message: "User updated successfully",
+      message: "User updated successfully.",
       data: updateUser,
     });
   } catch (err) {
     // You can add specific error handling here if needed
     res.json({
       success: false,
-      message: err.message || "User update failed",
+      message: err.message || "User update failed.",
     });
   }
 };
@@ -138,14 +138,14 @@ const deleteUser = async (req, res) => {
     // Return consistent response structure
     res.status(200).json({
       success: true,
-      message: "User deleted successfully",
+      message: "User deleted successfully.",
       data: updateUser,
     });
   } catch (err) {
     // You can add specific error handling here if needed
     res.json({
       success: false,
-      message: err.message || "User deletion failed",
+      message: err.message || "User deletion failed.",
     });
   }
 };
