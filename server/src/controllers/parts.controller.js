@@ -640,7 +640,7 @@ const markItemAvailable = async (req, res) => {
   try {
     const serialNumber = req.params.serialNumber;
 
-    console.log("Data in backend: ", req.body);
+    // console.log("Data in backend: ", req.body);
 
     if (
       !req.body.from ||
