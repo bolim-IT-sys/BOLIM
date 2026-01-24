@@ -1,3 +1,4 @@
+// FOR ADDING USERS
 import { useState } from "react";
 import {
   createUser,
@@ -8,6 +9,7 @@ import { Modal } from "../../Modal";
 import SuccessButton from "../../button/SuccessButton";
 import SecondaryButton from "../../button/SecondaryButton";
 import PrimaryButton from "../../button/PrimaryButton";
+import Swal from "sweetalert2";
 
 interface AddingProps {
   fetchAllUsers: () => void;
@@ -36,25 +38,60 @@ export const AddingUser = ({ fetchAllUsers }: AddingProps) => {
       if (result.success) {
         setTimeout(
           () => {
-            setIsLoading(false);
-            alert("User created successfully!");
-            fetchAllUsers();
             setModalShow(false);
+            Swal.fire({
+              icon: "success",
+              title: `ADD SUCCESS`,
+              text: result.message,
+              timer: 5000,
+              showConfirmButton: false,
+            }).then(() => {
+              fetchAllUsers();
+              setFormData((prev) => ({
+                ...prev,
+                username: "",
+                password: "",
+                pins: 0,
+                it_stocks: 0,
+                materials: 0,
+              }));
+            });
           },
-          import.meta.env.VITE_TIME_OUT
+          import.meta.env.VITE_TIME_OUT,
         );
         // Redirect or update UI
       } else {
         setTimeout(
           () => {
-            setIsLoading(false);
-            alert(`${result.message}`);
+            setModalShow(false);
+            Swal.fire({
+              icon: "error",
+              title: "ADDING FAILED",
+              text: result.message,
+            }).then(() => {
+              setModalShow(true);
+            });
           },
-          import.meta.env.VITE_TIME_OUT
+          import.meta.env.VITE_TIME_OUT,
         );
       }
     } catch (error) {
-      console.error("Unexpecter error occured: ", error);
+      console.error(`Unexpecter error occured: ${error}`);
+      setModalShow(false);
+      Swal.fire({
+        icon: "error",
+        title: "ADDING FAILED",
+        text: `Unexpecter error occured: ${error}`,
+      }).then(() => {
+        setModalShow(true);
+      });
+    } finally {
+      setTimeout(
+        () => {
+          setIsLoading(false);
+        },
+        import.meta.env.VITE_TIME_OUT,
+      );
     }
   };
 
@@ -65,7 +102,11 @@ export const AddingUser = ({ fetchAllUsers }: AddingProps) => {
       <Modal
         isOpen={modalShow}
         onClose={() => setModalShow(false)}
-        title={"CREATE NEW USER"}
+        title={
+          <>
+            <h3 className="text-start">CREATE NEW USER</h3>
+          </>
+        }
         size="md"
         footer={
           <>

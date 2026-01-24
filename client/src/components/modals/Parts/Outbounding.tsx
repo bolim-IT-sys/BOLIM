@@ -1,3 +1,4 @@
+// THIS IS FOR OUTBOUNDING STOCKS ON INVENTORY
 import SuccessButton from "../../button/SuccessButton";
 import SecondaryButton from "../../button/SecondaryButton";
 import InputField from "../../InputField";
@@ -10,6 +11,7 @@ import {
   type InboundOutboundType,
 } from "../../../services/InboundOutbound.Service";
 import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
+import Swal from "sweetalert2";
 
 interface Props {
   item: Part;
@@ -51,9 +53,11 @@ export const Outbounding = ({
     deployedDate: formData.outboundDate!,
     station: "",
     department: "",
+    reason: "",
     remarks: "deployed",
   });
 
+  // SETTING ITEM DETAILS VALUE AUTOMATICALLY
   useEffect(() => {
     setItemDetails((prev) => ({
       ...prev,
@@ -70,10 +74,24 @@ export const Outbounding = ({
     setOutBounding(true);
     try {
       if (type === "it") {
+        // DEPLOYING THE ITEM IN THE DATABASE FIRST
         const deployItem = await outboundItem(itemDetails);
 
         if (!deployItem.success) {
-          return alert(deployItem.message);
+          // IF FAILED RETURN ERROR
+          setTimeout(
+            () => {
+              setOutboundShow(false);
+              return Swal.fire({
+                icon: "error",
+                title: "Outbound Failed",
+                text: deployItem.message,
+              }).then(() => {
+                setOutboundShow(true);
+              });
+            },
+            import.meta.env.VITE_TIME_OUT,
+          );
         } else {
           await outboundPart(
             item,
@@ -84,7 +102,7 @@ export const Outbounding = ({
             fetchTransactions,
             fetchAllParts,
             setData,
-            setItemDetails
+            setItemDetails,
           );
         }
       } else {
@@ -97,7 +115,7 @@ export const Outbounding = ({
           fetchTransactions,
           fetchAllParts,
           setData,
-          setItemDetails
+          setItemDetails,
         );
       }
 
@@ -109,11 +127,12 @@ export const Outbounding = ({
         () => {
           setOutBounding(false);
         },
-        import.meta.env.VITE_TIME_OUT
+        import.meta.env.VITE_TIME_OUT,
       );
     }
   };
 
+  // CHECKING IF THE FORM IS COMPLETE BEFORE ENABLING THE SUBMIT BUTTON
   const incompleteForm = () => {
     if (type === "it") {
       return (
@@ -216,6 +235,7 @@ export const Outbounding = ({
           </div>
           {type === "it" ? (
             <>
+              {/* THESE FIELDS ARE ONLY ENABLED ON IT STOCKS */}
               <div className="mb-1">
                 <label
                   htmlFor="SERIAL NUMBER"
@@ -265,6 +285,23 @@ export const Outbounding = ({
                     setItemDetails((prev) => ({ ...prev, department: value }))
                   }
                   autoComplete={`department`}
+                />
+              </div>
+              <div className="mb-1">
+                <label
+                  htmlFor="REASON"
+                  className="block font-medium text-gray-700"
+                >
+                  <p>REASON</p>
+                </label>
+                <InputField
+                  label="REASON"
+                  type="text"
+                  value={itemDetails.reason!}
+                  onChange={(value: string) =>
+                    setItemDetails((prev) => ({ ...prev, reason: value }))
+                  }
+                  autoComplete={`reason`}
                 />
               </div>
             </>

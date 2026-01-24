@@ -1,3 +1,4 @@
+// THIS IS FOR ADDING ITEMS ON ALL INVENTORY
 import { useState } from "react";
 import InputField from "../../InputField";
 import { Modal } from "../../Modal";
@@ -8,6 +9,7 @@ import {
   createPart,
   type AddingPartType,
 } from "../../../services/Part.Service";
+import Swal from "sweetalert2";
 
 interface AddingProps {
   fetchAllParts: () => void;
@@ -34,14 +36,18 @@ export const AddingPart = ({ fetchAllParts, type }: AddingProps) => {
     try {
       const result = await createPart(formData);
       // console.log("Adding part.");
-
       if (result.success) {
         setTimeout(
           () => {
-            setIsLoading(false);
-            alert(result.message);
-            fetchAllParts();
             setModalShow(false);
+            Swal.fire({
+              icon: "success",
+              title: `ADDING SUCCESS`,
+              text: result.message,
+              timer: 5000,
+              showConfirmButton: false,
+            });
+            fetchAllParts();
             setFormData({
               type: type,
               partNumber: "",
@@ -51,23 +57,45 @@ export const AddingPart = ({ fetchAllParts, type }: AddingProps) => {
               company: "",
             });
           },
-          import.meta.env.VITE_TIME_OUT
+          import.meta.env.VITE_TIME_OUT,
         );
         // Redirect or update UI
       } else {
         setTimeout(
           () => {
-            setIsLoading(false);
-            alert(`${result.message}`);
+            setModalShow(false);
+            Swal.fire({
+              icon: "error",
+              title: "ADDING FAILED",
+              text: result.message,
+            }).then(() => {
+              setModalShow(true);
+            });
           },
-          import.meta.env.VITE_TIME_OUT
+          import.meta.env.VITE_TIME_OUT,
         );
       }
     } catch (error) {
       console.error("Unexpecter error occured: ", error);
+      setModalShow(false);
+      Swal.fire({
+        icon: "error",
+        title: "ADDING FAILED",
+        text: `Unexpecter error occured: ${error}`,
+      }).then(() => {
+        setModalShow(true);
+      });
+    } finally {
+      setTimeout(
+        () => {
+          setIsLoading(false);
+        },
+        import.meta.env.VITE_TIME_OUT,
+      );
     }
   };
 
+  // CHECKING IF THE FORM IS COMPLETE BEFORE ENABLING THE SUBMIT BUTTON
   const IncompleteForm = () => {
     return (
       formData.partNumber === "" ||
@@ -100,15 +128,20 @@ export const AddingPart = ({ fetchAllParts, type }: AddingProps) => {
       <Modal
         isOpen={modalShow}
         onClose={() => setModalShow(false)}
-        title={`ADD ${
-          type === "pin"
-            ? "PIN"
-            : type === "it"
-              ? "ITEM"
-              : type === "material"
-                ? "MATERIAL"
-                : "INVALID TYPE"
-        }`}
+        title={
+          <>
+            <h3>
+              ADD{" "}
+              {type === "pin"
+                ? "PIN"
+                : type === "it"
+                  ? "ITEM"
+                  : type === "material"
+                    ? "MATERIAL"
+                    : "INVALID TYPE"}
+            </h3>
+          </>
+        }
         size="md"
         footer={
           <>
@@ -213,7 +246,7 @@ export const AddingPart = ({ fetchAllParts, type }: AddingProps) => {
           </label>
           <InputField
             label="UNIT PRICE"
-            type="text"
+            type="number"
             value={formData.unitPrice}
             required={true}
             onChange={(value: string) => handleChange("unitPrice", value)}

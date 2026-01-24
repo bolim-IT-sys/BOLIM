@@ -749,6 +749,7 @@ const outboundItem = async (req, res) => {
       !req.body.deployedDate ||
       !req.body.station ||
       !req.body.department ||
+      !req.body.reason ||
       !req.body.remarks
     ) {
       return res.json({

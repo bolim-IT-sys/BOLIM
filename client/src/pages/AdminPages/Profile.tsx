@@ -1,3 +1,4 @@
+// PROFILE MANAGEMENT PAGE
 import { useEffect, useState } from "react";
 import InputField from "../../components/InputField";
 import {
@@ -7,6 +8,7 @@ import {
 } from "../../services/User.Service";
 import { useOutletContext } from "react-router-dom";
 import SuccessButton from "../../components/button/SuccessButton";
+import Swal from "sweetalert2";
 
 type ContextType = {
   user: User;
@@ -54,7 +56,13 @@ export default function Profile() {
       if (result.success) {
         setTimeout(
           () => {
-            alert(result.message);
+            Swal.fire({
+              icon: "success",
+              title: `UPDATE SUCCESS`,
+              text: result.message,
+              timer: 5000,
+              showConfirmButton: false,
+            });
             fetchUserDetails();
             setFormData({
               username: formData.username,
@@ -64,25 +72,34 @@ export default function Profile() {
               materials: formData.materials,
             });
           },
-          import.meta.env.VITE_TIME_OUT
+          import.meta.env.VITE_TIME_OUT,
         );
         // Redirect or update UI
       } else {
         setTimeout(
           () => {
-            alert(`${result.message}`);
+            Swal.fire({
+              icon: "error",
+              title: "UPDATE FAILED",
+              text: result.message,
+            });
           },
-          import.meta.env.VITE_TIME_OUT
+          import.meta.env.VITE_TIME_OUT,
         );
       }
     } catch (error) {
       console.error("Unexpecter error occured: ", error);
+      Swal.fire({
+        icon: "error",
+        title: "UPDATE FAILED",
+        text: `Unexpecter error occured: ${error}`,
+      });
     } finally {
       setTimeout(
         () => {
           setIsLoading(false);
         },
-        import.meta.env.VITE_TIME_OUT
+        import.meta.env.VITE_TIME_OUT,
       );
     }
   };

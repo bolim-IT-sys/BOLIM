@@ -20,7 +20,7 @@ export default function InputFieldSmall({
   onKeyPress,
 }: InputFieldProps) {
   return (
-    <div className="">
+    <div className="w-full">
       <input
         type={type}
         id={label}
