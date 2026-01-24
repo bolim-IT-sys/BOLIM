@@ -1,3 +1,4 @@
+// MAIN LAYOUT OF THE SYSTEM
 import { useCallback, useEffect, useState } from "react";
 import { fetchUserData, type User } from "../services/User.Service";
 import { useNavigate, Outlet, useSearchParams } from "react-router-dom";
@@ -74,6 +75,7 @@ export default function Mainlayout() {
   };
 
   useEffect(() => {
+    // LOADS DATA ON RENDER
     const loadData = async () => {
       await fetchUserDetails();
       await load_inventories();
@@ -87,6 +89,7 @@ export default function Mainlayout() {
     // console.log("Inventories fetched: ", inventories);
   }, [inventories]);
 
+  // FETCHING INBOUNDS, OUTBOUNDS, AND INVENTORY ITEMS
   const fetchAllParts = useCallback(async () => {
     try {
       // setIsFetching(true);
@@ -208,6 +211,7 @@ export default function Mainlayout() {
 
   return (
     <div className="relative" style={{ height: "100dvh" }}>
+      {/* TOP NAVIGATION BAR */}
       <NavBar
         user={user!}
         showSideBar={showSideBar}
@@ -217,6 +221,7 @@ export default function Mainlayout() {
       />
       <div className="relative flex justify-start h-dvh w-dvw pt-15 overflow-hidden">
         <div>
+          {/* SIDE NAVIGATION BAR */}
           <SideNavBar
             user={user!}
             inventories={inventories}
@@ -228,6 +233,7 @@ export default function Mainlayout() {
         </div>
         <div className={`w-10/10`}>
           <div className="bg-white h-95/100 my-4 md:my-7 mx-2 md:mx-5 p-5 rounded-sm">
+            {/* PASSING USESTATES AND DATA TO THE CHILDREN COMPONENTS TO MAKE IT REUSABLE */}
             <Outlet
               context={{
                 fetchUserDetails,
