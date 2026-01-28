@@ -23,6 +23,7 @@ import {
 import { getDateRange } from "../../helper/date.helper";
 import type { User } from "../../services/User.Service";
 import { getDataType } from "../../helper/dashboard.helper";
+import { computeStocks } from "../../helper/table.helper";
 
 interface ContextType {
   user: User;
@@ -36,24 +37,26 @@ export default function Dashboard() {
   const { user, parts, ITStocks, materials } = useOutletContext<ContextType>();
 
   const [dataType, setDataType] = useState<string>("");
+
+//  AUTOMATIC DETECTION OF USERS TYPE TO AVOID ACCESSING UNNECESSARY DATA ACCESS, BY IDENTIFYING USERS AUTHORIZATION
   useEffect(() => {
     // Remove the if (user) check or handle the falsy case
     if (!user) {
-      // console.log("No user yet, dataType remains empty");
       return; // or set a default: setDataType("Pins");
     }
     setTimeout(() => {
+      // GETTING THE DATA TYPE OF THE USER
       getDataType(user, setDataType);
     }, 100);
   }, [user]);
 
+  // SETTING THE DATA TYPE THAT THE USER CAN ONLY SEE AFTER IDENTIFYING THE USERS AUTHORIZATION
   useEffect(() => {
     if (user) {
       if (!dataType || dataType === "") {
-        // console.log("data type cant be saved.");
-        // localStorage.removeItem("dataType");
+        // IF DATA TYPE DIDNT EXIST ITS NOT SAVED
       } else {
-        // console.log("data type can be saved.");
+        // SAVING THE DATA TYPE TO LOCAL STORAGE
         localStorage.setItem("dataType", JSON.stringify(dataType));
       }
     }
@@ -61,6 +64,7 @@ export default function Dashboard() {
 
   const [data, setData] = useState<Part[]>([]);
 
+  // SETTING THE DATA TO BE DISPLAYED
   useEffect(() => {
     // console.log("DATA TYPE: ", dataType);
     if (dataType === "Pins") {
@@ -75,13 +79,16 @@ export default function Dashboard() {
     }
   }, [dataType, parts, ITStocks, materials]);
 
+
   const [dateRange, setDateRange] = useState(() => {
+    // CHECKING IF THERES A DATE RANGE SAVED
     const stored = localStorage.getItem("dateRange");
     return stored ? JSON.parse(stored) : "week";
   });
   const [startDate, setStartDate] = useState<string>();
   const [endDate, setEndDate] = useState<string>();
 
+  // FOR AUTOMATIC DETECTION OF THE DATE RANGE
   useEffect(() => {
     localStorage.setItem("dateRange", JSON.stringify(dateRange));
     const dates = getDateRange(dateRange);
@@ -102,6 +109,7 @@ export default function Dashboard() {
     const end = new Date(endDate);
     end.setHours(23, 59, 59, 999);
 
+    // FILTERING OUTBOUNDS BASED ON START AND END DATE
     const processedParts = data.map((stock) => {
       // console.log("Filtering parts...", part.partNumber);
       const filteredOutbounds = stock.outbounds!.filter((outbound) => {
@@ -145,7 +153,7 @@ export default function Dashboard() {
       company: part.company,
       rank: index + 1,
       outbound: part.totalOutbound,
-      stock: part.quantity,
+      stock: computeStocks(part),
     }));
   }, [filteredAndRankedParts]);
 

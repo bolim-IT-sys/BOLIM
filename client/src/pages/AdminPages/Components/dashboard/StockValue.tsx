@@ -15,6 +15,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { TrendingUp } from "lucide-react";
+import { computeStocks } from "../../../../helper/table.helper";
 
 type Props = {
   data: Part[];
@@ -32,7 +33,7 @@ export const StockValue = ({ data }: Props) => {
   const [endDate, setEndDate] = useState<string>();
 
   const totalInventoryValue = data.reduce(
-    (sum, part) => sum + part.unitPrice * part.quantity,
+    (sum, part) => sum + part.unitPrice * computeStocks(part),
     0
   );
 

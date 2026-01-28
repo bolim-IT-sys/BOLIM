@@ -5,31 +5,25 @@ export const getDataType = (
   user: User,
   setDataType: Dispatch<SetStateAction<string>>
 ) => {
-  const stored = localStorage.getItem("dataType");
+  const stored = localStorage.getItem("dataType"); //CHECKING IF DATA TYPE EXIST IN LOCAL STORAGE
   // console.log(stored ? "has" : "none");
 
+  //IF DATA TYPE EXIST IN LOCAL STORAGE 
   if (stored) {
-    const parsedData = JSON.parse(stored);
-    // console.log("Parsed: ", parsedData);
+    const parsedData = JSON.parse(stored); //PARSING STORED DATA TYPE
     if (parsedData === "Pins" && user.pins) {
       setDataType("Pins");
-      // console.log("11INITIAL DATA TYPE: ", "Pins");
     } else if (parsedData === "ITStocks" && user.it_stocks) {
       setDataType("ITStocks");
-      // console.log("12INITIAL DATA TYPE: ", "ITStocks");
     } else if (parsedData === "MaterialControl" && user.materials) {
       setDataType("MaterialControl");
-      // console.log("13INITIAL DATA TYPE: ", "MaterialControl");
     }
-    // console.log("1INITIAL DATA TYPE: ", JSON.parse(stored));
-  } else if (user.pins) {
+  // IF THERES NO DATA TYPE SAVED IN LOCAL STORAGE
+  } else if (user.pins) { // CHECKING IF USER IS AUTHORIZED IN PINS
     setDataType("Pins");
-    // console.log("2INITIAL DATA TYPE: ", "Pins");
-  } else if (user.it_stocks) {
+  } else if (user.it_stocks) { // CHECKING IF USER IS AUTHORIZED IN PINS
     setDataType("ITStocks");
-    // console.log("3INITIAL DATA TYPE: ", "ITStocks");
-  } else if (user.materials) {
+  } else if (user.materials) { // CHECKING IF USER IS AUTHORIZED IN PINS
     setDataType("MaterialControl");
-    // console.log("4INITIAL DATA TYPE: ", "MaterialControl");
   }
 };
