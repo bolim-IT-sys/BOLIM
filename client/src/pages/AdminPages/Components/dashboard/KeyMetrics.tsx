@@ -9,6 +9,7 @@ import { StockValue } from "./StockValue";
 import { LowStocks } from "./LowStocks";
 import { useEffect, useState } from "react";
 import { OutOfStocks } from "./OutOfStocks";
+import { computeStocks } from "../../../../helper/table.helper";
 
 type Props = {
   data: Part[];
@@ -30,11 +31,11 @@ export const KeyMetrics = ({ data, dataType }: Props) => {
         currentYear(),
         currentMonth()
       );
-      return stock.quantity > 0 && stock.quantity < safetyStock;
+      return computeStocks(stock) > 0 && computeStocks(stock) < safetyStock;
     });
     setLowStockParts(lowStockParts);
 
-    const outOfStockParts = data.filter((stock) => stock.quantity === 0);
+    const outOfStockParts = data.filter((stock) => computeStocks(stock) === 0);
     setOutOfStockParts(outOfStockParts);
   }, [data]);
   return (
