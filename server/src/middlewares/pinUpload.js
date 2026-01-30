@@ -4,7 +4,7 @@ const path = require("path");
 // Folder where images will be stored
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "uploads/pinImage"); // create this folder manually
+    cb(null, path.join(__dirname, "..", "uploads", "pinImage"));
   },
   filename: (req, file, cb) => {
     const unique = Date.now() + "-" + Math.round(Math.random() * 1e9);
