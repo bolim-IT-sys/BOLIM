@@ -44,3 +44,18 @@ export const formatStockDate = (dateStr: string): string => {
 
   return `${mm}/${dd}/${yyyy}`;
 };
+
+export const months = [
+  "JAN",
+  "FEB",
+  "MAR",
+  "APR",
+  "MAY",
+  "JUN",
+  "JUL",
+  "AUG",
+  "SEP",
+  "OCT",
+  "NOV",
+  "DEC",
+];

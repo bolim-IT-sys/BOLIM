@@ -210,7 +210,6 @@ const inboundPart = async (inboundData) => {
 
     // console.log("Inbounding part.");
     const inbound = await Inbound.create({
-      lotNo: lotNo,
       partId: partId,
       from: from,
       quantity: quantity,
@@ -401,6 +400,40 @@ const updateItem = async (itemData) => {
   }
 };
 
+const updateItemStatus = async (itemData) => {
+  try {
+    const item = await ITStock.findOne({
+      where: { serialNumber: itemData.serialNumber },
+    });
+
+    // console.log("Item found: ", item);
+
+    if (!item) {
+      throw new Error("Item not found.");
+    }
+
+    // prepare the data
+    const updateData = {
+      status: itemData.newStatus,
+      remarks: itemData.newStatus === "ready" ? "available" : "on-hold",
+      from: itemData.from,
+      reason: itemData.reason,
+    };
+
+    await item.update(updateData);
+
+    // console.log("Item deployed successfully.");
+
+    // Return parts without password
+    return {
+      serialNumber: item.serialNumber,
+    };
+  } catch (error) {
+    console.error("Error deploying item: ", error);
+    throw error;
+  }
+};
+
 const markItemAvailable = async (itemData) => {
   try {
     const item = await ITStock.findOne({
@@ -514,6 +547,7 @@ module.exports = {
   getOutbounds,
   addItem,
   updateItem,
+  updateItemStatus,
   markItemAvailable,
   deployItem,
   getItems,

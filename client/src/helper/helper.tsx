@@ -156,3 +156,14 @@ export const handleKeyDown = (e: KeyboardEvent, onKeyPress?: () => void) => {
     onKeyPress();
   }
 };
+
+export const getStatus = (status: string) => {
+
+  const remark =
+    status === "ready" ? "Ready to use" :
+      status === "forChecking" ? "For Checking" :
+        status === "forRepair" ? "For Repair" :
+          status === "forDisposal" ? "For Disposal" : "Undefined"
+
+  return remark
+}

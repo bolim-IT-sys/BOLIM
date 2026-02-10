@@ -12,6 +12,7 @@ import {
   type InboundOutboundType,
   type ITStocks,
   type Outbound,
+  type updateStatusType,
 } from "../../../services/InboundOutbound.Service";
 import { Inbounding } from "./Inbounding";
 import { Outbounding } from "./Outbounding";
@@ -27,6 +28,8 @@ import { InboundOutboundHistoryTable } from "../../tables/InboundOutboundHistory
 import { TransactionHistory } from "./TransactionHistory";
 import InputField from "../../InputField";
 import { DownloadStockData } from "../../downloadButton/DownloadStockData";
+import { months } from "../../../helper/date.helper";
+import { ChangeStatusModal } from "./ChangeStatusModal";
 
 interface Props {
   item: Part;
@@ -156,20 +159,17 @@ export const ViewPartStocks = ({ item, setData, type }: Props) => {
     years.push(y);
   }
 
-  const months = [
-    "JAN",
-    "FEB",
-    "MAR",
-    "APR",
-    "MAY",
-    "JUN",
-    "JUL",
-    "AUG",
-    "SEP",
-    "OCT",
-    "NOV",
-    "DEC",
-  ];
+  // FOR UPDATING STATUS  
+  const [statusModalShow, setStatusModalShow] = useState(false)
+  const [updateData, setUpdateData] = useState<updateStatusType>({
+    stockId: 0,
+    from: "",
+    serialNumber: "",
+    remarks: "",
+    status: "",
+    newStatus: "",
+    reason: "",
+  })
 
   return (
     <>
@@ -186,8 +186,7 @@ export const ViewPartStocks = ({ item, setData, type }: Props) => {
                 <h3 className="text-start">
                   {`${item.partNumber}`}:{" "}
                   <span
-                    className={`${
-                      computeStocks(item) <
+                    className={`${computeStocks(item) <
                       getSafetyStock(
                         outbounds.map((o) => ({
                           quantity: o.quantity,
@@ -196,21 +195,21 @@ export const ViewPartStocks = ({ item, setData, type }: Props) => {
                         chosenYear,
                         month,
                       )
-                        ? "bg-red-100 text-red-900"
-                        : "bg-emerald-100 text-emerald-800"
-                    } rounded px-2`}
+                      ? "bg-red-100 text-red-900"
+                      : "bg-emerald-100 text-emerald-800"
+                      } rounded px-2`}
                   >
                     <b>{computeStocks(item)} </b>
                     <i className="text-sm hidden sm:inline">
                       {computeStocks(item) <
-                      getSafetyStock(
-                        outbounds.map((o) => ({
-                          quantity: o.quantity,
-                          date: String(o.outboundDate),
-                        })),
-                        chosenYear,
-                        month,
-                      ) ? (
+                        getSafetyStock(
+                          outbounds.map((o) => ({
+                            quantity: o.quantity,
+                            date: String(o.outboundDate),
+                          })),
+                          chosenYear,
+                          month,
+                        ) ? (
                         <>Warning: Low stock!</>
                       ) : null}
                     </i>
@@ -330,13 +329,15 @@ export const ViewPartStocks = ({ item, setData, type }: Props) => {
                     </div>
                   </div>
                 </div>
-                <div className="relative w-10/10 h-60 md:h-80 overflow-y-scroll border border-gray-400">
+                <div className="relative w-10/10 h-60 md:h-80 overflow-y-scroll custom_scroll border border-gray-400">
                   <ItemStockTable
                     setSerialNumber={setSerialNumber}
                     fetchAllParts={fetchAllParts}
                     fetchTransactions={fetchTransactions}
                     setModalShow={setModalShow}
                     setOutboundShow={setOutboundShow}
+                    setUpdateData={setUpdateData}
+                    setStatusModalShow={setStatusModalShow}
                     isLoading={isLoading}
                     stockItems={searchTerm ? searchedParts : stockItems}
                   />
@@ -347,6 +348,10 @@ export const ViewPartStocks = ({ item, setData, type }: Props) => {
         </div>
       </Modal>
 
+      <ChangeStatusModal updateData={updateData} setUpdateData={setUpdateData} setModalShow={setModalShow} isOpen={statusModalShow} setIsOpen={setStatusModalShow} fetchAllParts={fetchAllParts}
+        fetchTransactions={fetchTransactions} />
+
+      {/* TRANSACTION HISTORY MODAL */}
       <TransactionHistory
         item={item}
         inbounds={inbounds}

@@ -45,7 +45,7 @@ const Modal = ({
           : size === "xl"
             ? "md:w-250"
             : size === "2xl"
-              ? "md:w-300"
+              ? "md:w-400"
               : "md:w-100";
 
   return (

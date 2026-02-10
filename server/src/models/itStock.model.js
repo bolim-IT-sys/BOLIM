@@ -56,6 +56,11 @@ const ITStock = sequelize.define("ITStock", {
     allowNull: true,
     defaultValue: "available",
   },
+  status: {
+    type: DataTypes.STRING(100),
+    allowNull: false,
+    defaultValue: "brandnew",
+  },
 });
 
 module.exports = ITStock;

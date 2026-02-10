@@ -636,6 +636,99 @@ const updateItem = async (req, res) => {
   }
 };
 
+const updateItemStatus = async (req, res) => {
+  try {
+    const serialNumber = req.params.serialNumber;
+
+    // console.log("Data in backend: ", req.body);
+
+    if (
+      !req.body.from ||
+      !req.body.serialNumber ||
+      !req.body.stockId ||
+      !req.body.newStatus ||
+      !req.body.reason
+    ) {
+      return res.json({
+        message: "Please fill in all required fields.",
+      });
+    }
+
+    // Check if part exists
+    const isPartExisting = await partService.findById(req.body.stockId);
+
+    if (!isPartExisting) {
+      return res.json({
+        success: false,
+        message: "Part does not exist.",
+      });
+    }
+
+    // DATA FOR INBOUNDING
+    const inboundData = {
+      partId: req.body.stockId,
+      from: req.body.from,
+      quantity: 1,
+      inboundDate: new Date().toISOString().split("T")[0],
+    };
+
+    // Check if part exists
+    const existingItem = await partService.findItemBySerialNumber(serialNumber);
+
+    // console.log("Existing match: ", existingItem);
+    if (!existingItem) {
+      return res.json({
+        success: false,
+        message: "Item not found.",
+      });
+    }
+
+    // DATA FOR UPDATING STOCK QUANTITY
+    const updateData = {
+      quantity: 1 + isPartExisting.quantity,
+    };
+
+    // INBOUNDING ITEM
+    const inbound = await partService.inboundPart(inboundData);
+
+    if (!inbound.success) {
+      return res.json({
+        success: false,
+        message: "Inbound failed.",
+      });
+    }
+
+    // UPDATING STOCK QUANTITY
+    const updatePartQty = await partService.updatePart(
+      req.body.stockId,
+      updateData,
+    );
+
+    if (!updatePartQty.success) {
+      return res.json({
+        success: false,
+        message: "Updating quantity failed.",
+      });
+    }
+
+    // UPDATING ITEMS STATUS
+    const deployItem = await partService.updateItemStatus(req.body);
+
+    // Return consistent response structure
+    res.status(200).json({
+      success: true,
+      message: "Item deployed successfully",
+      data: deployItem,
+    });
+  } catch (err) {
+    // You can add specific error handling here if needed
+    res.json({
+      success: false,
+      message: err.message || "Item deployment failed",
+    });
+  }
+};
+
 const markItemAvailable = async (req, res) => {
   try {
     const serialNumber = req.params.serialNumber;
@@ -827,6 +920,7 @@ module.exports = {
   inboundPart,
   addingItem,
   updateItem,
+  updateItemStatus,
   markItemAvailable,
   outboundItem,
   getItem,

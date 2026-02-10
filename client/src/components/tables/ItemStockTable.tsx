@@ -3,6 +3,7 @@ import {
   markItemAsAvailable,
   updateItem,
   type ITStocks,
+  type updateStatusType,
 } from "../../services/InboundOutbound.Service";
 import SuccessButton from "../button/SuccessButton";
 import InputFieldSmall from "../InputFieldSmall";
@@ -12,6 +13,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { formatStockDate } from "../../helper/date.helper";
 import Swal from "sweetalert2";
+import { getStatus } from "../../helper/helper";
 
 type Props = {
   setSerialNumber: Dispatch<SetStateAction<string>>;
@@ -19,6 +21,8 @@ type Props = {
   fetchTransactions: () => void;
   setModalShow: Dispatch<SetStateAction<boolean>>;
   setOutboundShow: Dispatch<SetStateAction<boolean>>;
+  setUpdateData: Dispatch<SetStateAction<updateStatusType>>;
+  setStatusModalShow: Dispatch<SetStateAction<boolean>>;
   isLoading: boolean;
   stockItems: ITStocks[];
 };
@@ -29,6 +33,8 @@ export const ItemStockTable = ({
   fetchTransactions,
   setModalShow,
   setOutboundShow,
+  setUpdateData,
+  setStatusModalShow,
   isLoading,
   stockItems,
 }: Props) => {
@@ -134,39 +140,63 @@ export const ItemStockTable = ({
       return;
     }
 
-    const resultConfirm = await Swal.fire({
-      icon: "warning",
-      title: `UPDATE STATUS?`,
-      text: "Mark this stock as avaiable.",
-      showCancelButton: true,
-      confirmButtonText: "Yes, delete it",
-      cancelButtonText: "Cancel",
-      confirmButtonColor: "#d33",
-    });
-
-    if (!resultConfirm.isConfirmed) {
-      return;
+    // IF THE ITEM IS ALREADY DEPLOYED IT CAN BE PULLED OUT WITH DIFFERENT REMARKS
+    if (stock.remarks === "deployed") {
+      setModalShow(false)
+      setStatusModalShow(true)
+      setUpdateData((prev) => ({
+        ...prev,
+        stockId: stock.stockId,
+        serialNumber: stock.serialNumber,
+      }))
     }
 
-    const response = await markItemAsAvailable(stock);
-    if (response.success) {
-      // FETCHED LATEST DATA
-      fetchTransactions();
-      fetchAllParts();
-      Swal.fire({
-        icon: "success",
-        title: `UPDATE SUCCESS`,
-        text: `Stock ${stock.serialNumber} is now available for outbound.`,
-        timer: 5000,
-        showConfirmButton: false,
-      });
+    if (stock.remarks === "on-hold") {
+      setModalShow(false)
+      setStatusModalShow(true)
+      setUpdateData((prev) => ({
+        ...prev,
+        remarks: stock.remarks,
+        status: stock.status,
+        stockId: stock.stockId,
+        serialNumber: stock.serialNumber,
+      }))
     } else {
-      Swal.fire({
-        icon: "error",
-        title: "UPDATE FAILED",
-        text: response.message,
+      const resultConfirm = await Swal.fire({
+        icon: "warning",
+        title: `UPDATE STATUS?`,
+        text: "Mark this stock as avaiable.",
+        showCancelButton: true,
+        confirmButtonText: "Yes, update it",
+        cancelButtonText: "Cancel",
+        confirmButtonColor: "#d33",
       });
+
+      if (!resultConfirm.isConfirmed) {
+        return;
+      }
+
+      const response = await markItemAsAvailable(stock);
+      if (response.success) {
+        // FETCHED LATEST DATA
+        fetchTransactions();
+        fetchAllParts();
+        Swal.fire({
+          icon: "success",
+          title: `UPDATE SUCCESS`,
+          text: `Stock ${stock.serialNumber} is now available for outbound.`,
+          timer: 5000,
+          showConfirmButton: false,
+        });
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "UPDATE FAILED",
+          text: response.message,
+        });
+      }
     }
+
   };
   const handleChange = (field: string, value: string | Date | null) => {
     // console.log("field: ", value);
@@ -184,7 +214,7 @@ export const ItemStockTable = ({
       // new Date(stock.receivedDate).toLocaleDateString() ===
       //   new Date(formData.receivedDate).toLocaleDateString() &&
       new Date(stock.deployedDate!).toLocaleDateString() ===
-        new Date(formData.deployedDate!).toLocaleDateString() &&
+      new Date(formData.deployedDate!).toLocaleDateString() &&
       stock.station === formData.station &&
       stock.department === formData.department &&
       stock.reason === formData.reason &&
@@ -194,7 +224,7 @@ export const ItemStockTable = ({
   };
   return (
     <>
-      <table className="w-400 md:w-20/10 lg:w-15/10 table-fixed border border-gray-300">
+      <table className="w-300 md:w-15/10 lg:w-10/10 table-fixed">
         <thead className="sticky top-0 bg-sky-200 ">
           <tr>
             <th className="w-4/30 bg-sky-200 border border-neutral-400 px-3 py-2 text-neutral-900 text-center">
@@ -216,16 +246,16 @@ export const ItemStockTable = ({
               <h5>DEPARTMENT</h5>
             </th>
             <th className="bg-sky-200 border border-neutral-400 px-3 py-2 text-neutral-900 text-center">
-              <h5>OUTBOUND PERSONEL</h5>
+              <h5>AUTHORIZED PERSONEL</h5>
             </th>
             <th className="bg-sky-200 border border-neutral-400 px-3 py-2 text-neutral-900 text-center">
               <h5>RECIEVER</h5>
             </th>
-            <th className="md:w-3/20 lg:w-2/10  bg-sky-200 border border-neutral-400 px-3 py-2 text-neutral-900 text-center">
-              <h5>REASON</h5>
-            </th>
             <th className="bg-sky-2 00 border border-neutral-400 px-3 py-2 text-neutral-900 text-center">
               <h5>REMARKS</h5>
+            </th>
+            <th className="md:w-3/20 lg:w-2/10  bg-sky-200 border border-neutral-400 px-3 py-2 text-neutral-900 text-center">
+              <h5>REASON</h5>
             </th>
             <th className="bg-sky-600 border border-neutral-400 px-3 py-2 text-neutral-50 text-center">
               <h5>ACTIONS</h5>
@@ -284,9 +314,8 @@ export const ItemStockTable = ({
                           </>
                         ) : (
                           <h6
-                            className={` ${
-                              stock.PRDate === "N/A" ? "text-neutral-400" : ""
-                            }`}
+                            className={` ${stock.PRDate === "N/A" ? "text-neutral-400" : ""
+                              }`}
                           >
                             {stock.PRDate === "N/A"
                               ? "N/A"
@@ -315,9 +344,8 @@ export const ItemStockTable = ({
                     </td>
                     <td className="border border-neutral-400 px-3 py-2">
                       <div
-                        className={`flex justify-center items-center flex-col gap-1 ${
-                          stock.deployedDate ? null : "text-neutral-400"
-                        }`}
+                        className={`flex justify-center items-center flex-col gap-1 ${stock.deployedDate ? null : "text-neutral-400"
+                          }`}
                       >
                         {toBeUpdated === stock.id && formData.deployedDate ? (
                           <DatePicker
@@ -341,9 +369,8 @@ export const ItemStockTable = ({
                     </td>
                     <td className="border border-neutral-400 px-3 py-2">
                       <div
-                        className={`flex justify-center items-center flex-col gap-1 ${
-                          stock.station ? null : "text-neutral-400"
-                        }`}
+                        className={`flex justify-center items-center flex-col gap-1 ${stock.station ? null : "text-neutral-400"
+                          }`}
                       >
                         {toBeUpdated === stock.id && formData.station ? (
                           <InputFieldSmall
@@ -363,9 +390,8 @@ export const ItemStockTable = ({
                     </td>
                     <td className="border border-neutral-400 px-3 py-2">
                       <div
-                        className={`flex justify-center items-center flex-col gap-1 ${
-                          stock.department ? null : "text-neutral-400"
-                        }`}
+                        className={`flex justify-center items-center flex-col gap-1 ${stock.department ? null : "text-neutral-400"
+                          }`}
                       >
                         {toBeUpdated === stock.id && formData.department ? (
                           <InputFieldSmall
@@ -388,7 +414,7 @@ export const ItemStockTable = ({
                         className={`flex justify-center items-center flex-col gap-1 `}
                       >
                         {(toBeUpdated === stock.id && formData.from) ||
-                        (toBeUpdated === stock.id && stock.remarks) ===
+                          (toBeUpdated === stock.id && stock.remarks) ===
                           "deployed" ? (
                           <InputFieldSmall
                             label="OUTBOUND PERSONEL"
@@ -402,9 +428,8 @@ export const ItemStockTable = ({
                           />
                         ) : (
                           <h6
-                            className={`${
-                              stock.from ? null : "text-neutral-400"
-                            }`}
+                            className={`${stock.from ? null : "text-neutral-400"
+                              }`}
                           >
                             {stock.from ? stock.from : "N/A"}
                           </h6>
@@ -416,7 +441,7 @@ export const ItemStockTable = ({
                         className={`flex justify-center items-center flex-col gap-1`}
                       >
                         {(toBeUpdated === stock.id && formData.to) ||
-                        (toBeUpdated === stock.id && stock.remarks) ===
+                          (toBeUpdated === stock.id && stock.remarks) ===
                           "deployed" ? (
                           <InputFieldSmall
                             label="RECEIVER"
@@ -430,13 +455,25 @@ export const ItemStockTable = ({
                           />
                         ) : (
                           <h6
-                            className={`${
-                              stock.to ? null : "text-neutral-400"
-                            }`}
+                            className={`${stock.to ? null : "text-neutral-400"
+                              }`}
                           >
                             {stock.to ? stock.to : "N/A"}
                           </h6>
                         )}
+                      </div>
+                    </td>
+                    <td className="border border-neutral-400 px-3 py-2">
+                      <div
+                        className={`flex justify-center items-center flex-col gap-1 p-1.5 rounded ${stock.remarks === "available"
+                          ? "hover:bg-emerald-500 hover:text-neutral-50 text-green-700"
+                          : "hover:bg-red-500 hover:text-neutral-50 text-red-600"
+                          } transition duration-300 ease-in-out cursor-pointer`}
+                        onClick={() => UpdateItemStatus(stock)}
+                      >
+                        <h6>
+                          {stock.remarks ? `${getStatus(stock.status!)?.toUpperCase()}: ${stock.remarks.toUpperCase()}` : "N/A"}
+                        </h6>
                       </div>
                     </td>
                     <td className="border border-neutral-400 px-3 py-2">
@@ -456,27 +493,12 @@ export const ItemStockTable = ({
                           />
                         ) : (
                           <h6
-                            className={`${
-                              stock.reason ? null : "text-neutral-400"
-                            }`}
+                            className={`${stock.reason ? null : "text-neutral-400"
+                              }`}
                           >
                             {stock.reason ? stock.reason : "N/A"}
                           </h6>
                         )}
-                      </div>
-                    </td>
-                    <td className="border border-neutral-400 px-3 py-2">
-                      <div
-                        className={`flex justify-center items-center flex-col gap-1 p-1.5 rounded ${
-                          stock.remarks === "available"
-                            ? "hover:bg-emerald-500 hover:text-neutral-50 text-green-700"
-                            : "hover:bg-red-500 hover:text-neutral-50 text-red-600"
-                        } transition duration-300 ease-in-out cursor-pointer`}
-                        onClick={() => UpdateItemStatus(stock)}
-                      >
-                        <h6>
-                          {stock.remarks ? stock.remarks.toUpperCase() : "N/A"}
-                        </h6>
                       </div>
                     </td>
                     <td className="border border-neutral-400 px-3 py-2">
