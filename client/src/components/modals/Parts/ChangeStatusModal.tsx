@@ -33,15 +33,15 @@ export const ChangeStatusModal = ({
 
   const handleUpdateStatus = async () => {
     try {
-      const status = getStatus(updateData.newStatus!)
+      const status = getStatus(updateData.newStatus!).toUpperCase()
       const resultConfirm = await Swal.fire({
         icon: "warning",
         title: `UPDATE STATUS?`,
         text: `Mark this stock as ${status}.`,
         showCancelButton: true,
-        confirmButtonText: "Yes, update it",
         cancelButtonText: "Cancel",
-        confirmButtonColor: "#d33",
+        confirmButtonText: "Yes, update it",
+        confirmButtonColor: "#00b36b",
       });
 
       if (!resultConfirm.isConfirmed) {
@@ -161,15 +161,21 @@ export const ChangeStatusModal = ({
               CURRENT STATUS: {getStatus(updateData.status!).toUpperCase()}
             </p>
             <div className="flex flex-col gap-2">
-              <div className={`border-2 border-sky-500 ${updateData.newStatus === "ready" ? "border-sky-500 bg-sky-500 text-neutral-50 hover:bg-sky-600 hover:border-sky-600" : "text-sky-700 hover:bg-sky-500"} hover:text-neutral-50 transition-300 duration-300 ease-in-out rounded py-2 cursor-pointer`} onClick={() => setUpdateData((prev) => ({ ...prev, newStatus: updateData.newStatus === "ready" ? "" : "ready" }))}>
+              <div className={`border-2 border-sky-500 ${updateData.newStatus === "used" ? "border-sky-500 bg-sky-500 text-neutral-50 hover:bg-sky-600 hover:border-sky-600" : "text-sky-700 hover:bg-sky-500"} hover:text-neutral-50 transition-300 duration-300 ease-in-out rounded py-2 cursor-pointer`}
+                onClick={() => setUpdateData((prev) => ({ ...prev, newStatus: updateData.newStatus === "used" ? "" : "used", newRemarks: "available" }))}
+              >
                 <p>MARK AS AVAILABLE</p>
               </div>
 
-              <div className={`border-2 border-sky-500 ${updateData.newStatus === "forChecking" ? "border-sky-500 bg-sky-500 text-neutral-50 hover:bg-sky-600 hover:border-sky-600" : "text-sky-700 hover:bg-sky-500"} hover:text-neutral-50 transition-300 duration-300 ease-in-out rounded py-2 cursor-pointer`} onClick={() => setUpdateData((prev) => ({ ...prev, newStatus: updateData.newStatus === "forChecking" ? "" : "forChecking" }))}>
+              <div className={`border-2 border-sky-500 ${updateData.newStatus === "repaired" ? "border-sky-500 bg-sky-500 text-neutral-50 hover:bg-sky-600 hover:border-sky-600" : "text-sky-700 hover:bg-sky-500"} hover:text-neutral-50 transition-300 duration-300 ease-in-out rounded py-2 cursor-pointer`}
+                onClick={() => setUpdateData((prev) => ({ ...prev, newStatus: updateData.newStatus === "repaired" ? "" : "repaired", newRemarks: "available" }))}
+              >
                 <p>REPAIRED</p>
               </div>
 
-              <div className={`border-2 border-sky-500 ${updateData.newStatus === "forRepair" ? "border-sky-500 bg-sky-500 text-neutral-50 hover:bg-sky-600 hover:border-sky-600" : "text-sky-700 hover:bg-sky-500"} hover:text-neutral-50 transition-300 duration-300 ease-in-out rounded py-2 cursor-pointer`} onClick={() => setUpdateData((prev) => ({ ...prev, newStatus: updateData.newStatus === "forRepair" ? "" : "forRepair" }))}>
+              <div className={`border-2 border-sky-500 ${updateData.newStatus === "disposed" ? "border-sky-500 bg-sky-500 text-neutral-50 hover:bg-sky-600 hover:border-sky-600" : "text-sky-700 hover:bg-sky-500"} hover:text-neutral-50 transition-300 duration-300 ease-in-out rounded py-2 cursor-pointer`}
+                onClick={() => setUpdateData((prev) => ({ ...prev, newStatus: updateData.newStatus === "disposed" ? "" : "disposed", newRemarks: "unavailable" }))}
+              >
                 <p>DISPOSED</p>
               </div>
             </div>

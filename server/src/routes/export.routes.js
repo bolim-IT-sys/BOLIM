@@ -506,6 +506,29 @@ router.post("/export-inventory-to-excel", async (req, res) => {
 });
 
 router.post("/export-items-to-excel", async (req, res) => {
+  const getStatus = (status) => {
+    const remark =
+      status === "brandnew"
+        ? "Brand New"
+        : status === "ready"
+          ? "Used"
+          : status === "forChecking"
+            ? "For Checking"
+            : status === "forRepair"
+              ? "For Repair"
+              : status === "forDisposal"
+                ? "For Disposal"
+                : status === "used"
+                  ? "Used"
+                  : status === "repaired"
+                    ? "Repaired"
+                    : status === "disposed"
+                      ? "Disposed"
+                      : "Undefined";
+
+    return remark;
+  };
+
   try {
     const { data } = req.body;
 
@@ -517,10 +540,11 @@ router.post("/export-items-to-excel", async (req, res) => {
         "Deployed Date": item.deployedDate ? item.deployedDate : "N/A",
         Station: item.station ? item.station : "N/A",
         Department: item.department ? item.department : "N/A",
-        "Outbound Personel": item.from ? item.from : "N/A",
+        "Authorized Personel": item.from ? item.from : "N/A",
         Receiver: item.to ? item.to : "N/A",
-        reason: item.reason ? item.reason : "N/A",
+        Status: getStatus(item.status).toUpperCase(),
         Remarks: item.remarks.toUpperCase(),
+        reason: item.reason ? item.reason : "N/A",
       };
     });
 
@@ -538,10 +562,11 @@ router.post("/export-items-to-excel", async (req, res) => {
           "Deployed Date",
           "Station",
           "Department",
-          "Outbound Personel",
+          "Authorized Personel",
           "Receiver",
-          "Reason",
+          "Status",
           "Remarks",
+          "Reason",
         ],
       ],
       { origin: "A1" },
@@ -549,16 +574,17 @@ router.post("/export-items-to-excel", async (req, res) => {
 
     // COLORS FOR COLUMN HEADERS (using hex colors without #)
     const columnColors = [
-      "a6e0f7", // Serial Number
-      "a6e0f7", // PR Date
-      "a6e0f7", // Received Date
-      "a6e0f7", // Deployed Date
-      "a6e0f7", // Station
-      "a6e0f7", // Department
-      "a6e0f7", // Outbound Personel
-      "a6e0f7", // Receiver
-      "a6e0f7", // Reason
-      "49abf5", // Remarks
+      "F4B084", // Serial Number
+      "FFD966", // PR Date
+      "FFD966", // Received Date
+      "F4B084", // Deployed Date
+      "F4B084", // Station
+      "F4B084", // Department
+      "F4B084", // Authorized Personel
+      "F4B084", // Receiver
+      "9BC2E6", // Status
+      "9BC2E6", // Remarks
+      "9BC2E6", // Reason
     ];
 
     // APPLYING COLORS ON HEADERS
@@ -611,7 +637,7 @@ router.post("/export-items-to-excel", async (req, res) => {
           },
         };
 
-        if (C < 9) {
+        if (C < 8) {
           // FIX: Better validation of cell value
           const cellValue = worksheet[address].v;
           const strValue = String(cellValue).toUpperCase();
@@ -621,6 +647,62 @@ router.post("/export-items-to-excel", async (req, res) => {
               ...worksheet[address].s,
               font: {
                 color: { rgb: "b0b0b0" },
+                bold: true,
+              },
+            };
+          }
+        }
+
+        // APPLYING COLORS ON STATUS DATA CELLS
+        if (C === 8) {
+          // FIX: Better validation of cell value
+          const cellValue = worksheet[address].v;
+          const strValue = String(cellValue).toLowerCase();
+
+          if (strValue === "brand new") {
+            worksheet[address].s = {
+              ...worksheet[address].s,
+              fill: { fgColor: { rgb: "D9FCE8" } },
+              font: {
+                color: { rgb: "004A24" },
+                bold: true,
+              },
+            };
+          }
+          if (
+            strValue === "ready" ||
+            strValue === "repaired" ||
+            strValue === "used"
+          ) {
+            worksheet[address].s = {
+              ...worksheet[address].s,
+              fill: { fgColor: { rgb: "FFFF99" } },
+              font: {
+                color: { rgb: "494529" },
+                bold: true,
+              },
+            };
+          }
+          if (
+            strValue === "for checking" ||
+            strValue === "for cepair" ||
+            strValue === "for cisposal"
+          ) {
+            worksheet[address].s = {
+              ...worksheet[address].s,
+              fill: { fgColor: { rgb: "FABF8F" } },
+              font: {
+                color: { rgb: "800000" },
+                bold: true,
+              },
+            };
+          }
+          if (strValue === "disposed") {
+            worksheet[address].s = {
+              ...worksheet[address].s,
+              fill: { fgColor: { rgb: "D9D9D9" } },
+              font: {
+                color: { rgb: "262626" },
                 bold: true,
               },
             };
@@ -664,13 +746,14 @@ router.post("/export-items-to-excel", async (req, res) => {
       { wch: 20 }, // Deployed Date
       { wch: 25 }, // Station
       { wch: 25 }, // Department
-      { wch: 15 }, // Outbound Personel
+      { wch: 25 }, // Authorized Personel
       { wch: 15 }, // Receiver
-      { wch: 45 }, // Reason
+      { wch: 20 }, // Status
       { wch: 20 }, // Remarks
+      { wch: 45 }, // Reason
     ];
 
-    worksheet["!rows"] = [{ hpt: 40 }];
+    worksheet["!rows"] = [{ hpt: 20 }];
 
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Stock Report");

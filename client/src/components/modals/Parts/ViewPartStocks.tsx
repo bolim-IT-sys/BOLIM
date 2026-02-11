@@ -28,7 +28,7 @@ import { InboundOutboundHistoryTable } from "../../tables/InboundOutboundHistory
 import { TransactionHistory } from "./TransactionHistory";
 import InputField from "../../InputField";
 import { DownloadStockData } from "../../downloadButton/DownloadStockData";
-import { months } from "../../../helper/date.helper";
+import { getYears, months } from "../../../helper/date.helper";
 import { ChangeStatusModal } from "./ChangeStatusModal";
 
 interface Props {
@@ -43,23 +43,12 @@ interface ContextType {
 
 export const ViewPartStocks = ({ item, setData, type }: Props) => {
   const { fetchAllParts } = useOutletContext<ContextType>();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
+  // FOR DISPLAYING MAIN MODAL
   const [modalShow, setModalShow] = useState<boolean>(false);
 
-  const [inbounds, setInbounds] = useState<Inbound[]>([]);
-  const [inboundShow, setInboundShow] = useState<boolean>(false);
-  const [inbounding, setInBounding] = useState<boolean>(false);
-
-  const [outbounds, setOutbounds] = useState<Outbound[]>([]);
-  const [outboundShow, setOutboundShow] = useState<boolean>(false);
-  const [outbounding, setOutBounding] = useState<boolean>(false);
-
-  const [showPrinter, setShowPrinter] = useState(false);
-  const [showHistoryModal, setShowHistoryModal] = useState(false);
-
-  const [stockItems, setStockItems] = useState<ITStocks[]>([]);
-
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  // DATA FOR INBOUND AND OUTBOUND
   const [formData, setFormData] = useState<InboundOutboundType>({
     partNumber: item.partNumber,
     partId: item.id!,
@@ -72,17 +61,42 @@ export const ViewPartStocks = ({ item, setData, type }: Props) => {
     outboundDate: new Date().toISOString().split("T")[0],
   });
 
-  const [serialNumber, setSerialNumber] = useState<string>("");
-
+  // FOR DATE SELECTION IN INBOUND OUTBOUND
   const currentMonthOption = currentMonth();
   const [month, setMonth] = useState<number>(currentMonthOption);
   const currentYearOption = currentYear();
   const [chosenYear, setYear] = useState<number>(currentYearOption);
+  const years = getYears();
+
+
+  // FOR INBOUNDING MODAL
+  const [inbounds, setInbounds] = useState<Inbound[]>([]);
+  const [inboundShow, setInboundShow] = useState<boolean>(false);
+  const [inbounding, setInBounding] = useState<boolean>(false);
+
+  // FOR OUTBOUNDING MODAL
+  const [outbounds, setOutbounds] = useState<Outbound[]>([]);
+  const [outboundShow, setOutboundShow] = useState<boolean>(false);
+  const [outbounding, setOutBounding] = useState<boolean>(false);
+
+  // FOR PRINTER CONFIGURATION MODAL AND TRANSACTION HISTORY MODAL
+  const [showPrinter, setShowPrinter] = useState(false);
+  const [showHistoryModal, setShowHistoryModal] = useState(false);
+
+  // INITIAL STORAGE OF STOCK ITEM DATA
+  const [stockItems, setStockItems] = useState<ITStocks[]>([]);
+  const [filteredStockItems, setFilteredStockItems] = useState<ITStocks[]>([]);
+
+
+
+  // USED FOR SENDING THE SERIAL NUMBER ON OUTBOUND FORM
+  const [serialNumber, setSerialNumber] = useState<string>("");
 
   // FOR SEACHING FEATURE
   const [searchTerm, setSearchTerm] = useState("");
   const [searchedParts, setSearchedParts] = useState<ITStocks[]>([]);
 
+  // USEEFFECT TO AUTOMATICALLY ADD SEARCHED TERMS ON SEARCHED DATA
   useEffect(() => {
     if (searchTerm !== "") {
       setSearchedParts(
@@ -95,6 +109,7 @@ export const ViewPartStocks = ({ item, setData, type }: Props) => {
             item.department?.toLowerCase().includes(term) ||
             item.from?.toLowerCase().includes(term) ||
             item.to?.toLowerCase().includes(term) ||
+            item.status?.toLowerCase().includes(term) ||
             item.remarks?.toLowerCase().includes(term)
           );
         }),
@@ -104,6 +119,7 @@ export const ViewPartStocks = ({ item, setData, type }: Props) => {
     }
   }, [searchTerm, stockItems]);
 
+  // FETCHING INBOUNDS, OUTBOUNDS AND STOCK ITEMS
   const fetchTransactions = async () => {
     try {
       setIsLoading(true);
@@ -146,30 +162,68 @@ export const ViewPartStocks = ({ item, setData, type }: Props) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
+  // TO REFRESH TRANSACTIONS EVERY TIME THE MAIN MODAL IS OPENED 
   const handleViewModal = () => {
     setModalShow(true);
     fetchTransactions();
   };
 
-  const startYear = currentYearOption - 5;
+  // GETTING THE DEFAULT START AND END DATE FOR STOCK ITEM DATE SELECTION
+  const today = new Date();
+  // First day of previous month
+  const firstDayPrevMonth = new Date(
+    today.getFullYear(),
+    today.getMonth() - 1,
+    2
+  );
+  // Last day of current month
+  const lastDayCurrentMonth = new Date(
+    today.getFullYear(),
+    today.getMonth() + 1,
+    1
+  );
+  const [startDate, setStartDate] = useState<string>(
+    firstDayPrevMonth.toISOString().split("T")[0]
+  );
+  const [endDate, setEndDate] = useState<string>(
+    lastDayCurrentMonth.toISOString().split("T")[0]
+  );
 
-  const years = [];
+  useEffect(() => {
+    if (!startDate || !endDate) {
+      return;
+    }
+    const start = new Date(startDate);
+    start.setHours(0, 0, 0, 0);
 
-  for (let y = startYear; y <= currentYearOption; y++) {
-    years.push(y);
-  }
+    const end = new Date(endDate);
+    end.setHours(23, 59, 59, 999);
+
+    // FILTERING OUTBOUNDS BASED ON START AND END DATE
+    const filteredStocks = stockItems.filter((stock) => {
+      const date = new Date(stock.updatedAt!);
+      date.setHours(0, 0, 0, 0); // Normalize to start of day
+      return date >= start && date <= end;
+    })
+    setFilteredStockItems(filteredStocks)
+  }, [stockItems, startDate, endDate]);
 
   // FOR UPDATING STATUS  
   const [statusModalShow, setStatusModalShow] = useState(false)
   const [updateData, setUpdateData] = useState<updateStatusType>({
     stockId: 0,
     from: "",
+    newRemarks: "",
+    newStatus: "",
     serialNumber: "",
     remarks: "",
     status: "",
-    newStatus: "",
     reason: "",
   })
+
+  // useEffect(() => {
+  //   console.log("Update Data: ", updateData)
+  // }, [updateData])
 
   return (
     <>
@@ -312,6 +366,38 @@ export const ViewPartStocks = ({ item, setData, type }: Props) => {
               <div>
                 <div className="mb-1">
                   <div className="flex flex-col sm:flex-row gap-1 md:gap-2">
+                    <div className="relative mb-1">
+                      <label
+                        htmlFor="Previous date"
+                        className="absolute -top-2 left-2 block font-medium text-gray-700 bg-neutral-50 px-1"
+                      >
+                        <h6>START DATE:</h6>
+                      </label>
+                      <InputField
+                        label="Previous date"
+                        type="date"
+                        value={startDate}
+                        required={true}
+                        onChange={(value: string) => setStartDate(value)}
+                        autoComplete={`Previous date`}
+                      />
+                    </div>
+                    <div className="relative mb-1">
+                      <label
+                        htmlFor="Latest date"
+                        className="absolute -top-2 left-2 block font-medium text-gray-700 bg-neutral-50 px-1"
+                      >
+                        <h6>END DATE:</h6>
+                      </label>
+                      <InputField
+                        label="Latest date"
+                        type="date"
+                        value={endDate}
+                        required={true}
+                        onChange={(value: string) => setEndDate(value)}
+                        autoComplete={`Latest date`}
+                      />
+                    </div>
                     <div className="w-full sm:w-7/10">
                       <InputField
                         label="Search(serial number, station, department, outbound personel, receiver, remarks)"
@@ -322,7 +408,7 @@ export const ViewPartStocks = ({ item, setData, type }: Props) => {
                     </div>
                     <div className="w-full h-10 sm:w-3/10 flex gap-2">
                       <DownloadStockData
-                        data={searchTerm ? searchedParts : stockItems}
+                        data={searchTerm ? searchedParts : filteredStockItems}
                         item={item}
                         isLoading={isLoading}
                       />
@@ -339,7 +425,7 @@ export const ViewPartStocks = ({ item, setData, type }: Props) => {
                     setUpdateData={setUpdateData}
                     setStatusModalShow={setStatusModalShow}
                     isLoading={isLoading}
-                    stockItems={searchTerm ? searchedParts : stockItems}
+                    stockItems={searchTerm ? searchedParts : filteredStockItems}
                   />
                 </div>
               </div>

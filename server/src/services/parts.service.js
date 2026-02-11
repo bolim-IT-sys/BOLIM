@@ -415,7 +415,7 @@ const updateItemStatus = async (itemData) => {
     // prepare the data
     const updateData = {
       status: itemData.newStatus,
-      remarks: itemData.newStatus === "ready" ? "available" : "on-hold",
+      remarks: itemData.newRemarks ? itemData.newRemarks : "on-hold",
       from: itemData.from,
       reason: itemData.reason,
     };

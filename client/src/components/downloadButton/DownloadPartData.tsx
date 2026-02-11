@@ -13,12 +13,28 @@ interface ItemDataProp {
 
 export const DownloadPartData = ({ parts }: ItemDataProp) => {
   const [modalShow, setShowModal] = useState(false);
+
+  // GETTING THE DEFAULT START AND END DATE
+  const today = new Date();
+  // First day of previous month
+  const firstDayPrevMonth = new Date(
+    today.getFullYear(),
+    today.getMonth() - 1,
+    2
+  );
+  // Last day of current month
+  const lastDayCurrentMonth = new Date(
+    today.getFullYear(),
+    today.getMonth() + 1,
+    1
+  );
   const [prevDate, setPrevDate] = useState<string>(
-    new Date().toISOString().split("T")[0],
+    firstDayPrevMonth.toISOString().split("T")[0]
   );
   const [currentDate, setCurrentDate] = useState<string>(
-    new Date().toISOString().split("T")[0],
+    lastDayCurrentMonth.toISOString().split("T")[0]
   );
+
   const [previousMonth, setPreviousMonth] = useState<number>(0);
   const [previousYear, setPreviousYear] = useState<number>(0);
   const [latestMonth, setLatestMonth] = useState<number>(0);

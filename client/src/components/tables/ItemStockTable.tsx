@@ -1,6 +1,5 @@
 import { useState, type Dispatch, type SetStateAction } from "react";
 import {
-  markItemAsAvailable,
   updateItem,
   type ITStocks,
   type updateStatusType,
@@ -29,7 +28,6 @@ type Props = {
 
 export const ItemStockTable = ({
   setSerialNumber,
-  fetchAllParts,
   fetchTransactions,
   setModalShow,
   setOutboundShow,
@@ -161,40 +159,6 @@ export const ItemStockTable = ({
         stockId: stock.stockId,
         serialNumber: stock.serialNumber,
       }))
-    } else {
-      const resultConfirm = await Swal.fire({
-        icon: "warning",
-        title: `UPDATE STATUS?`,
-        text: "Mark this stock as avaiable.",
-        showCancelButton: true,
-        confirmButtonText: "Yes, update it",
-        cancelButtonText: "Cancel",
-        confirmButtonColor: "#d33",
-      });
-
-      if (!resultConfirm.isConfirmed) {
-        return;
-      }
-
-      const response = await markItemAsAvailable(stock);
-      if (response.success) {
-        // FETCHED LATEST DATA
-        fetchTransactions();
-        fetchAllParts();
-        Swal.fire({
-          icon: "success",
-          title: `UPDATE SUCCESS`,
-          text: `Stock ${stock.serialNumber} is now available for outbound.`,
-          timer: 5000,
-          showConfirmButton: false,
-        });
-      } else {
-        Swal.fire({
-          icon: "error",
-          title: "UPDATE FAILED",
-          text: response.message,
-        });
-      }
     }
 
   };
@@ -465,11 +429,22 @@ export const ItemStockTable = ({
                     </td>
                     <td className="border border-neutral-400 px-3 py-2">
                       <div
-                        className={`flex justify-center items-center flex-col gap-1 p-1.5 rounded ${stock.remarks === "available"
-                          ? "hover:bg-emerald-500 hover:text-neutral-50 text-green-700"
-                          : "hover:bg-red-500 hover:text-neutral-50 text-red-600"
-                          } transition duration-300 ease-in-out cursor-pointer`}
-                        onClick={() => UpdateItemStatus(stock)}
+                        className={`flex justify-center items-center flex-col gap-1 hover:text-neutral-50 p-1.5 rounded 
+                          transition duration-300 ease-in-out 
+                          ${stock.remarks === "unavailable" ? "cursor-not-allowed" : "cursor-pointer"}
+                           ${(stock.status === "ready" || stock.status === "used" || stock.status === "repaired") && stock.remarks === "available"
+                            ? "hover:bg-yellow-500 text-yellow-700"
+                            : stock.remarks === "available"
+                              ? "hover:bg-emerald-500 text-green-700"
+                              : stock.remarks === "on-hold"
+                                ? "hover:bg-orange-500 text-orange-700"
+                                : stock.remarks === "unavailable"
+                                  ? "bg-neutral-200 text-neutral-600 hover:text-neutral-600"
+                                  : "hover:bg-red-500 hover:text-neutral-50 text-red-600"
+                          }`}
+                        onClick={() =>
+                          stock.remarks === "unavailable" ?
+                            null : UpdateItemStatus(stock)}
                       >
                         <h6>
                           {stock.remarks ? `${getStatus(stock.status!)?.toUpperCase()}: ${stock.remarks.toUpperCase()}` : "N/A"}

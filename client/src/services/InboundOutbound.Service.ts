@@ -33,6 +33,7 @@ export interface ITStocks {
   to?: string;
   remarks?: string;
   status?: string;
+  updatedAt?: string;
 }
 
 export interface InboundOutboundType {
@@ -72,6 +73,7 @@ export interface updateStatusType {
   serialNumber?: string;
   remarks?: string;
   status?: string;
+  newRemarks?: string;
   newStatus?: string;
   from?: string;
   reason?: string;

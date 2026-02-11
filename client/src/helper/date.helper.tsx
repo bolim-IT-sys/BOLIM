@@ -1,3 +1,5 @@
+import { currentYear } from "./helper";
+
 export const getDateRange = (range: string) => {
   const today = new Date();
 
@@ -59,3 +61,15 @@ export const months = [
   "NOV",
   "DEC",
 ];
+
+export const getYears = () => {
+  const startYear = currentYear() - 5;
+
+  const years = [];
+
+  for (let y = startYear; y <= currentYear(); y++) {
+    years.push(y);
+  }
+  return years
+}
+
