@@ -12,6 +12,7 @@
 
 /* WebKit browsers */
 .custom_scroll::-webkit-scrollbar {
+  height: 5px;
   width: 5px;
 }
 

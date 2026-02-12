@@ -11,6 +11,7 @@ interface DataProp {
 
 export const DownloadStockData = ({ data, item, isLoading }: DataProp) => {
   const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000/api";
+  const specs = item.specs
 
   const handleExportToExcel = async () => {
     try {
@@ -21,6 +22,7 @@ export const DownloadStockData = ({ data, item, isLoading }: DataProp) => {
         },
         body: JSON.stringify({
           data,
+          specs
         }),
       });
 

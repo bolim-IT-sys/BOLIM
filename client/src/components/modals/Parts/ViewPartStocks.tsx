@@ -189,23 +189,51 @@ export const ViewPartStocks = ({ item, setData, type }: Props) => {
     lastDayCurrentMonth.toISOString().split("T")[0]
   );
 
+  // FILTERING STOCK ITEMS BASED ON DATE AND THEIR STATUS
   useEffect(() => {
-    if (!startDate || !endDate) {
-      return;
-    }
+    if (!startDate || !endDate) return;
+
     const start = new Date(startDate);
     start.setHours(0, 0, 0, 0);
-
     const end = new Date(endDate);
     end.setHours(23, 59, 59, 999);
 
-    // FILTERING OUTBOUNDS BASED ON START AND END DATE
-    const filteredStocks = stockItems.filter((stock) => {
-      const date = new Date(stock.updatedAt!);
-      date.setHours(0, 0, 0, 0); // Normalize to start of day
-      return date >= start && date <= end;
-    })
-    setFilteredStockItems(filteredStocks)
+    const statusOrder: Record<string, number> = {
+      brandnew: 1,
+      ready: 2,
+      used: 2,
+      repaired: 3,
+      forChecking: 4,
+      forRepair: 5,
+      forDisposal: 6,
+      disposed: 7,
+    };
+
+    const availabilityOrder: Record<string, number> = {
+      available: 1,
+      deployed: 2,
+      "on-hold": 3,
+      unavailable: 3,
+    };
+
+    const filteredStocks = stockItems
+      .filter((stock) => {
+        const date = new Date(stock.updatedAt!);
+        date.setHours(0, 0, 0, 0);
+        return date >= start && date <= end;
+      })
+      .sort((a, b) => {
+        const aAvail = availabilityOrder[a.remarks!] ?? 999;
+        const bAvail = availabilityOrder[b.remarks!] ?? 999;
+
+        if (aAvail !== bAvail) return aAvail - bAvail;
+
+        const aOrder = statusOrder[a.status!] ?? 999;
+        const bOrder = statusOrder[b.status!] ?? 999;
+        return aOrder - bOrder;
+      });
+
+    setFilteredStockItems(filteredStocks);
   }, [stockItems, startDate, endDate]);
 
   // FOR UPDATING STATUS  
@@ -366,39 +394,51 @@ export const ViewPartStocks = ({ item, setData, type }: Props) => {
               <div>
                 <div className="mb-1">
                   <div className="flex flex-col sm:flex-row gap-1 md:gap-2">
-                    <div className="relative mb-1">
-                      <label
-                        htmlFor="Previous date"
-                        className="absolute -top-2 left-2 block font-medium text-gray-700 bg-neutral-50 px-1"
-                      >
-                        <h6>START DATE:</h6>
-                      </label>
-                      <InputField
-                        label="Previous date"
-                        type="date"
-                        value={startDate}
-                        required={true}
-                        onChange={(value: string) => setStartDate(value)}
-                        autoComplete={`Previous date`}
-                      />
+                    {/* START ADN END DATE SELECTION */}
+                    <div className="flex justify-center gap-2">
+                      <div className="w-48/100 relative mb-1">
+                        <label
+                          htmlFor="Previous date"
+                          className="absolute -top-2 left-2 block font-medium text-gray-700 bg-neutral-50 px-1"
+                        >
+                          <h6>START DATE:</h6>
+                        </label>
+                        <InputField
+                          label="Previous date"
+                          type="date"
+                          value={startDate}
+                          required={true}
+                          onChange={(value: string) => setStartDate(value)}
+                          autoComplete={`Previous date`}
+                        />
+                      </div>
+                      <div className="w-48/100 relative mb-1">
+                        <label
+                          htmlFor="Latest date"
+                          className="absolute -top-2 left-2 block font-medium text-gray-700 bg-neutral-50 px-1"
+                        >
+                          <h6>END DATE:</h6>
+                        </label>
+                        <InputField
+                          label="Latest date"
+                          type="date"
+                          value={endDate}
+                          required={true}
+                          onChange={(value: string) => setEndDate(value)}
+                          autoComplete={`Latest date`}
+                        />
+                      </div>
                     </div>
-                    <div className="relative mb-1">
-                      <label
-                        htmlFor="Latest date"
-                        className="absolute -top-2 left-2 block font-medium text-gray-700 bg-neutral-50 px-1"
+                    {/* SEARCH BAR */}
+                    <div className="relative w-full sm:w-7/10">
+                      {searchTerm ? (<label
+                        htmlFor="Search(serial number, station, department, outbound personel, receiver, remarks)"
+                        className="absolute right-4 top-5/10 -translate-y-5/10 font-medium text-gray-700 hover:text-gray-900 p-1 cursor-pointer"
+                        onClick={() => setSearchTerm("")}
                       >
-                        <h6>END DATE:</h6>
-                      </label>
-                      <InputField
-                        label="Latest date"
-                        type="date"
-                        value={endDate}
-                        required={true}
-                        onChange={(value: string) => setEndDate(value)}
-                        autoComplete={`Latest date`}
-                      />
-                    </div>
-                    <div className="w-full sm:w-7/10">
+                        <h3 className="flex justify-center items-center"><i className='bx bx-x'></i></h3>
+                      </label>) : (null)}
+
                       <InputField
                         label="Search(serial number, station, department, outbound personel, receiver, remarks)"
                         type="text"
@@ -406,6 +446,7 @@ export const ViewPartStocks = ({ item, setData, type }: Props) => {
                         onChange={(value: string) => setSearchTerm(value)}
                       />
                     </div>
+                    {/* EXPORT TO EXCEL BUTTON */}
                     <div className="w-full h-10 sm:w-3/10 flex gap-2">
                       <DownloadStockData
                         data={searchTerm ? searchedParts : filteredStockItems}
@@ -415,7 +456,7 @@ export const ViewPartStocks = ({ item, setData, type }: Props) => {
                     </div>
                   </div>
                 </div>
-                <div className="relative w-10/10 h-60 md:h-80 overflow-y-scroll custom_scroll border border-gray-400">
+                <div className="relative w-10/10 h-80 md:h-110 overflow-y-scroll custom_scroll border border-gray-400">
                   <ItemStockTable
                     setSerialNumber={setSerialNumber}
                     fetchAllParts={fetchAllParts}

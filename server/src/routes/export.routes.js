@@ -506,265 +506,259 @@ router.post("/export-inventory-to-excel", async (req, res) => {
 });
 
 router.post("/export-items-to-excel", async (req, res) => {
-  const getStatus = (status) => {
-    const remark =
-      status === "brandnew"
-        ? "Brand New"
-        : status === "ready"
-          ? "Used"
-          : status === "forChecking"
-            ? "For Checking"
-            : status === "forRepair"
-              ? "For Repair"
-              : status === "forDisposal"
-                ? "For Disposal"
-                : status === "used"
-                  ? "Used"
-                  : status === "repaired"
-                    ? "Repaired"
-                    : status === "disposed"
-                      ? "Disposed"
-                      : "Undefined";
+  const STATUS_LABEL = {
+    brandnew: "Brand New",
+    ready: "Used",
+    forChecking: "For Checking",
+    forRepair: "For Repair",
+    forDisposal: "For Disposal",
+    used: "Used",
+    repaired: "Repaired",
+    disposed: "Disposed",
+  };
 
-    return remark;
+  // Maps each status to its TABLE GROUP key
+  const STATUS_GROUP = {
+    brandnew: "brandnew",
+    ready: "used_group",
+    used: "used_group",
+    repaired: "used_group",
+    forChecking: "for_group",
+    forRepair: "for_group",
+    forDisposal: "for_group",
+    disposed: "disposed",
+  };
+
+  // Display label for each table group title row
+  const GROUP_TITLE = {
+    brandnew: "Brand New",
+    used_group: "Used / Repaired",
+    for_group: "For Checking / For Repair / For Disposal",
+    disposed: "Disposed",
+  };
+
+  // Title row background color per group
+  const GROUP_COLOR = {
+    brandnew: "D9FCE8",
+    used_group: "FFFF99",
+    for_group: "FABF8F",
+    disposed: "D9D9D9",
+  };
+
+  // Render order of groups
+  const GROUP_ORDER = ["brandnew", "used_group", "for_group", "disposed"];
+
+  // Sort order per individual status within a group
+  const STATUS_SORT = {
+    brandnew: 1,
+    ready: 1,
+    used: 2,
+    repaired: 3,
+    forChecking: 1,
+    forRepair: 2,
+    forDisposal: 3,
+    disposed: 1,
+  };
+
+  const COLUMN_HEADERS = [
+    "Serial Number",
+    "Specifications",
+    "PR Date",
+    "Received Date",
+    "Deployed Date",
+    "Station",
+    "Department",
+    "Authorized Personnel",
+    "Receiver",
+    "Status",
+    "Remarks",
+    "Reason",
+  ];
+
+  const COLUMN_COLORS = [
+    "8497B0",
+    "8497B0", // Serial Number, Specifications
+    "FFD966",
+    "FFD966", // PR Date, Received Date
+    "F4B084",
+    "F4B084",
+    "F4B084",
+    "F4B084",
+    "F4B084", // Deployed Date → Receiver
+    "9BC2E6",
+    "9BC2E6",
+    "9BC2E6", // Status, Remarks, Reason
+  ];
+
+  const COL_WIDTHS = [30, 40, 20, 20, 20, 25, 25, 25, 15, 20, 20, 45];
+
+  const BORDER = {
+    top: { style: "thin", color: { rgb: "000000" } },
+    bottom: { style: "thin", color: { rgb: "000000" } },
+    left: { style: "thin", color: { rgb: "000000" } },
+    right: { style: "thin", color: { rgb: "000000" } },
+  };
+
+  const CENTER = { horizontal: "center", vertical: "center", wrapText: true };
+
+  const setCell = (ws, r, c, value, style) => {
+    const addr = XLSX.utils.encode_cell({ r, c });
+    ws[addr] = { v: value, t: typeof value === "number" ? "n" : "s", s: style };
+  };
+
+  const updateRef = (ws, lastRow) => {
+    ws["!ref"] = XLSX.utils.encode_range({
+      s: { r: 0, c: 0 },
+      e: { r: lastRow, c: COLUMN_HEADERS.length - 1 },
+    });
   };
 
   try {
-    const { data } = req.body;
+    const { data, specs } = req.body;
+    const titleRows = [];
 
-    const excelData = data.map((item) => {
-      return {
-        "Serial Number": item.serialNumber,
-        "PR Date": item.PRDate ? item.PRDate : "N/A",
-        "Received Date": item.receivedDate,
-        "Deployed Date": item.deployedDate ? item.deployedDate : "N/A",
-        Station: item.station ? item.station : "N/A",
-        Department: item.department ? item.department : "N/A",
-        "Authorized Personel": item.from ? item.from : "N/A",
-        Receiver: item.to ? item.to : "N/A",
-        Status: getStatus(item.status).toUpperCase(),
-        Remarks: item.remarks.toUpperCase(),
-        reason: item.reason ? item.reason : "N/A",
-      };
-    });
+    // Bucket items into their group
+    const groups = {};
+    for (const item of data) {
+      const groupKey = STATUS_GROUP[item.status] ?? "disposed";
+      if (!groups[groupKey]) groups[groupKey] = [];
+      groups[groupKey].push(item);
+    }
 
-    // Create worksheet
-    const worksheet = XLSX.utils.json_to_sheet(excelData);
+    // Sort within each group by individual status order
+    for (const key of Object.keys(groups)) {
+      groups[key].sort(
+        (a, b) =>
+          (STATUS_SORT[a.status] ?? 999) - (STATUS_SORT[b.status] ?? 999),
+      );
+    }
 
-    // Insert custom header rows at the top
-    XLSX.utils.sheet_add_aoa(
-      worksheet,
-      [
-        [
-          "Serial Number",
-          "PR Date",
-          "Received Date",
-          "Deployed Date",
-          "Station",
-          "Department",
-          "Authorized Personel",
-          "Receiver",
-          "Status",
-          "Remarks",
-          "Reason",
-        ],
-      ],
-      { origin: "A1" },
-    );
+    const ws = {};
+    ws["!merges"] = [];
+    let currentRow = 0;
 
-    // COLORS FOR COLUMN HEADERS (using hex colors without #)
-    const columnColors = [
-      "F4B084", // Serial Number
-      "FFD966", // PR Date
-      "FFD966", // Received Date
-      "F4B084", // Deployed Date
-      "F4B084", // Station
-      "F4B084", // Department
-      "F4B084", // Authorized Personel
-      "F4B084", // Receiver
-      "9BC2E6", // Status
-      "9BC2E6", // Remarks
-      "9BC2E6", // Reason
-    ];
+    for (const groupKey of GROUP_ORDER) {
+      const items = groups[groupKey];
+      if (!items || items.length === 0) continue; // skip empty groups
 
-    // APPLYING COLORS ON HEADERS
-    const range = XLSX.utils.decode_range(worksheet["!ref"]);
-    for (let C = range.s.c; C <= range.e.c; ++C) {
-      const color = columnColors[C] || "FFFFFF";
+      const title = GROUP_TITLE[groupKey];
+      const color = GROUP_COLOR[groupKey];
+      const numCols = COLUMN_HEADERS.length;
 
-      // Row 1 headers
-      const address1 = XLSX.utils.encode_col(C) + "1";
-      if (worksheet[address1]) {
-        worksheet[address1].s = {
-          alignment: {
-            horizontal: "center",
-            vertical: "center",
-            wrapText: true,
-          },
+      // ── Group Title Row ──────────────────────────────────────────────
+      titleRows.push(currentRow);
+      for (let c = 0; c < numCols; c++) {
+        setCell(ws, currentRow, c, c === 0 ? title.toUpperCase() : "", {
+          alignment: CENTER,
           fill: { fgColor: { rgb: color } },
+          font: { bold: true, sz: 12, color: { rgb: "000000" } },
+          border: BORDER,
+        });
+      }
+      ws["!merges"].push({
+        s: { r: currentRow, c: 0 },
+        e: { r: currentRow, c: numCols - 1 },
+      });
+      currentRow++;
+
+      // ── Column Header Row ────────────────────────────────────────────
+      for (let c = 0; c < numCols; c++) {
+        setCell(ws, currentRow, c, COLUMN_HEADERS[c], {
+          alignment: CENTER,
+          fill: { fgColor: { rgb: COLUMN_COLORS[c] } },
           font: { bold: true, color: { rgb: "000000" } },
-          border: {
-            top: { style: "thin", color: { rgb: "000000" } },
-            bottom: { style: "thin", color: { rgb: "000000" } },
-            left: { style: "thin", color: { rgb: "000000" } },
-            right: { style: "thin", color: { rgb: "000000" } },
-          },
-        };
+          border: BORDER,
+        });
       }
+      currentRow++;
+
+      // ── Data Rows ────────────────────────────────────────────────────
+      for (const item of items) {
+        const row = [
+          item.serialNumber,
+          specs,
+          item.PRDate ?? "N/A",
+          item.receivedDate,
+          item.deployedDate ?? "N/A",
+          item.station ?? "N/A",
+          item.department ?? "N/A",
+          item.from ?? "N/A",
+          item.to ?? "N/A",
+          (STATUS_LABEL[item.status] ?? "Undefined").toUpperCase(),
+          item.remarks?.toUpperCase(),
+          item.reason ?? "N/A",
+        ];
+
+        for (let c = 0; c < row.length; c++) {
+          const val = row[c];
+          const strVal = String(val).toLowerCase();
+          let style = { alignment: CENTER, border: BORDER };
+
+          // N/A dimmed styling for informational columns (0–8)
+          if (c < 9 && strVal === "n/a") {
+            style.font = { color: { rgb: "B0B0B0" }, bold: true };
+          }
+
+          // Status column (c === 9) coloring
+          if (c === 9) {
+            if (strVal === "brand new") {
+              style.fill = { fgColor: { rgb: "D9FCE8" } };
+              style.font = { color: { rgb: "004A24" }, bold: true };
+            } else if (["used", "repaired", "ready"].includes(strVal)) {
+              style.fill = { fgColor: { rgb: "FFFF99" } };
+              style.font = { color: { rgb: "494529" }, bold: true };
+            } else if (
+              ["for checking", "for repair", "for disposal"].includes(strVal)
+            ) {
+              style.fill = { fgColor: { rgb: "FABF8F" } };
+              style.font = { color: { rgb: "800000" }, bold: true };
+            } else if (strVal === "disposed") {
+              style.fill = { fgColor: { rgb: "D9D9D9" } };
+              style.font = { color: { rgb: "262626" }, bold: true };
+            }
+          }
+
+          // Remarks column (c === 10) coloring
+          if (c === 10) {
+            if (strVal === "available") {
+              style.fill = { fgColor: { rgb: "D9FCE8" } };
+              style.font = { color: { rgb: "004A24" }, bold: true };
+            } else {
+              style.fill = { fgColor: { rgb: "FCD7D7" } };
+              style.font = { color: { rgb: "400101" }, bold: true };
+            }
+          }
+
+          setCell(ws, currentRow, c, val, style);
+        }
+        currentRow++;
+      }
+
+      // Spacer row between tables
+      currentRow++;
     }
 
-    // APPLYING BACKGROUND COLORS FOR DATA CELLS (rows 3 and below)
-    const rangeAll = XLSX.utils.decode_range(worksheet["!ref"]);
-    for (let R = 1; R <= rangeAll.e.r; ++R) {
-      for (let C = rangeAll.s.c; C <= rangeAll.e.c; ++C) {
-        const address = XLSX.utils.encode_cell({ r: R, c: C });
+    updateRef(ws, currentRow - 1);
 
-        // FIX: Only apply styles to cells that actually exist
-        if (!worksheet[address]) continue;
-
-        // Apply background color + border + center alignment
-        worksheet[address].s = {
-          alignment: {
-            horizontal: "center",
-            vertical: "center",
-            wrapText: true,
-          },
-          border: {
-            top: { style: "thin", color: { rgb: "000000" } },
-            bottom: { style: "thin", color: { rgb: "000000" } },
-            left: { style: "thin", color: { rgb: "000000" } },
-            right: { style: "thin", color: { rgb: "000000" } },
-          },
-        };
-
-        if (C < 8) {
-          // FIX: Better validation of cell value
-          const cellValue = worksheet[address].v;
-          const strValue = String(cellValue).toUpperCase();
-
-          if (strValue === "N/A") {
-            worksheet[address].s = {
-              ...worksheet[address].s,
-              font: {
-                color: { rgb: "b0b0b0" },
-                bold: true,
-              },
-            };
-          }
-        }
-
-        // APPLYING COLORS ON STATUS DATA CELLS
-        if (C === 8) {
-          // FIX: Better validation of cell value
-          const cellValue = worksheet[address].v;
-          const strValue = String(cellValue).toLowerCase();
-
-          if (strValue === "brand new") {
-            worksheet[address].s = {
-              ...worksheet[address].s,
-              fill: { fgColor: { rgb: "D9FCE8" } },
-              font: {
-                color: { rgb: "004A24" },
-                bold: true,
-              },
-            };
-          }
-          if (
-            strValue === "ready" ||
-            strValue === "repaired" ||
-            strValue === "used"
-          ) {
-            worksheet[address].s = {
-              ...worksheet[address].s,
-              fill: { fgColor: { rgb: "FFFF99" } },
-              font: {
-                color: { rgb: "494529" },
-                bold: true,
-              },
-            };
-          }
-          if (
-            strValue === "for checking" ||
-            strValue === "for cepair" ||
-            strValue === "for cisposal"
-          ) {
-            worksheet[address].s = {
-              ...worksheet[address].s,
-              fill: { fgColor: { rgb: "FABF8F" } },
-              font: {
-                color: { rgb: "800000" },
-                bold: true,
-              },
-            };
-          }
-          if (strValue === "disposed") {
-            worksheet[address].s = {
-              ...worksheet[address].s,
-              fill: { fgColor: { rgb: "D9D9D9" } },
-              font: {
-                color: { rgb: "262626" },
-                bold: true,
-              },
-            };
-          }
-        }
-
-        // === MAKE "Remarks" GREEN IF === "available" and RED if not ===
-        if (C === 9) {
-          // FIX: Better validation of cell value
-          const cellValue = worksheet[address].v;
-          const strValue = String(cellValue).toLowerCase();
-
-          if (strValue === "available") {
-            worksheet[address].s = {
-              ...worksheet[address].s,
-              fill: { fgColor: { rgb: "d9fce8" } },
-              font: {
-                color: { rgb: "004a24" },
-                bold: true,
-              },
-            };
-          } else {
-            worksheet[address].s = {
-              ...worksheet[address].s,
-              fill: { fgColor: { rgb: "fcd7d7" } },
-              font: {
-                color: { rgb: "400101" },
-                bold: true,
-              },
-            };
-          }
-        }
-      }
+    ws["!cols"] = COL_WIDTHS.map((wch) => ({ wch }));
+    const rowsConfig = [];
+    for (const r of titleRows) {
+      rowsConfig[r] = { hpt: 35 }; // 35pt height — change to whatever you want
     }
-
-    // Set column widths
-    worksheet["!cols"] = [
-      { wch: 30 }, // Serial Number
-      { wch: 20 }, // PR Date
-      { wch: 20 }, // Received Date
-      { wch: 20 }, // Deployed Date
-      { wch: 25 }, // Station
-      { wch: 25 }, // Department
-      { wch: 25 }, // Authorized Personel
-      { wch: 15 }, // Receiver
-      { wch: 20 }, // Status
-      { wch: 20 }, // Remarks
-      { wch: 45 }, // Reason
-    ];
-
-    worksheet["!rows"] = [{ hpt: 20 }];
+    ws["!rows"] = rowsConfig;
 
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Stock Report");
+    XLSX.utils.book_append_sheet(workbook, ws, "Stock Report");
 
-    // Generate file buffer
     const excelBuffer = XLSX.write(workbook, {
       type: "buffer",
       bookType: "xlsx",
     });
 
-    res.setHeader("Content-Disposition", `attachment; filename=Sample`);
+    res.setHeader(
+      "Content-Disposition",
+      "attachment; filename=StockReport.xlsx",
+    );
     res.setHeader(
       "Content-Type",
       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -773,7 +767,7 @@ router.post("/export-items-to-excel", async (req, res) => {
     return res.send(excelBuffer);
   } catch (error) {
     console.error("Export error:", error);
-    res
+    return res
       .status(500)
       .json({ error: "Failed to generate Excel", details: error.message });
   }
