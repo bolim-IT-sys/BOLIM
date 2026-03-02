@@ -76,6 +76,7 @@ export interface updateStatusType {
   newRemarks?: string;
   newStatus?: string;
   from?: string;
+  to?: string;
   reason?: string;
 }
 

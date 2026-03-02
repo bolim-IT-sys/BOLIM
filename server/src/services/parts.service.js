@@ -203,7 +203,7 @@ const deletePart = async (partsId) => {
 
 const inboundPart = async (inboundData) => {
   try {
-    const { lotNo, partId, from, quantity, inboundDate } = inboundData;
+    const { partId, from, quantity, inboundDate } = inboundData;
 
     // Hash password before storing
     // console.log("Data received in inbounding: ", inboundData);
@@ -270,10 +270,12 @@ const outboundPart = async (outboundData) => {
 
     // Return parts without password
     return {
+      success: true,
       id: outbound.id,
       quantity: outbound.quantity,
     };
   } catch (error) {
+    console.error("Error creating outbound: ", error);
     throw error;
   }
 };
@@ -299,6 +301,19 @@ const getOutbounds = async (id) => {
     return outbounds;
   } catch (error) {
     console.log("Error Finding Part Outbounds: ", error);
+    throw error;
+  }
+};
+
+const findItemById = async (id) => {
+  try {
+    const item = await ITStock.findOne({
+      where: { id: id },
+    });
+    // console.log("Part ID confirm: ", item);
+    return item;
+  } catch (error) {
+    console.log("Error Finding Item: ", error);
     throw error;
   }
 };
@@ -396,6 +411,39 @@ const updateItem = async (itemData) => {
     };
   } catch (error) {
     console.error("Error Updating item: ", error);
+    throw error;
+  }
+};
+
+const deleteItem = async (itemId, partID) => {
+  try {
+    const item = await ITStock.findByPk(itemId);
+
+    if (!item) {
+      throw new Error("Item not found.");
+    }
+
+    // DELETING INBOUNDS AND OUTBOUNDS FOR THIS ITEM
+    const inbound = await Inbound.findOne({
+      where: { partId: partID },
+      order: [["createdAt", "ASC"]], // optional: choose which one
+    });
+
+    if (inbound) {
+      await inbound.destroy();
+    }
+
+    // IF USER IS PART DELETE
+    await item.destroy({ where: { id: itemId } });
+
+    // console.log("Part deleted successfully.");
+
+    // Return parts without password
+    return {
+      success: true,
+    };
+  } catch (error) {
+    console.error("Error updating parts: ", error);
     throw error;
   }
 };
@@ -545,8 +593,10 @@ module.exports = {
   outboundPart,
   getAllOutbounds,
   getOutbounds,
+  findItemById,
   addItem,
   updateItem,
+  deleteItem,
   updateItemStatus,
   markItemAvailable,
   deployItem,

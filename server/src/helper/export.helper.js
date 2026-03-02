@@ -1,4 +1,4 @@
-export const formatNumberShort = (num) => {
+const formatNumberShort = (num) => {
   if (num >= 1_000_000_000) return (num / 1_000_000_000).toFixed(2) + "B";
   if (num >= 1_000_000) return (num / 1_000_000).toFixed(2) + "M";
   if (num >= 1_000) return (num / 1_000).toFixed(2) + "K";
@@ -6,11 +6,11 @@ export const formatNumberShort = (num) => {
 };
 
 // GETTING CURRENT YEAR
-export const currentYear = () => {
+const currentYear = () => {
   return new Date().getFullYear();
 };
 
-export const monthList = [
+const monthList = [
   "JAN",
   "FEB",
   "MAR",
@@ -26,12 +26,12 @@ export const monthList = [
 ];
 
 // GETTING CURRENT MONTH
-export const currentMonth = () => {
+const currentMonth = () => {
   return new Date().getMonth();
 };
 
 // FORMATTING DATE
-export const formatDate = (date) => {
+const formatDate = (date) => {
   return new Date(date).toLocaleDateString("en-US", {
     year: "numeric",
     month: "short",
@@ -40,7 +40,7 @@ export const formatDate = (date) => {
 };
 
 // COMPUTING INBOUND PER MONTH
-export const getInQuantity = (data, monthAbb, year) => {
+const getInQuantity = (data, monthAbb, year) => {
   return data.reduce((sum, item) => {
     const date = new Date(item.inboundDate);
     const month = new Date(item.inboundDate)
@@ -55,7 +55,7 @@ export const getInQuantity = (data, monthAbb, year) => {
 };
 
 // COMPUTING OUTBOUND PER MONTH
-export const getOutQuantity = (data, monthAbb, year) => {
+const getOutQuantity = (data, monthAbb, year) => {
   return data.reduce((sum, item) => {
     const date = new Date(item.outboundDate);
     const month = new Date(item.outboundDate)
@@ -70,10 +70,10 @@ export const getOutQuantity = (data, monthAbb, year) => {
 };
 
 // FOR COMPUTING OVERALL INBOUND AND OUTBOUND UNTIL CURRENT MONTH AND YEAR
-export const getTotal = (
+const getTotal = (
   data,
   year,
-  month // 0-based month (Jan = 0)
+  month, // 0-based month (Jan = 0)
 ) => {
   return data
     .filter((item) => {
@@ -87,14 +87,14 @@ export const getTotal = (
 };
 
 // FOR COMPUTING TOTAL INBOUND AND OUTBOUND PER YEAR
-export const getTotalByYear = (data, year) => {
+const getTotalByYear = (data, year) => {
   return data
     .filter((item) => new Date(item.date).getFullYear() === year)
     .reduce((sum, item) => sum + item.quantity, 0);
 };
 
 // FOR COMPUTING OUTBOUND AVERAGE WITHOUT CURRENT MONTH
-export const getTotalByYearExcludingCurrentMonth = (data, year, month) => {
+const getTotalByYearExcludingCurrentMonth = (data, year, month) => {
   const currentMonth = month; // 0-based (Jan = 0)
 
   return data
@@ -108,14 +108,14 @@ export const getTotalByYearExcludingCurrentMonth = (data, year, month) => {
 };
 
 // COMPUTING OUTBOUND AVERAGE PER MONTH
-export const getAverageOutboundPerMonth = (data, year, month) => {
+const getAverageOutboundPerMonth = (data, year, month) => {
   return currentMonth() > 0
     ? Math.round(getTotalByYearExcludingCurrentMonth(data, year, month) / month)
     : 0;
 };
 
 // COMPUTING SAFETY STOCK
-export const getSafetyStock = (data, year, month) => {
+const getSafetyStock = (data, year, month) => {
   const averageOutboundPerMonth = getAverageOutboundPerMonth(data, year, month);
 
   if (averageOutboundPerMonth * 2 > 10) {
@@ -123,4 +123,18 @@ export const getSafetyStock = (data, year, month) => {
   } else {
     return 10;
   }
+};
+
+module.exports = {
+  monthList,
+  formatNumberShort,
+  currentYear,
+  currentMonth,
+  formatDate,
+  getInQuantity,
+  getOutQuantity,
+  getTotal,
+  getTotalByYear,
+  getAverageOutboundPerMonth,
+  getSafetyStock,
 };

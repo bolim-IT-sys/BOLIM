@@ -1,5 +1,6 @@
 import axios, { AxiosError } from "axios";
 import type { Inbound, Outbound } from "./InboundOutbound.Service";
+import Swal from "sweetalert2";
 
 export interface Part {
   id: number;
@@ -67,7 +68,7 @@ export async function fetchParts(): Promise<FetchingPartsResponse> {
 }
 
 export async function createPart(
-  formData: AddingPartType
+  formData: AddingPartType,
 ): Promise<PartResponse> {
   try {
     const response = await axios.post(
@@ -77,7 +78,7 @@ export async function createPart(
         headers: {
           "Content-Type": "application/json",
         },
-      }
+      },
     );
     // console.log("creating user");
     if (response.status === 201) {
@@ -91,7 +92,7 @@ export async function createPart(
       const axiosError = error as AxiosError<ApiErrorResponse>;
       console.error(
         "Error creating part:",
-        axiosError.response?.data || axiosError.message
+        axiosError.response?.data || axiosError.message,
       );
 
       // Check if it's a connection error
@@ -124,14 +125,37 @@ export async function createPart(
 
 export async function editPart(
   id: number,
-  formData: FormData | AddingPartType
+  formData: FormData | AddingPartType,
 ): Promise<PartResponse> {
   try {
     const response = await axios.put(
       `${API_URL}/parts/update-part/${id}`,
-      formData
+      formData,
     );
     // console.log("editing user details");
+    if (response.status === 200) {
+      return response.data;
+    } else {
+      return response.data;
+    }
+  } catch (error) {
+    // Handle non-Axios errors
+    console.error("Error updating user:", error);
+    return {
+      success: false,
+      message:
+        error instanceof Error ? error.message : "An unknown error occurred",
+    };
+  }
+}
+
+export async function removePart(id: number): Promise<PartResponse> {
+  try {
+    const response = await axios.delete(`${API_URL}/parts/delete-part/${id}`, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
     if (response.status === 200) {
       return response.data;
     } else {
@@ -143,7 +167,7 @@ export async function editPart(
       const axiosError = error as AxiosError<ApiErrorResponse>;
       console.error(
         "Error creating user:",
-        axiosError.response?.data || axiosError.message
+        axiosError.response?.data || axiosError.message,
       );
 
       // Check if it's a connection error
@@ -174,51 +198,41 @@ export async function editPart(
   }
 }
 
-export async function removePart(id: number): Promise<PartResponse> {
+export async function removeStockItem(
+  stockID: number,
+  partID: number,
+  fetchAllParts: () => void,
+) {
   try {
-    const response = await axios.delete(`${API_URL}/parts/delete-part/${id}`, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    const response = await axios.delete(
+      `${API_URL}/parts/delete-item/${stockID}/${partID}`,
+    );
+
     if (response.status === 200) {
-      return response.data;
+      fetchAllParts();
+      await Swal.fire({
+        title: "Deleted!",
+        text: "Item removed successfully.",
+        icon: "success",
+        confirmButtonColor: "#3085d6",
+      });
     } else {
-      return response.data;
+      await Swal.fire({
+        title: "Error!",
+        text: "Error removing item.",
+        icon: "error",
+        confirmButtonColor: "#d33",
+      });
     }
   } catch (error) {
-    // Type guard for Axios errors
-    if (axios.isAxiosError(error)) {
-      const axiosError = error as AxiosError<ApiErrorResponse>;
-      console.error(
-        "Error creating user:",
-        axiosError.response?.data || axiosError.message
-      );
+    const message =
+      error instanceof Error ? error.message : "An unknown error occurred";
 
-      // Check if it's a connection error
-      if (
-        axiosError.code === "ERR_NETWORK" ||
-        axiosError.message.includes("ERR_CONNECTION_REFUSED")
-      ) {
-        return {
-          success: false,
-          message:
-            "Cannot connect to server. Please check if the server is running.",
-        };
-      }
-
-      return {
-        success: false,
-        message: axiosError.response?.data?.message || axiosError.message,
-      };
-    }
-
-    // Handle non-Axios errors
-    console.error("Error updating user:", error);
-    return {
-      success: false,
-      message:
-        error instanceof Error ? error.message : "An unknown error occurred",
-    };
+    await Swal.fire({
+      title: "Error!",
+      text: message,
+      icon: "error",
+      confirmButtonColor: "#d33",
+    });
   }
 }

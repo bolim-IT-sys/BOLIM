@@ -17,6 +17,7 @@ const {
   updateItemStatus,
   markItemAvailable,
   outboundItem,
+  removeItem,
 } = require("../controllers/parts.controller");
 
 const router = express.Router();
@@ -32,6 +33,7 @@ router.get("/fetch-inbounds/:id", getInbounds);
 
 router.post("/add-item", addingItem);
 router.put("/update-item", updateItem);
+router.delete("/delete-item/:id/:partID", removeItem);
 router.put("/update-status/:serialNumber", updateItemStatus);
 router.put("/mark-item-available/:serialNumber", markItemAvailable);
 router.put("/outbound-item/:serialNumber", outboundItem);

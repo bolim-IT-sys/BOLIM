@@ -13,6 +13,8 @@ import "react-datepicker/dist/react-datepicker.css";
 import { formatStockDate } from "../../helper/date.helper";
 import Swal from "sweetalert2";
 import { getStatus } from "../../helper/helper";
+import DangerButton from "../button/DangerButton";
+import { removeStockItem } from "../../services/Part.Service";
 
 type Props = {
   setSerialNumber: Dispatch<SetStateAction<string>>;
@@ -28,6 +30,7 @@ type Props = {
 
 export const ItemStockTable = ({
   setSerialNumber,
+  fetchAllParts,
   fetchTransactions,
   setModalShow,
   setOutboundShow,
@@ -129,6 +132,23 @@ export const ItemStockTable = ({
     }
   };
 
+  const HandleDelete = async (stocksID: number, partID: number) => {
+
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "This item will be permanently removed.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel",
+    });
+    if (!result.isConfirmed) return
+    // HANDLES DELETING ITEM
+    await removeStockItem(stocksID, partID, fetchAllParts);
+  }
+
   const UpdateItemStatus = async (stock: ITStocks) => {
     // HANDLES CHANGING ITEM'S REMARKS BETWEEN "AVAILABLE" AND "DEPLOYED"
     if (stock.remarks === "available") {
@@ -154,6 +174,7 @@ export const ItemStockTable = ({
       setStatusModalShow(true)
       setUpdateData((prev) => ({
         ...prev,
+        to: stock.to,
         remarks: stock.remarks,
         status: stock.status,
         stockId: stock.stockId,
@@ -495,10 +516,17 @@ export const ItemStockTable = ({
                             />
                           </>
                         ) : (
-                          <PrimaryButton
-                            text="UPDATE"
-                            onClick={() => HandleSetUpdateStock(stock)}
-                          />
+                          <>
+                            <PrimaryButton
+                              text="UPDATE"
+                              onClick={() => HandleSetUpdateStock(stock)}
+                            />
+                            <DangerButton
+                              text="DELETE"
+                              disabled={stock.remarks !== "available"}
+                              onClick={() => HandleDelete(stock.id!, stock.stockId!)}
+                            />
+                          </>
                         )}
                       </div>
                     </td>

@@ -241,6 +241,7 @@ export const ViewPartStocks = ({ item, setData, type }: Props) => {
   const [updateData, setUpdateData] = useState<updateStatusType>({
     stockId: 0,
     from: "",
+    to: "",
     newRemarks: "",
     newStatus: "",
     serialNumber: "",
@@ -492,6 +493,7 @@ export const ViewPartStocks = ({ item, setData, type }: Props) => {
       <Inbounding
         item={item}
         type={type}
+        itemsLength={filteredStockItems.length}
         fetchAllParts={fetchAllParts!}
         setData={setData}
         formData={formData}

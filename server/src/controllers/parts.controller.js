@@ -636,6 +636,50 @@ const updateItem = async (req, res) => {
   }
 };
 
+const removeItem = async (req, res) => {
+  try {
+    const stockID = req.params.id;
+    const partID = req.params.partID;
+
+    // Optional: Validate request body first
+    if (!stockID) {
+      return res.json({
+        message: "Stock ID is required",
+      });
+    }
+    // Check if user exists
+    const existingItem = await partService.findItemById(stockID);
+
+    if (!existingItem) {
+      return res.json({
+        success: false,
+        message: "Item not found.",
+      });
+    }
+
+    const deleteItem = await partService.deleteItem(stockID, partID);
+
+    // Return consistent response structure
+    if (deleteItem.success) {
+      console.log("Item removed successfully!");
+
+      res.status(200).json({
+        success: true,
+        message: "Item removed successfully!",
+        data: deleteItem,
+      });
+    } else {
+      console.error("Error Removing Item");
+    }
+  } catch (err) {
+    // You can add specific error handling here if needed
+    res.json({
+      success: false,
+      message: err.message || "Item deletion failed",
+    });
+  }
+};
+
 const updateItemStatus = async (req, res) => {
   try {
     const serialNumber = req.params.serialNumber;
@@ -664,14 +708,6 @@ const updateItemStatus = async (req, res) => {
       });
     }
 
-    // DATA FOR INBOUNDING
-    const inboundData = {
-      partId: req.body.stockId,
-      from: req.body.from,
-      quantity: 1,
-      inboundDate: new Date().toISOString().split("T")[0],
-    };
-
     // Check if part exists
     const existingItem = await partService.findItemBySerialNumber(serialNumber);
 
@@ -685,17 +721,56 @@ const updateItemStatus = async (req, res) => {
 
     // DATA FOR UPDATING STOCK QUANTITY
     const updateData = {
-      quantity: 1 + isPartExisting.quantity,
+      quantity:
+        req.body.newStatus === "disposed"
+          ? isPartExisting.quantity - 1
+          : isPartExisting.quantity + 1,
     };
 
-    // INBOUNDING ITEM
-    const inbound = await partService.inboundPart(inboundData);
+    // console.log("Update data: ", updateData);
 
-    if (!inbound.success) {
-      return res.json({
-        success: false,
-        message: "Inbound failed.",
-      });
+    if (req.body.newStatus === "disposed") {
+      // DATA FOR OUTBOUNDING
+      const outboundData = {
+        partId: req.body.stockId,
+        from: req.body.from,
+        to: req.body.to,
+        quantity: 1,
+        outboundDate: new Date().toISOString().split("T")[0],
+      };
+      // OUTBOUNDING ITEM
+      const outbound = await partService.outboundPart(outboundData);
+
+      if (!outbound.success) {
+        console.error("Error in outbound: ", outbound);
+        return res.json({
+          success: false,
+          message: "Outbound failed.",
+        });
+      }
+    } else if (
+      req.body.newStatus === "ready" ||
+      req.body.newStatus === "forChecking" ||
+      req.body.newStatus === "forRepair" ||
+      req.body.newStatus === "forDisposal"
+    ) {
+      // DATA FOR INBOUNDING
+      const inboundData = {
+        partId: req.body.stockId,
+        from: req.body.from,
+        quantity: 1,
+        inboundDate: new Date().toISOString().split("T")[0],
+      };
+      // INBOUNDING ITEM
+      const inbound = await partService.inboundPart(inboundData);
+
+      if (!inbound.success) {
+        console.error("Error in inbound: ", inbound);
+        return res.json({
+          success: false,
+          message: "Inbound failed.",
+        });
+      }
     }
 
     // UPDATING STOCK QUANTITY
@@ -920,6 +995,7 @@ module.exports = {
   inboundPart,
   addingItem,
   updateItem,
+  removeItem,
   updateItemStatus,
   markItemAvailable,
   outboundItem,

@@ -28,7 +28,7 @@ const find = async (username) => {
       where: { username: username },
       raw: true,
     });
-    // console.log("Checking user existense... ", user ? `Found` : "Cannot Found");
+    console.log("Checking user existense... ", user ? `Found` : "Cannot Found");
     return user;
   } catch (error) {
     console.log("Error Finding User: ", error);

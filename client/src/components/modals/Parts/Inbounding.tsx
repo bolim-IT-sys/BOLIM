@@ -18,6 +18,7 @@ import { UseZebraPrinter } from "../../../services/ZebraPrinter.Service";
 interface Props {
   item: Part;
   type: string;
+  itemsLength: number,
   fetchAllParts: () => void;
   setData: Dispatch<SetStateAction<Part[]>>;
   formData: InboundOutboundType;
@@ -36,6 +37,7 @@ interface Props {
 export const Inbounding = ({
   item,
   type,
+  itemsLength,
   fetchAllParts,
   setData,
   formData,
@@ -55,7 +57,7 @@ export const Inbounding = ({
   const [itemDetails, setItemDetails] = useState<addItemType>({
     // from: formData.from!,
     stockId: item.id!,
-    serialNumber: `${item.partNumber} ${item.inbounds!.length + 1}`,
+    serialNumber: ``,
     PRDate: "",
     receivedDate: formData.inboundDate!,
   });
@@ -87,11 +89,11 @@ export const Inbounding = ({
   useEffect(() => {
     setItemDetails((prev) => ({
       ...prev,
-      serialNumber: `${item.partNumber} ${item.inbounds!.length + 1}`,
+      serialNumber: `${item.partNumber} ${itemsLength + 1}`,
       receivedDate: formData.inboundDate!,
       PRDate: prev.PRDate,
     }));
-  }, [formData, item]);
+  }, [formData, item, itemsLength]);
 
   const handleInbound = async () => {
     setInBounding(true);
