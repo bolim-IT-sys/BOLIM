@@ -76,7 +76,7 @@ const Modal = ({
               </button>
             </div>
             {/* MODAL BODY */}
-            <div className="pt-3 mb-3">{children}</div>
+            <div className="max-h-130 overflow-y-scroll pt-3 mb-3">{children}</div>
             {footer && (
               <div className="flex flex-col gap-2 border-t border-neutral-300 pt-1">
                 {footer}
