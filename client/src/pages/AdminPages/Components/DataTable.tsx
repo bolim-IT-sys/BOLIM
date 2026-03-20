@@ -469,19 +469,18 @@ export const DataTable = ({
                         <h6>{item.company}</h6>
                       </td>
                       <td
-                        className={`${
-                          computeStocks(item) <
-                          getSafetyStock(
-                            item.outbounds!.map((o) => ({
-                              quantity: o.quantity,
-                              date: String(o.outboundDate),
-                            })),
-                            year,
-                            month,
-                          )
+                        className={`${computeStocks(item) <
+                            getSafetyStock(
+                              item.outbounds!.map((o) => ({
+                                quantity: o.quantity,
+                                date: String(o.outboundDate),
+                              })),
+                              year,
+                              month,
+                            )
                             ? "bg-red-100 text-red-900"
                             : "bg-emerald-100 text-emerald-800"
-                        } text-center border border-neutral-300  px-3 py-2`}
+                          } text-center border border-neutral-300  px-3 py-2`}
                       >
                         <div>
                           <h6 className={`rounded px-1`}>

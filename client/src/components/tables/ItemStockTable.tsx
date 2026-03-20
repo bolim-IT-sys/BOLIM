@@ -15,6 +15,7 @@ import Swal from "sweetalert2";
 import { getStatus } from "../../helper/helper";
 import DangerButton from "../button/DangerButton";
 import { removeStockItem } from "../../services/Part.Service";
+import StatusModal from "../modals/Parts/StatusModal";
 
 type Props = {
   setSerialNumber: Dispatch<SetStateAction<string>>;
@@ -39,6 +40,9 @@ export const ItemStockTable = ({
   isLoading,
   stockItems,
 }: Props) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedStock, setSelectedStock] = useState<any>(null);
+  const [isEditing, setIsEditing] = useState<boolean>(false);
   const [toBeUpdated, setToBeUpdated] = useState<number>(0);
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const [formData, setFormData] = useState<ITStocks>({
@@ -56,6 +60,7 @@ export const ItemStockTable = ({
     remarks: "",
   });
 
+  const handleUpdate = () => { }
   // useEffect(() => {
   //   console.log(formData);
   //   // console.log("Items: ", stockItems);
@@ -278,9 +283,85 @@ export const ItemStockTable = ({
                             autoComplete={`serialNumber`}
                           />
                         ) : (
-                          <h6 className="break-all">{stock.serialNumber}</h6>
+                          <h6 className="break-all cursor-pointer hover:underline" onClick={() => {
+                            setSelectedStock(stock);
+                            setIsOpen(true);
+                          }}>{stock.serialNumber}</h6>
                         )}
                       </div>
+                      <StatusModal isOpen={isOpen} onClose={() => setIsOpen(false)}>
+                        <div className="w-full py-2">
+                          <p>Serial Number: </p>{selectedStock?.serialNumber || ""}
+                        </div>
+                        <div>
+                          <label htmlFor="update" className="font-semibold">Updated By: </label>
+                          <input
+                            className="w-full py-2 px-4 border border-gray-300 rounded-md disabled:border-0"
+                            type="text"
+                            placeholder="Updated by"
+                            value={selectedStock?.department || ""}
+                            disabled={!isEditing}
+                            onChange={(e) =>
+                              setSelectedStock({
+                                ...selectedStock,
+                                department: e.target.value,
+                              })
+                            } />
+                        </div>
+                        <div>
+                          <label htmlFor="remarks" className="font-semibold">Remarks </label>
+                          <input
+                            type="text"
+                            placeholder="Reason"
+                            value={selectedStock?.remarks || ""}
+                            disabled={!isEditing}
+                            onChange={(e) =>
+                              setSelectedStock({
+                                ...selectedStock,
+                                remarks: e.target.value,
+                              })}
+                            className="w-full py-2 px-4 border border-gray-300 rounded-md disabled:border-0" />
+                        </div>
+                        <div>
+                          <select
+                            className="border w-full p-2 mb-4 border-gray-300 rounded-md disabled:border-0 d-none"
+                            value={selectedStock?.status || ""}
+                            disabled={!isEditing}
+                            onChange={(e) =>
+                              setSelectedStock({
+                                ...selectedStock,
+                                status: e.target.value,
+                              })
+                            }
+                          >
+                            <option value="">{selectedStock?.status || ""}</option>
+                            <option value="use">Available</option>
+                            <option value="checking">Checked</option>
+                            <option value="rapair">Repaired</option>
+                            <option value="disposal">Disposed</option>
+                          </select>
+                        </div>
+
+
+                        {isEditing ?
+                          <div className="flex justify-end gap-2">
+                            <SecondaryButton
+                              text="Cancel"
+                              onClick={() => setIsEditing(false)}
+                            />
+                            <SuccessButton text="Save" onClick={handleUpdate} />
+                          </div> :
+                          <div className="flex justify-end gap-2">
+                            <SecondaryButton
+                              text="Cancel"
+                              onClick={() => setIsOpen(false)}
+                            />
+                            <PrimaryButton
+                              text="Edit"
+                              onClick={() => setIsEditing(true)}//HandleSetUpdateStock(stock)
+                            />
+                          </div>}
+                      </StatusModal>
                     </td>
                     <td className="border border-neutral-400 px-3 py-2">
                       <div className="flex justify-center items-center flex-col gap-1">
