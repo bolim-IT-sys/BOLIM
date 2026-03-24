@@ -47,6 +47,21 @@ export const formatStockDate = (dateStr: string): string => {
   return `${mm}/${dd}/${yyyy}`;
 };
 
+export const formatLongDate = (
+  dateInput?: string | Date | null
+): string => {
+  if (!dateInput) return "N/A";
+
+  const date = new Date(dateInput);
+  if (isNaN(date.getTime())) return "N/A";
+
+  return date.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+};
+
 export const months = [
   "JAN",
   "FEB",

@@ -1,8 +1,10 @@
 import { useState, type Dispatch, type SetStateAction } from "react";
 import {
   updateItem,
+  updateTrack,
   type ITStocks,
   type updateStatusType,
+  type updateTrackType,
 } from "../../services/InboundOutbound.Service";
 import SuccessButton from "../button/SuccessButton";
 import InputFieldSmall from "../InputFieldSmall";
@@ -10,7 +12,7 @@ import PrimaryButton from "../button/PrimaryButton";
 import SecondaryButton from "../button/SecondaryButton";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { formatStockDate } from "../../helper/date.helper";
+import { formatStockDate, formatLongDate } from "../../helper/date.helper";
 import Swal from "sweetalert2";
 import { getStatus } from "../../helper/helper";
 import DangerButton from "../button/DangerButton";
@@ -41,7 +43,15 @@ export const ItemStockTable = ({
   stockItems,
 }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedStock, setSelectedStock] = useState<any>(null);
+  const [selectedStock, setSelectedStock] = useState<updateTrackType>({
+    stockId: 0,
+    serialNumber: "",
+    from: "",
+    remarks: "",
+    status: "",
+    receivedDate: null,
+    deployedDate: null,
+  });
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [toBeUpdated, setToBeUpdated] = useState<number>(0);
   const [isSaving, setIsSaving] = useState<boolean>(false);
@@ -60,12 +70,45 @@ export const ItemStockTable = ({
     remarks: "",
   });
 
-  const handleUpdate = () => { }
+  // Tracking Modal
+  const handleUpdate = async () => {
+    const res = await updateTrack(selectedStock);
+
+    if (res.success) {
+      setTimeout(
+        () => {
+          fetchAllParts();
+          fetchTransactions();
+          setIsEditing(false)
+          setIsOpen(false)
+          Swal.fire({
+            icon: "success",
+            title: `UPDATE SUCCESS`,
+            text: res.message,
+            timer: 5000,
+            showConfirmButton: false,
+          });
+        },
+        import.meta.env.VITE_TIME_OUT,
+      );
+    } else {
+      setTimeout(
+        () => {
+          Swal.fire({
+            icon: "error",
+            title: "UPDATE FAILED",
+            text: res.message,
+          });
+        },
+        import.meta.env.VITE_TIME_OUT,
+      );
+    }
+  };
+  // console.log("selectedStock: ", selectedStock)
   // useEffect(() => {
   //   console.log(formData);
   //   // console.log("Items: ", stockItems);
   // }, [formData]);
-
   const HandleSetUpdateStock = (stock: ITStocks) => {
     // SETTING FORMDATA TO BE VALUE OF THE SELECTED STOCKS
     setToBeUpdated(stock.id!);
@@ -217,6 +260,9 @@ export const ItemStockTable = ({
       <table className="w-300 md:w-15/10 lg:w-10/10 table-fixed">
         <thead className="sticky top-0 bg-sky-200 ">
           <tr>
+            <th className="w-[3%] bg-sky-200 border border-neutral-400 text-neutral-900 text-center">
+              <h5>No.</h5>
+            </th>
             <th className="w-4/30 bg-sky-200 border border-neutral-400 px-3 py-2 text-neutral-900 text-center">
               <h5>SERIAL NUMBER</h5>
             </th>
@@ -247,6 +293,9 @@ export const ItemStockTable = ({
             <th className="md:w-3/20 lg:w-2/10  bg-sky-200 border border-neutral-400 px-3 py-2 text-neutral-900 text-center">
               <h5>REASON</h5>
             </th>
+            {/*<th className="bg-sky-2 00 border border-neutral-400 px-3 py-2 text-neutral-900 text-center">
+              <h5>PROGRESS</h5>
+            </th>*/}
             <th className="bg-sky-600 border border-neutral-400 px-3 py-2 text-neutral-50 text-center">
               <h5>ACTIONS</h5>
             </th>
@@ -267,8 +316,9 @@ export const ItemStockTable = ({
           ) : (
             <>
               {stockItems.length > 0 ? (
-                stockItems.map((stock) => (
+                stockItems.map((stock, index) => (
                   <tr key={stock.id}>
+                    <td className="border border-neutral-400">{index + 1}</td>
                     <td className="border border-neutral-400 px-3 py-2">
                       <div className="flex justify-center items-center flex-col gap-1">
                         {toBeUpdated === stock.id ? (
@@ -289,79 +339,6 @@ export const ItemStockTable = ({
                           }}>{stock.serialNumber}</h6>
                         )}
                       </div>
-                      <StatusModal isOpen={isOpen} onClose={() => setIsOpen(false)}>
-                        <div className="w-full py-2">
-                          <p>Serial Number: </p>{selectedStock?.serialNumber || ""}
-                        </div>
-                        <div>
-                          <label htmlFor="update" className="font-semibold">Updated By: </label>
-                          <input
-                            className="w-full py-2 px-4 border border-gray-300 rounded-md disabled:border-0"
-                            type="text"
-                            placeholder="Updated by"
-                            value={selectedStock?.department || ""}
-                            disabled={!isEditing}
-                            onChange={(e) =>
-                              setSelectedStock({
-                                ...selectedStock,
-                                department: e.target.value,
-                              })
-                            } />
-                        </div>
-                        <div>
-                          <label htmlFor="remarks" className="font-semibold">Remarks </label>
-                          <input
-                            type="text"
-                            placeholder="Reason"
-                            value={selectedStock?.remarks || ""}
-                            disabled={!isEditing}
-                            onChange={(e) =>
-                              setSelectedStock({
-                                ...selectedStock,
-                                remarks: e.target.value,
-                              })}
-                            className="w-full py-2 px-4 border border-gray-300 rounded-md disabled:border-0" />
-                        </div>
-                        <div>
-                          <select
-                            className="border w-full p-2 mb-4 border-gray-300 rounded-md disabled:border-0 d-none"
-                            value={selectedStock?.status || ""}
-                            disabled={!isEditing}
-                            onChange={(e) =>
-                              setSelectedStock({
-                                ...selectedStock,
-                                status: e.target.value,
-                              })
-                            }
-                          >
-                            <option value="">{selectedStock?.status || ""}</option>
-                            <option value="use">Available</option>
-                            <option value="checking">Checked</option>
-                            <option value="rapair">Repaired</option>
-                            <option value="disposal">Disposed</option>
-                          </select>
-                        </div>
-
-
-                        {isEditing ?
-                          <div className="flex justify-end gap-2">
-                            <SecondaryButton
-                              text="Cancel"
-                              onClick={() => setIsEditing(false)}
-                            />
-                            <SuccessButton text="Save" onClick={handleUpdate} />
-                          </div> :
-                          <div className="flex justify-end gap-2">
-                            <SecondaryButton
-                              text="Cancel"
-                              onClick={() => setIsOpen(false)}
-                            />
-                            <PrimaryButton
-                              text="Edit"
-                              onClick={() => setIsEditing(true)}//HandleSetUpdateStock(stock)
-                            />
-                          </div>}
-                      </StatusModal>
                     </td>
                     <td className="border border-neutral-400 px-3 py-2">
                       <div className="flex justify-center items-center flex-col gap-1">
@@ -578,6 +555,11 @@ export const ItemStockTable = ({
                         )}
                       </div>
                     </td>
+                    {/*<td className="border border-neutral-400 px-3 py-2">
+                      <div
+                        className={`flex justify-center items-center flex-col gap-1`}
+                      ><div className="bg-green-400 p-2 rounded-4xl"><h6>completed</h6></div></div>
+                    </td>*/}
                     <td className="border border-neutral-400 px-3 py-2">
                       <div
                         className={`flex justify-center items-center flex-col gap-1`}
@@ -629,6 +611,84 @@ export const ItemStockTable = ({
           )}
         </tbody>
       </table>
+      <StatusModal isOpen={isOpen} onClose={() => setIsOpen(false)}>
+        <div className="flex mb-4 items-center justify-center">
+          <div className="w-auto p-2">Date Received:
+            <p>{selectedStock.receivedDate
+              ? formatLongDate(String(selectedStock?.receivedDate))
+              : "N/A"}</p>
+          </div>
+          <div className="w-auto p-2">
+            <p>Serial Number: </p>{selectedStock?.serialNumber || ""}
+          </div>
+          <div className="p-2 flex flex-col">
+            <label htmlFor="update">Updated By: </label>
+            <input
+              className="w-fit py-2 px-4 border border-gray-300 outline-blue-400 rounded-md disabled:border-0 text-center"
+              type="text"
+              placeholder="Updated by"
+              value={selectedStock?.from || ""}
+              disabled={!isEditing}
+              onChange={(e) =>
+                setSelectedStock({
+                  ...selectedStock,
+                  from: e.target.value,
+                })
+              } />
+          </div>
+          <div className="p-2 flex flex-col">
+            <label htmlFor="remarks">Remarks </label>
+            <input
+              type="text"
+              placeholder="Reason"
+              value={selectedStock?.status || ""}
+              disabled={!isEditing}
+              onChange={(e) =>
+                setSelectedStock({
+                  ...selectedStock,
+                  status: e.target.value,
+                })}
+              className="w-full py-2 px-4 border border-gray-300 outline-blue-400 rounded-md disabled:border-0 text-center" />
+          </div>
+          <div className="p-2">
+            <select
+              className="border w-full p-2 mb-4 mt-1 appearance-none border-gray-300 outline-blue-400 rounded-3xl disabled:border-0 text-center focus:outline-none"
+              value={selectedStock?.remarks || ""}
+              disabled={!isEditing}
+              onChange={(e) =>
+                setSelectedStock({
+                  ...selectedStock,
+                  remarks: e.target.value,
+                })
+              }
+            >
+              <option value="">{selectedStock?.remarks || ""}</option>
+              <option value="available">Available</option>
+              <option value="deployed">Deployed</option>
+              <option value="on-hold">On-hold</option>
+            </select>
+          </div>
+        </div>
+
+        {isEditing ?
+          <div className="flex justify-end gap-2">
+            <SecondaryButton
+              text="Cancel"
+              onClick={() => setIsEditing(false)}
+            />
+            <SuccessButton text="Save" onClick={handleUpdate} />
+          </div> :
+          <div className="flex justify-end gap-2">
+            <SecondaryButton
+              text="Cancel"
+              onClick={() => setIsOpen(false)}
+            />
+            <PrimaryButton
+              text="Edit"
+              onClick={() => setIsEditing(true)}//HandleSetUpdateStock(stock)
+            />
+          </div>}
+      </StatusModal>
     </>
   );
 };

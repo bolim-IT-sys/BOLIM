@@ -80,6 +80,16 @@ export interface updateStatusType {
   reason?: string;
 }
 
+export interface updateTrackType {
+  stockId?: number;
+  serialNumber?: string;
+  from?: string;
+  remarks?: string;
+  status?: string;
+  receivedDate: Date | null;
+  deployedDate?: Date | null;
+}
+
 export interface InboundOutboundResponse {
   success: boolean;
   message?: string;
@@ -102,6 +112,12 @@ export interface outboundItemResponse {
   success: boolean;
   message?: string;
   data?: ITStocks;
+}
+
+export interface updateTrackResponse {
+  success: boolean;
+  message?: string;
+  data?: updateTrackType;
 }
 
 export interface FetchingOutboundsResponse {
@@ -460,6 +476,26 @@ export async function addingItem(
       success: false,
       message:
         "Something went wrong while fetching parts. Check your internet connection and try again.",
+    };
+  }
+}
+
+export async function updateTrack(
+  item: updateTrackType,
+): Promise<updateTrackResponse> {
+  try {
+    const response = await axios.put<updateTrackResponse>(
+      `${API_URL}/parts/update-item`,
+      item,
+    );
+
+    return response.data;
+  } catch (error) {
+    console.log(error);
+    return {
+      success: false,
+      message:
+        "Something went wrong. Check your internet connection and try again.",
     };
   }
 }
