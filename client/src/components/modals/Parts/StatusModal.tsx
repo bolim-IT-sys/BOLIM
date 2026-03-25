@@ -21,18 +21,27 @@ const Modal: React.FC<ModalProps> = ({
             onClick={onClose} // close when clicking outside
         >
             <div
-                className="bg-white p-5 rounded-2xl w-96 border border-gray-400"
+                className="bg-white p-5 rounded-2xl w-auto border border-gray-400"
                 onClick={(e) => e.stopPropagation()} // prevent closing when clicking inside
             >
                 {/* Header */}
                 <div className="flex justify-between items-center mb-3">
                     <h2 className="text-lg font-bold">{title || "Status"}</h2>
                     <button
+                        className="bg-red-300 hover:bg-red-400 text-neutral-50 transition rounded duration-200 size-9 cursor-pointer"
+                        onClick={onClose}
+                        aria-label="Close"
+                    >
+                        <h4 className="flex justify-center items-center">
+                            <i className="bx  bx-x"></i>
+                        </h4>
+                    </button>
+                    {/*<button
                         className="text-gray-500 hover:text-black"
                         onClick={onClose}
                     >
                         ✕
-                    </button>
+                    </button>*/}
                 </div>
 
                 {/* Body */}
