@@ -86,6 +86,7 @@ export interface updateTrackType {
   from?: string;
   remarks?: string;
   status?: string;
+  PRDate: string | null;
   receivedDate: Date | null;
   deployedDate?: Date | null;
 }

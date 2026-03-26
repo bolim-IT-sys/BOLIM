@@ -49,6 +49,7 @@ export const ItemStockTable = ({
     from: "",
     remarks: "",
     status: "",
+    PRDate: "",
     receivedDate: null,
     deployedDate: null,
   });
@@ -293,9 +294,9 @@ export const ItemStockTable = ({
             <th className="md:w-3/20 lg:w-2/10  bg-sky-200 border border-neutral-400 px-3 py-2 text-neutral-900 text-center">
               <h5>REASON</h5>
             </th>
-            {/*<th className="bg-sky-2 00 border border-neutral-400 px-3 py-2 text-neutral-900 text-center">
+            <th className="bg-sky-2 00 border border-neutral-400 px-3 py-2 text-neutral-900 text-center">
               <h5>PROGRESS</h5>
-            </th>*/}
+            </th>
             <th className="bg-sky-600 border border-neutral-400 px-3 py-2 text-neutral-50 text-center">
               <h5>ACTIONS</h5>
             </th>
@@ -555,11 +556,16 @@ export const ItemStockTable = ({
                         )}
                       </div>
                     </td>
-                    {/*<td className="border border-neutral-400 px-3 py-2">
+                    <td className="border border-neutral-400 px-3 py-2">
                       <div
                         className={`flex justify-center items-center flex-col gap-1`}
-                      ><div className="bg-green-400 p-2 rounded-4xl"><h6>completed</h6></div></div>
-                    </td>*/}
+                      >
+                        {stock.remarks === 'deployed'
+                          ? <div className="bg-green-400 p-2 rounded-4xl cursor-default"><h5>completed</h5></div> : stock.remarks === "on-hold"
+                            ? <div className="bg-orange-400 p-2 rounded-4xl cursor-default"><h5>on-hold</h5></div> : stock.remarks === "unavailable"
+                              ? <div className="bg-gray-400 p-2 rounded-4xl cursor-default"><h5>disposed</h5></div> : ""}
+                      </div>
+                    </td>
                     <td className="border border-neutral-400 px-3 py-2">
                       <div
                         className={`flex justify-center items-center flex-col gap-1`}
@@ -612,63 +618,103 @@ export const ItemStockTable = ({
         </tbody>
       </table>
       <StatusModal isOpen={isOpen} onClose={() => setIsOpen(false)}>
-        <div className="flex mb-4 items-center justify-center">
-          <div className="w-auto p-2">Date Received:
-            <p>{selectedStock.receivedDate
-              ? formatLongDate(String(selectedStock?.receivedDate))
-              : "N/A"}</p>
-          </div>
-          <div className="w-auto p-2">
-            <p>Serial Number: </p>{selectedStock?.serialNumber || ""}
-          </div>
-          <div className="p-2 flex flex-col">
-            <label htmlFor="update">Updated By: </label>
-            <input
-              className="w-fit py-2 px-4 border border-gray-300 outline-blue-400 rounded-md disabled:border-0 text-center"
-              type="text"
-              placeholder="Updated by"
-              value={selectedStock?.from || ""}
-              disabled={!isEditing}
-              onChange={(e) =>
-                setSelectedStock({
-                  ...selectedStock,
-                  from: e.target.value,
-                })
-              } />
-          </div>
-          <div className="p-2 flex flex-col">
-            <label htmlFor="remarks">Remarks </label>
-            <input
-              type="text"
-              placeholder="Reason"
-              value={selectedStock?.status || ""}
-              disabled={!isEditing}
-              onChange={(e) =>
-                setSelectedStock({
-                  ...selectedStock,
-                  status: e.target.value,
-                })}
-              className="w-full py-2 px-4 border border-gray-300 outline-blue-400 rounded-md disabled:border-0 text-center" />
-          </div>
-          <div className="p-2">
-            <select
-              className="border w-full p-2 mb-4 mt-1 appearance-none border-gray-300 outline-blue-400 rounded-3xl disabled:border-0 text-center focus:outline-none"
-              value={selectedStock?.remarks || ""}
-              disabled={!isEditing}
-              onChange={(e) =>
-                setSelectedStock({
-                  ...selectedStock,
-                  remarks: e.target.value,
-                })
-              }
-            >
-              <option value="">{selectedStock?.remarks || ""}</option>
-              <option value="available">Available</option>
-              <option value="deployed">Deployed</option>
-              <option value="on-hold">On-hold</option>
-            </select>
-          </div>
-        </div>
+        <table className="mb-4 items-center justify-center">
+          <thead>
+            <th className="bg-sky-200 border border-neutral-400 px-3 py-2 text-neutral-900 text-center">
+              PR Date:
+            </th>
+            <th className="bg-sky-200 border border-neutral-400 px-3 py-2 text-neutral-900 text-center">
+              Date Received:
+            </th>
+            <th className="bg-sky-200 border border-neutral-400 px-3 py-2 text-neutral-900 text-center">
+              Serial Number:
+            </th>
+            {selectedStock.remarks === "on-hold" ?
+              <>
+                <th className="bg-sky-200 border border-neutral-400 px-3 py-2 text-neutral-900 text-center">
+                  Repair Started:
+                </th>
+                <th className="bg-sky-200 border border-neutral-400 px-3 py-2 text-neutral-900 text-center">
+                  Repair Ended:
+                </th>
+              </> : ""}
+            <th className="bg-sky-200 border border-neutral-400 px-3 py-2 text-neutral-900 text-center">
+              Updated By:
+            </th>
+            <th className="bg-sky-200 border border-neutral-400 px-3 py-2 text-neutral-900 text-center">
+              Remarks
+            </th>
+          </thead>
+          <tbody>
+            <tr>
+              <td className="border border-neutral-400 px-3 py-2">
+                {selectedStock.PRDate
+                  ? formatLongDate(String(selectedStock?.PRDate))
+                  : "N/A"}
+              </td>
+              <td className="border border-neutral-400 px-3 py-2">
+                {selectedStock.receivedDate
+                  ? formatLongDate(String(selectedStock?.receivedDate))
+                  : "N/A"}
+              </td>
+              <td className="border border-neutral-400 px-3 py-2">{selectedStock?.serialNumber || ""}</td>
+              {selectedStock.remarks === "on-hold" ?
+                <>
+                  <td className="border border-neutral-400 px-3 py-2">March 24, 2026</td>
+                  <td className="border border-neutral-400 px-3 py-2">March 25, 2026</td>
+                </> : ""}
+              <td className="border border-neutral-400 px-3 py-2">
+                <input
+                  className="w-fit py-2 px-4 border border-gray-300 outline-blue-400 rounded-md disabled:border-0 text-center"
+                  type="text"
+                  placeholder="Updated by"
+                  value={selectedStock?.from || ""}
+                  disabled={!isEditing}
+                  onChange={(e) =>
+                    setSelectedStock({
+                      ...selectedStock,
+                      from: e.target.value,
+                    })
+                  } />
+              </td>
+              <td className="border border-neutral-400 px-3 py-2">
+                <input
+                  type="text"
+                  placeholder="Reason"
+                  value={selectedStock?.status || ""}
+                  disabled={!isEditing}
+                  onChange={(e) =>
+                    setSelectedStock({
+                      ...selectedStock,
+                      status: e.target.value,
+                    })}
+                  className="w-full py-2 px-4 border border-gray-300 outline-blue-400 rounded-md disabled:border-0 text-center"
+                />
+              </td>
+              <div className="p-2">
+                <select
+                  className={`border w-full p-2 mb-4 mt-1 appearance-none border-gray-300 outline-blue-400 rounded-3xl disabled:border-0 text-center focus:outline-none
+                    ${selectedStock.remarks === "deployed" ? "bg-green-400" : selectedStock.remarks === "on-hold" ?
+                      "bg-orange-400" : selectedStock.remarks === "unavailable" ? "bg-gray-400" : ""}
+                  `}
+                  value={selectedStock?.remarks || ""}
+                  disabled={!isEditing}
+                  onChange={(e) =>
+                    setSelectedStock({
+                      ...selectedStock,
+                      remarks: e.target.value,
+                    })
+                  }
+                >
+                  <option value="">{selectedStock?.remarks || ""}</option>
+                  <option value="available">Available</option>
+                  <option value="deployed">Deployed</option>
+                  <option value="on-hold">On-hold</option>
+                </select>
+              </div>
+            </tr>
+          </tbody>
+        </table>
 
         {isEditing ?
           <div className="flex justify-end gap-2">
