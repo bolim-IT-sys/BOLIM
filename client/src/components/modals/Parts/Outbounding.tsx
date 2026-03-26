@@ -12,6 +12,7 @@ import {
 } from "../../../services/InboundOutbound.Service";
 import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
 import Swal from "sweetalert2";
+import Select, { type SingleValue } from "react-select"
 
 interface Props {
   item: Part;
@@ -29,6 +30,61 @@ interface Props {
   setModalShow: (value: boolean) => void;
   handleChange: (field: string, value: string) => void;
 }
+// Select Options
+type OptionType = {
+  value: string;
+  label: string;
+};
+const station: OptionType[] = [
+  { value: "Sub1", label: "Sub1" },
+  { value: "Sub2", label: "Sub2" },
+  { value: "Sub3", label: "Sub3" },
+  { value: "Sub4", label: "Sub4" },
+  { value: "Sub5", label: "Sub5" },
+  { value: "Sub6", label: "Sub6" },
+  { value: "Sub7", label: "Sub7" },
+  { value: "Sub8", label: "Sub8" },
+  { value: "Sub9", label: "Sub9" },
+  { value: "Sub10", label: "Sub10" },
+  { value: "Material", label: "Material" },
+  { value: "Rework", label: "Rework" },
+  { value: "Packing", label: "Packing" },
+  { value: "Dimension", label: "Dimension" },
+  { value: "Production", label: "Production" },
+  { value: "Wrap up", label: "Wrap up" },
+  { value: "Vision", label: "Vision" },
+  { value: "Airleak", label: "Airleak" },
+  { value: "Circuit", label: "Circuit" },
+  { value: "Fuse and Relay", label: "Fuse and Relay" },
+];
+const department: OptionType[] = [
+  { value: "Assembly", label: "Assembly" },
+  { value: "Cutting & Crimpping", label: "Cutting & Crimpping" },
+  { value: "Line 1", label: "Line 1" },
+  { value: "Line 2", label: "Line 2" },
+  { value: "Line 3", label: "Line 3" },
+  { value: "Line 4", label: "Line 4" },
+  { value: "Line 5", label: "Line 5" },
+  { value: "Line 6", label: "Line 6" },
+  { value: "Line 7", label: "Line 7" },
+  { value: "Line 8", label: "Line 8" },
+  { value: "Line 9", label: "Line 9" },
+  { value: "Line 10", label: "Line 10" },
+  { value: "Line 11", label: "Line 11" },
+  { value: "Line 12", label: "Line 12" },
+  { value: "Line 13", label: "Line 13" },
+  { value: "Line 14", label: "Line 14" },
+  { value: "Line 15", label: "Line 15" },
+  { value: "Line 16", label: "Line 16" },
+  { value: "Line 17", label: "Line 17" },
+  { value: "Line 18", label: "Line 18" },
+  { value: "Line 19", label: "Line 19" },
+  { value: "Planning", label: "Planning" },
+  { value: "Quality Control", label: "Quality Control" },
+  { value: "Technology 1", label: "Technology 1" },
+  { value: "Technology 2", label: "Technology 2" },
+  { value: "Warehouse Plannig", label: "Warehouse Plannig" },
+];
 
 export const Outbounding = ({
   item,
@@ -69,8 +125,74 @@ export const Outbounding = ({
       department: prev.department,
     }));
   }, [formData, item, serialNumber]);
+  // Test code ONLY! ------------------------
+  const handleOutbound = async (action: "pending" | "on_hold" | "completed") => {
+    setOutBounding(true);
+    try {
+      if (type === "it") {
+        // DEPLOYING THE ITEM IN THE DATABASE FIRST
+        const deployItem = await outboundItem({
+          ...itemDetails,
+          remarks: action,
+        });
 
-  const handleOutbound = async () => {
+        if (!deployItem.success) {
+          // IF FAILED RETURN ERROR
+          setTimeout(
+            () => {
+              setOutboundShow(false);
+              return Swal.fire({
+                icon: "error",
+                title: "Outbound Failed",
+                text: deployItem.message,
+              }).then(() => {
+                setOutboundShow(true);
+              });
+            },
+            import.meta.env.VITE_TIME_OUT,
+          );
+        }
+        if (action === "completed") {
+          await outboundPart(
+            item,
+            formData,
+            setFormData,
+            setOutboundShow,
+            setModalShow,
+            fetchTransactions,
+            fetchAllParts,
+            setData,
+            setItemDetails,
+          );
+        }
+      } else {
+        await outboundPart(
+          item,
+          formData,
+          setFormData,
+          setOutboundShow,
+          setModalShow,
+          fetchTransactions,
+          fetchAllParts,
+          setData,
+          setItemDetails,
+        );
+      }
+
+      // console.log("deploying stock item.");
+    } catch (error) {
+      console.error("Unexpecter error occured: ", error);
+    } finally {
+      setTimeout(
+        () => {
+          setOutBounding(false);
+        },
+        import.meta.env.VITE_TIME_OUT,
+      );
+    }
+  };
+  //--------------------------
+  {/*const handleOutbound = async () => {
     setOutBounding(true);
     try {
       if (type === "it") {
@@ -130,7 +252,7 @@ export const Outbounding = ({
         import.meta.env.VITE_TIME_OUT,
       );
     }
-  };
+  };*/}
 
   // CHECKING IF THE FORM IS COMPLETE BEFORE ENABLING THE SUBMIT BUTTON
   const incompleteForm = () => {
@@ -164,15 +286,14 @@ export const Outbounding = ({
         title={
           <>
             <h4 className="w-55 sm:w-100 text-start">
-              {`OUTBOUND ${
-                type === "pin"
-                  ? "PIN"
-                  : type === "it"
-                    ? "ITEM"
-                    : type === "material"
-                      ? "MATERIAL"
-                      : "INVALID TYPE"
-              } (${item.partNumber})`}
+              {`OUTBOUND ${type === "pin"
+                ? "PIN"
+                : type === "it"
+                  ? "ITEM"
+                  : type === "material"
+                    ? "MATERIAL"
+                    : "INVALID TYPE"
+                } (${item.partNumber})`}
             </h4>
           </>
         }
@@ -188,9 +309,9 @@ export const Outbounding = ({
                 }}
               />
               <SuccessButton
-                text="CONFIRM"
+                text="Request"
                 loadingText="OUTBOUNDING"
-                onClick={handleOutbound}
+                onClick={() => handleOutbound("pending")}
                 isLoading={outbounding}
                 disabled={outbounding || incompleteForm()}
               />
@@ -260,15 +381,15 @@ export const Outbounding = ({
                 >
                   <p>STATION</p>
                 </label>
-                <InputField
-                  label="STATION"
-                  type="text"
-                  value={itemDetails.station!}
-                  onChange={(value: string) =>
-                    setItemDetails((prev) => ({ ...prev, station: value }))
-                  }
-                  autoComplete={`station`}
-                />
+                <div className="w-full">
+                  <Select<OptionType>
+                    options={station}
+                    onChange={(option: SingleValue<OptionType>) =>
+                      setItemDetails((prev) => ({ ...prev, station: option?.value || "" }))}
+                    isSearchable
+                    placeholder="Select Station"
+                  />
+                </div>
               </div>
               <div className="mb-1">
                 <label
@@ -277,15 +398,15 @@ export const Outbounding = ({
                 >
                   <p>DEPARTMENT</p>
                 </label>
-                <InputField
-                  label="DEPARTMENT"
-                  type="text"
-                  value={itemDetails.department!}
-                  onChange={(value: string) =>
-                    setItemDetails((prev) => ({ ...prev, department: value }))
-                  }
-                  autoComplete={`department`}
-                />
+                <div className="w-full">
+                  <Select<OptionType>
+                    options={department}
+                    onChange={(option: SingleValue<OptionType>) =>
+                      setItemDetails((prev) => ({ ...prev, department: option?.value || "" }))}
+                    isSearchable
+                    placeholder="Select Department"
+                  />
+                </div>
               </div>
               <div className="mb-1">
                 <label
@@ -338,8 +459,8 @@ export const Outbounding = ({
               autoComplete={`outboundDate`}
             />
           </div>
-        </div>
-      </Modal>
+        </div >
+      </Modal >
     </>
   );
 };
