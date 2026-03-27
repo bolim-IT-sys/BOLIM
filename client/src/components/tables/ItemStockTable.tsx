@@ -18,6 +18,7 @@ import { getStatus } from "../../helper/helper";
 import DangerButton from "../button/DangerButton";
 import { removeStockItem } from "../../services/Part.Service";
 import StatusModal from "../modals/Parts/StatusModal";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   setSerialNumber: Dispatch<SetStateAction<string>>;
@@ -70,7 +71,7 @@ export const ItemStockTable = ({
     to: "",
     remarks: "",
   });
-
+  const { t } = useTranslation();
   // Tracking Modal
   const handleUpdate = async () => {
     const res = await updateTrack(selectedStock);
@@ -262,43 +263,43 @@ export const ItemStockTable = ({
         <thead className="sticky top-0 bg-sky-200 ">
           <tr>
             <th className="w-[3%] bg-sky-200 border border-neutral-400 text-neutral-900 text-center">
-              <h5>No.</h5>
+              <h5>{t("table.no.")}</h5>
             </th>
             <th className="w-4/30 bg-sky-200 border border-neutral-400 px-3 py-2 text-neutral-900 text-center">
-              <h5>SERIAL NUMBER</h5>
+              <h5>{t("table.sn")}</h5>
             </th>
             <th className="bg-sky-200 border border-neutral-400 px-3 py-2 text-neutral-900 text-center">
-              <h5>PR DATE</h5>
+              <h5>{t("table.prd")}</h5>
             </th>
             <th className="bg-sky-200 border border-neutral-400 px-3 py-2 text-neutral-900 text-center">
-              <h5>RECIEVED DATE</h5>
+              <h5>{t("table.rd")}</h5>
             </th>
             <th className="bg-sky-200 border border-neutral-400 px-3 py-2 text-neutral-900 text-center">
-              <h5>DEPLOYED DATE</h5>
+              <h5>{t("table.dd")}</h5>
             </th>
             <th className="bg-sky-200 border border-neutral-400 px-3 py-2 text-neutral-900 text-center">
-              <h5>STATION</h5>
+              <h5>{t("table.sta")}</h5>
             </th>
             <th className="bg-sky-200 border border-neutral-400 px-3 py-2 text-neutral-900 text-center">
-              <h5>DEPARTMENT</h5>
+              <h5>{t("table.dept")}</h5>
             </th>
             <th className="bg-sky-200 border border-neutral-400 px-3 py-2 text-neutral-900 text-center">
-              <h5>AUTHORIZED PERSONEL</h5>
+              <h5>{t("table.ap")}</h5>
             </th>
             <th className="bg-sky-200 border border-neutral-400 px-3 py-2 text-neutral-900 text-center">
-              <h5>RECIEVER</h5>
+              <h5>{t("table.rec")}</h5>
             </th>
             <th className="bg-sky-2 00 border border-neutral-400 px-3 py-2 text-neutral-900 text-center">
-              <h5>REMARKS</h5>
+              <h5>{t("table.rem")}</h5>
             </th>
             <th className="md:w-3/20 lg:w-2/10  bg-sky-200 border border-neutral-400 px-3 py-2 text-neutral-900 text-center">
-              <h5>REASON</h5>
+              <h5>{t("table.rea")}</h5>
             </th>
             <th className="bg-sky-2 00 border border-neutral-400 px-3 py-2 text-neutral-900 text-center">
-              <h5>PROGRESS</h5>
+              <h5>{t("table.pro")}</h5>
             </th>
             <th className="bg-sky-600 border border-neutral-400 px-3 py-2 text-neutral-50 text-center">
-              <h5>ACTIONS</h5>
+              <h5>{t("table.act")}</h5>
             </th>
           </tr>
         </thead>

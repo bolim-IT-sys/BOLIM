@@ -9,6 +9,7 @@ import InputField from "../../components/InputField";
 import { DownloadPartData } from "../../components/downloadButton/DownloadPartData";
 import { DataTableLoader } from "../../components/loaders/DataTableLoader";
 import type { User } from "../../services/User.Service";
+import { useTranslation } from "react-i18next";
 
 interface ContextType {
   user: User;
@@ -19,6 +20,7 @@ interface ContextType {
 }
 
 export default function ITStocks() {
+  const { t } = useTranslation();
   const { user, ITStocks, setITStocks, fetchAllParts, isFetching } =
     useOutletContext<ContextType>();
   const [currentData, setCurrentData] = useState<Part[]>([]);
@@ -87,7 +89,7 @@ export default function ITStocks() {
           <div className="flex flex-col sm:flex-row gap-2">
             <div className="w-full sm:w-6/10">
               <InputField
-                label="Search(part number, specifications, category, unit price, company)"
+                label={t('label.search')}
                 type="text"
                 value={searchTerm}
                 onChange={(value: string) => setSearchTerm(value)}

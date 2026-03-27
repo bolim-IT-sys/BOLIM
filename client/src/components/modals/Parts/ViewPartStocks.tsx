@@ -30,6 +30,7 @@ import InputField from "../../InputField";
 import { DownloadStockData } from "../../downloadButton/DownloadStockData";
 import { getYears, months } from "../../../helper/date.helper";
 import { ChangeStatusModal } from "./ChangeStatusModal";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   item: Part;
@@ -42,6 +43,7 @@ interface ContextType {
 }
 
 export const ViewPartStocks = ({ item, setData, type }: Props) => {
+  const { t } = useTranslation()
   const { fetchAllParts } = useOutletContext<ContextType>();
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -256,7 +258,7 @@ export const ViewPartStocks = ({ item, setData, type }: Props) => {
 
   return (
     <>
-      <PrimaryButton text="VIEW" onClick={() => handleViewModal()} />
+      <PrimaryButton text={t("viewParts.view")} onClick={() => handleViewModal()} />
 
       {/* MAIN MODAL */}
       <Modal
@@ -293,7 +295,7 @@ export const ViewPartStocks = ({ item, setData, type }: Props) => {
                           chosenYear,
                           month,
                         ) ? (
-                        <>Warning: Low stock!</>
+                        <>{t("viewParts.warn")}</>
                       ) : null}
                     </i>
                   </span>
@@ -326,16 +328,23 @@ export const ViewPartStocks = ({ item, setData, type }: Props) => {
                   </select>
                 </h4>
               </div>
-              <div
-                className="size-8 rounded hover:bg-neutral-200 transition duration-300 ease-in-out cursor-pointer"
-                onClick={() => {
-                  setShowHistoryModal(true);
-                  setModalShow(false);
-                }}
-              >
-                <h2 className="relative flex h-full w-full">
-                  <i className="absolute transform left-[47%] translate-x-[-50%] top-[52%] translate-y-[-50%] bx bx-history"></i>
-                </h2>
+              <div className="flex gap-2">{/* Nilagay ko sa div yung history at wrench icon PENDING YUNG REPAIR HISTORY */}
+                <div className="size-8 rounded hover:bg-neutral-200 transition duration-300 ease-in-out cursor-pointer" >
+                  <h2 className="relative flex h-full w-full">
+                    <i className="absolute transform left-[47%] translate-x-[-50%] top-[52%] translate-y-[-50%] bx bx-wrench"></i>
+                  </h2>
+                </div>
+                <div
+                  className="size-8 rounded hover:bg-neutral-200 transition duration-300 ease-in-out cursor-pointer"
+                  onClick={() => {
+                    setShowHistoryModal(true);
+                    setModalShow(false);
+                  }}
+                >
+                  <h2 className="relative flex h-full w-full">
+                    <i className="absolute transform left-[47%] translate-x-[-50%] top-[52%] translate-y-[-50%] bx bx-history"></i>
+                  </h2>
+                </div>
               </div>
             </div>
           </>
@@ -346,7 +355,7 @@ export const ViewPartStocks = ({ item, setData, type }: Props) => {
             <div className="h-10 flex gap-2">
               {/* INBOUND MODAL */}
               <PrimaryButton
-                text={`INBOUND`}
+                text={t("viewParts.in")}
                 onClick={() => {
                   setModalShow(false);
                   setInboundShow(true);
@@ -354,7 +363,7 @@ export const ViewPartStocks = ({ item, setData, type }: Props) => {
               />
               {/* OUTBOUND MODAL */}
               <WarningButton
-                text="OUTBOUND"
+                text={t("viewParts.out")}
                 onClick={() => {
                   setModalShow(false);
                   setOutboundShow(true);
@@ -366,7 +375,7 @@ export const ViewPartStocks = ({ item, setData, type }: Props) => {
               <SecondaryButton
                 text={
                   <>
-                    <span className="my-1">CLOSE</span>
+                    <span className="my-1">{t("viewParts.close")}</span>
                   </>
                 }
                 onClick={() => setModalShow(false)}
@@ -402,7 +411,7 @@ export const ViewPartStocks = ({ item, setData, type }: Props) => {
                           htmlFor="Previous date"
                           className="absolute -top-2 left-2 block font-medium text-gray-700 bg-neutral-50 px-1"
                         >
-                          <h6>START DATE:</h6>
+                          <h6>{t("viewParts.start")}</h6>
                         </label>
                         <InputField
                           label="Previous date"
@@ -418,7 +427,7 @@ export const ViewPartStocks = ({ item, setData, type }: Props) => {
                           htmlFor="Latest date"
                           className="absolute -top-2 left-2 block font-medium text-gray-700 bg-neutral-50 px-1"
                         >
-                          <h6>END DATE:</h6>
+                          <h6>{t("viewParts.end")}</h6>
                         </label>
                         <InputField
                           label="Latest date"

@@ -3,6 +3,7 @@ import PrimaryButton from "../../../components/button/PrimaryButton";
 import type { Part } from "../../../services/Part.Service";
 import type { User } from "../../../services/User.Service";
 import type { Inventory } from "../../../services/Inventory.Service";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   data: Part[] | User[] | Inventory[];
@@ -21,12 +22,13 @@ export const DataPagination = ({
   setCurrentPage,
   totalPages,
 }: Props) => {
+  const { t } = useTranslation()
   return (
     <>
       <div className="h-10 w-full flex justify-between items-end sm:items-center">
         <div className="hidden sm:block text-sm text-gray-600">
-          Showing {indexOfFirstItem + 1} to{" "}
-          {Math.min(indexOfLastItem, data.length)} of {data.length} data
+          {t("dataPagi.showing")} {indexOfFirstItem + 1} to{" "}
+          {Math.min(indexOfLastItem, data.length)} of {data.length} {t("dataPagi.data")}
         </div>
 
         <div className="flex w-full sm:w-max justify-between items-center gap-2">
@@ -34,7 +36,7 @@ export const DataPagination = ({
             <PrimaryButton
               text={
                 <>
-                  <span className="py-1">PREVIOUS</span>
+                  <span className="py-1">{t("dataPagi.prev")}</span>
                 </>
               }
               onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
@@ -43,14 +45,14 @@ export const DataPagination = ({
           </div>
 
           <span className="px-3 py-1">
-            Page {currentPage} of {totalPages}
+            {t("dataPagi.page")} {currentPage} of {totalPages}
           </span>
 
           <div>
             <PrimaryButton
               text={
                 <>
-                  <span className="py-1">NEXT</span>
+                  <span className="py-1">{t("dataPagi.next")}</span>
                 </>
               }
               onClick={() =>

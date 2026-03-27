@@ -28,6 +28,7 @@ import {
   computeUrgentRequest,
 } from "../../../helper/table.helper";
 import Swal from "sweetalert2";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   data: Part[];
@@ -44,6 +45,7 @@ export const DataTable = ({
   fetchAllParts,
   currentData,
 }: Props) => {
+  const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
   const sort = searchParams.get("sort") || "partNumber";
   const order = searchParams.get("order") || "asc";
@@ -299,7 +301,7 @@ export const DataTable = ({
                   onClick={handleSortByPartNumber}
                 >
                   <div className="h-10 flex justify-center items-center">
-                    <h5>IMAGE</h5>
+                    <h5>{t("table.image")}</h5>
                   </div>
                 </th>
                 <th
@@ -309,12 +311,12 @@ export const DataTable = ({
                   <div className="h-10 flex justify-center items-center flex-col">
                     <h5>
                       {type === "pin"
-                        ? "PIN NUMBER"
+                        ? t("table.pinNumber")
                         : type === "it"
-                          ? "ITEM NAME"
+                          ? t("table.itemName")
                           : type === "material"
-                            ? "MATERIAL NAME"
-                            : "INVALID TYPE"}{" "}
+                            ? t("table.materialName")
+                            : t("table.invalidType")}
                       {sortBy === "partNumber"
                         ? sortOrder === "asc"
                           ? "▲"
@@ -325,14 +327,12 @@ export const DataTable = ({
                 </th>
                 <th className="w-70 border border-neutral-300 text-center px-2 py-3">
                   <div className="h-10 flex justify-center items-center flex-col">
-                    <h5>SPECIFICATIONS (Description)</h5>
-                    <h6>규격(설명)</h6>
+                    <h5>{t("table.specifications")}</h5>
                   </div>
                 </th>
                 <th className="border border-neutral-300 text-center px-2 py-3">
                   <div className="h-10 flex justify-center items-center flex-col">
-                    <h5>CATEGORY</h5>
-                    <h6>유형</h6>
+                    <h5>{t("table.category")}</h5>
                   </div>
                 </th>
                 <th
@@ -341,7 +341,7 @@ export const DataTable = ({
                 >
                   <div className="h-10 flex justify-center items-center">
                     <h5>
-                      UNIT PRICE (₩){" "}
+                      {t("table.unitPrice")}
                       {sortBy === "unitPrice"
                         ? sortOrder === "asc"
                           ? "▲"
@@ -352,8 +352,7 @@ export const DataTable = ({
                 </th>
                 <th className="border border-neutral-300 text-center px-2 py-3">
                   <div className="h-10 flex justify-center items-center flex-col">
-                    <h5>COMPANY</h5>
-                    <h6>업체</h6>
+                    <h5>{t("table.company")}</h5>
                   </div>
                 </th>
                 <th
@@ -362,8 +361,7 @@ export const DataTable = ({
                 >
                   <div className="h-10 flex justify-center items-center">
                     <h5>
-                      {" "}
-                      CURRENT STOCKS{" "}
+                      {t("table.stocks")}
                       {sortBy === "stocks"
                         ? sortOrder === "asc"
                           ? "▲"
@@ -374,7 +372,7 @@ export const DataTable = ({
                 </th>
                 <th className="w-30 border border-neutral-300 text-center px-2 py-3">
                   <div className="h-10 flex justify-center items-center">
-                    <h5>ACTION</h5>
+                    <h5>{t("table.action")}</h5>
                   </div>
                 </th>
                 <th
@@ -383,14 +381,14 @@ export const DataTable = ({
                 >
                   <div className="h-10 flex justify-center items-center flex-col">
                     <h5 className="uppercase">
-                      Securement rate{" "}
+                      {t("table.securementRate")}
                       {sortBy === "securementRate"
                         ? sortOrder === "asc"
                           ? "▲"
                           : "▼"
                         : "⇅"}
                     </h5>
-                    <h6>(확보율)</h6>
+
                   </div>
                 </th>
                 <th
@@ -399,14 +397,14 @@ export const DataTable = ({
                 >
                   <div className="h-10 flex justify-center items-center flex-col">
                     <h5 className="uppercase">
-                      Excess/insufficient quantity{" "}
+                      {t("table.excess")}
                       {sortBy === "excessInsufficient"
                         ? sortOrder === "asc"
                           ? "▲"
                           : "▼"
                         : "⇅"}
                     </h5>
-                    <h6>(과/부족수량)</h6>
+
                   </div>
                 </th>
                 <th
@@ -415,14 +413,14 @@ export const DataTable = ({
                 >
                   <div className="h-10 flex justify-center items-center flex-col">
                     <h5 className="uppercase">
-                      Urgent Request (Secure Rate Less than 50%){" "}
+                      {t("table.urgent")}
                       {sortBy === "urgentRequest"
                         ? sortOrder === "asc"
                           ? "▲"
                           : "▼"
                         : "⇅"}
                     </h5>
-                    <h6>긴급 요청(확보율 50%이하)</h6>
+
                   </div>
                 </th>
                 <th
@@ -431,14 +429,14 @@ export const DataTable = ({
                 >
                   <div className="h-10 flex justify-center items-center flex-col">
                     <h5 className="uppercase">
-                      Order Quantity (Regular Order){" "}
+                      {t("table.orderQty")}
                       {sortBy === "orderQuantity"
                         ? sortOrder === "asc"
                           ? "▲"
                           : "▼"
                         : "⇅"}
                     </h5>
-                    <h6>발주 수량(정기발주)</h6>
+
                   </div>
                 </th>
               </tr>
@@ -470,16 +468,16 @@ export const DataTable = ({
                       </td>
                       <td
                         className={`${computeStocks(item) <
-                            getSafetyStock(
-                              item.outbounds!.map((o) => ({
-                                quantity: o.quantity,
-                                date: String(o.outboundDate),
-                              })),
-                              year,
-                              month,
-                            )
-                            ? "bg-red-100 text-red-900"
-                            : "bg-emerald-100 text-emerald-800"
+                          getSafetyStock(
+                            (item.outbounds ?? []).map((o) => ({
+                              quantity: o.quantity,
+                              date: new Date(o.outboundDate).toISOString(),
+                            })),
+                            year,
+                            month,
+                          )
+                          ? "bg-red-100 text-red-900"
+                          : "bg-emerald-100 text-emerald-800"
                           } text-center border border-neutral-300  px-3 py-2`}
                       >
                         <div>
@@ -550,7 +548,7 @@ export const DataTable = ({
                       colSpan={12}
                       className="text-center border border-neutral-300 px-3 py-2"
                     >
-                      NO PART AVAILABLE
+                      {t('table.noPrtAve')}
                     </td>
                   </tr>
                 </>

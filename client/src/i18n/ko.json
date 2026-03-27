@@ -1,0 +1,66 @@
+{
+  "table": {
+    "image": "이미지",
+    "pinNumber": "핀 번호",
+    "itemName": "품목명",
+    "materialName": "자재명",
+    "invalidType": "잘못된 타입",
+    "specifications": "사양 (설명)",
+    "category": "카테고리",
+    "unitPrice": "단가 (₩)",
+    "company": "회사",
+    "stocks": "현재 재고",
+    "action": "행동",
+    "securementRate": "확보율",
+    "excess": "과잉/부족 수량",
+    "urgent": "긴급 요청 (확보율 50% 미만)",
+    "orderQty": "주문 수량 (정기 주문)",
+    "noPrtAve": "해당 부품 없음",
+    "no.": "아니요.",
+    "sn": "일련번호",
+    "prd": "홍보 날짜",
+    "rd": "수령일",
+    "dd": "배포 날짜",
+    "sta": "역",
+    "dept": "부서",
+    "ap": "권한 있는 직원",
+    "rec": "리시버",
+    "rem": "비고",
+    "rea": "이유",
+    "pro": "진전",
+    "act": "행위"
+  },
+  "label": {
+    "search": "검색(부품 번호, 사양, 카테고리, 단가, 회사)"
+  },
+  "nav": {
+    "title": "볼림(예비 부품)",
+    "acc": "계정",
+    "logout": "로그아웃"
+  },
+  "sNav": {
+    "dash": "계기반",
+    "pins": "다리",
+    "it": "IT 주식",
+    "material": "자재 관리",
+    "user": "사용자 관리"
+  },
+  "viewParts": {
+    "view": "보다",
+    "warn": "경고: 재고가 얼마 남지 않았습니다!",
+    "in": "인바운드",
+    "out": "배 밖으로",
+    "close": "닫다",
+    "start": "시작일:",
+    "end": "종료일:"
+  },
+  "dataPagi": {
+    "showing": "전시",
+    "to": "to",
+    "of": "of",
+    "data": "데이터",
+    "prev": "이전의",
+    "next": "다음",
+    "page": "페이지"
+  }
+}

@@ -6,6 +6,8 @@ import DangerButton from "./button/DangerButton";
 import logo from "/bolimlogo.png";
 import { type Dispatch, type SetStateAction } from "react";
 import LightButton from "./button/LightButton";
+import LanguageButton from "./button/LanguageButoon";
+import { useTranslation } from "react-i18next";
 
 interface NavbarProps {
   user: User;
@@ -30,6 +32,8 @@ export default function NavBar({
     navigate("/login");
   };
 
+  const { t } = useTranslation();
+
   // useEffect(() => {
   //   console.log(`Nav: ${showSideBar}, Side: ${collapse}`);
   // }, [showSideBar, collapse]);
@@ -45,7 +49,7 @@ export default function NavBar({
             <div className="size-10 flex justify-center items-center">
               <img className="w-full" src={logo} alt="navLogo" />
             </div>
-            <h4 className="hidden sm:block">BOLIM(SPARE PARTS)</h4>
+            <h4 className="hidden sm:block">{t("nav.title")}</h4>
             <div
               className={`size-9 ${showSideBar ? "bg-sky-600 hover:bg-sky-700 text-neutral-50" : "hover:bg-neutral-200"}  rounded transition duration-200 flex justify-center items-center cursor-pointer`}
               onClick={() => {
@@ -58,7 +62,8 @@ export default function NavBar({
               </h3>
             </div>
           </div>
-          <div>
+          <div className="flex gap-2">
+            <LanguageButton />
             <Dropdown
               trigger={
                 <h4 className="m-0 flex items-center gap-2 mx-2">
@@ -72,7 +77,7 @@ export default function NavBar({
                   <LightButton
                     text={
                       <>
-                        <span className="my-1">Account</span>
+                        <span className="my-1">{t("nav.acc")}</span>
                       </>
                     }
                   />
@@ -82,7 +87,7 @@ export default function NavBar({
                 <DangerButton
                   text={
                     <>
-                      <span className="my-1">Logout</span>
+                      <span className="my-1">{t("nav.logout")}</span>
                     </>
                   }
                   onClick={handleLogout}

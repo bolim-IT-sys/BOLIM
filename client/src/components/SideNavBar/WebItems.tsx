@@ -4,6 +4,7 @@ import { SideNavBarToolTip } from "./SideNavBarToolTip";
 // import { MoreOptionDropDown } from "./MoreOptionDropDown";
 import type { Dispatch, SetStateAction } from "react";
 import type { Inventory } from "../../services/Inventory.Service";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   user: User;
@@ -27,6 +28,7 @@ export const WebItems = ({
   // setCollapse,
 }: Props) => {
   const location = useLocation();
+  const { t } = useTranslation()
 
   return (
     <>
@@ -42,7 +44,7 @@ export const WebItems = ({
           <h4
             className={`absolute w-45 mt-1 start-12 font-bold ${isShowing ? "opacity-100" : "opacity-0"} ${isHidden ? "pointer-events-none" : ""} transition-all duration-250 ease-in-out`}
           >
-            Dashboard
+            {t("sNav.dash")}
           </h4>
         </Link>
         {user?.pins ? (
@@ -57,7 +59,7 @@ export const WebItems = ({
             <h4
               className={`absolute w-45 mt-1 start-12 font-bold ${isShowing ? "opacity-100" : "opacity-0"} ${isHidden ? "pointer-events-none" : ""} transition-all duration-250 ease-in-out`}
             >
-              Pins
+              {t("sNav.pins")}
             </h4>
           </Link>
         ) : null}
@@ -73,7 +75,7 @@ export const WebItems = ({
             <h4
               className={`absolute w-45 mt-1 start-12 font-bold ${isShowing ? "opacity-100" : "opacity-0"} ${isHidden ? "pointer-events-none" : ""} transition-all duration-250 ease-in-out`}
             >
-              IT Stocks
+              {t("sNav.it")}
             </h4>
           </Link>
         ) : null}
@@ -92,7 +94,7 @@ export const WebItems = ({
             <h4
               className={`absolute w-45 mt-1 start-12 font-bold ${isShowing ? "opacity-100" : "opacity-0"} ${isHidden ? "pointer-events-none" : ""} transition-all duration-250 ease-in-out`}
             >
-              Material Control
+              {t("sNav.material")}
             </h4>
           </Link>
         ) : null}
@@ -136,7 +138,7 @@ export const WebItems = ({
               <h4
                 className={`absolute w-45 mt-1 start-12 font-bold ${isShowing ? "opacity-100" : "opacity-0"} ${isHidden ? "pointer-events-none" : ""} transition-all duration-250 ease-in-out`}
               >
-                User Management
+                {t("sNav.user")}
               </h4>
             </Link>
           </>

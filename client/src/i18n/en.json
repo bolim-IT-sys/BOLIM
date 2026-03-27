@@ -1,0 +1,66 @@
+{
+  "table": {
+    "image": "IMAGE",
+    "pinNumber": "PIN NUMBER",
+    "itemName": "ITEM NAME",
+    "materialName": "MATERIAL NAME",
+    "invalidType": "INVALID TYPE",
+    "specifications": "SPECIFICATIONS (Description)",
+    "category": "CATEGORY",
+    "unitPrice": "UNIT PRICE (₩)",
+    "company": "COMPANY",
+    "stocks": "CURRENT STOCKS",
+    "action": "ACTION",
+    "securementRate": "Securement Rate",
+    "excess": "Excess/Insufficient Quantity",
+    "urgent": "Urgent Request (Secure Rate Less than 50%)",
+    "orderQty": "Order Quantity (Regular Order)",
+    "noPrtAve": "NO PART AVAILABLE",
+    "no.": "No.",
+    "sn": "SERIAL NUMBER",
+    "prd": "PR DATE",
+    "rd": "RECIEVED DATE",
+    "dd": "DEPLOYED DATE",
+    "sta": "STATION",
+    "dept": "DEPARTMENT",
+    "ap": "AUTHORIZED PERSONEL",
+    "rec": "RECIEVER",
+    "rem": "REMARKS",
+    "rea": "REASON",
+    "pro": "PROGRESS",
+    "act": "ACTIONS"
+  },
+  "label": {
+    "search": "Search(part number, specifications, category, unit price, company)"
+  },
+  "nav": {
+    "title": "BOLIM(SPARE PARTS)",
+    "acc": "Account",
+    "logout": "Logout"
+  },
+  "sNav": {
+    "dash": "Dashboard",
+    "pins": "Pins",
+    "it": "IT Stocks",
+    "material": "Material Control",
+    "user": "User Management"
+  },
+  "viewParts": {
+    "view": "VIEW",
+    "warn": "Warning: Low stock!",
+    "in": "INBOUND",
+    "out": "OUTBOUND",
+    "close": "CLOSE",
+    "start": "START DATE:",
+    "end": "END DATE:"
+  },
+  "dataPagi": {
+    "showing": "Showing",
+    "to": "to",
+    "of": "of",
+    "data": "data",
+    "prev": "Previous",
+    "next": "Next",
+    "page": "Page"
+  }
+}
