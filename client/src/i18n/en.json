@@ -19,16 +19,18 @@
     "no.": "No.",
     "sn": "SERIAL NUMBER",
     "prd": "PR DATE",
-    "rd": "RECIEVED DATE",
+    "rd": "RECEIVED DATE",
     "dd": "DEPLOYED DATE",
     "sta": "STATION",
     "dept": "DEPARTMENT",
-    "ap": "AUTHORIZED PERSONEL",
-    "rec": "RECIEVER",
+    "ap": "AUTHORIZED PERSONNEL",
+    "rec": "RECEIVER",
     "rem": "REMARKS",
     "rea": "REASON",
     "pro": "PROGRESS",
-    "act": "ACTIONS"
+    "act": "ACTIONS",
+    "Upt": "Updated By",
+    "red": "Date Received"
   },
   "label": {
     "search": "Search(part number, specifications, category, unit price, company)"
@@ -62,5 +64,23 @@
     "prev": "Previous",
     "next": "Next",
     "page": "Page"
+  },
+  "rh": {
+    "SN": "Serial Number:",
+    "RD": "Reported Date:",
+    "ID": "Issue Description:",
+    "RS": "Repair Status:",
+    "SD": "Started Date:",
+    "CD": "Completed Date:",
+    "Pers": "Personnel:",
+    "Bef": "Before:",
+    "Aft": "After:",
+    "Upt": "Update",
+    "Sta": "Status",
+    "UAI": "Upload after image",
+    "DS": "Date Started",
+    "DC": "Date Completed",
+    "RH": "Repair History",
+    "nrh": "No repair history"
   }
 }

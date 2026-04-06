@@ -1,4 +1,4 @@
-import { useState, type Dispatch, type SetStateAction } from "react";
+import { useState, useEffect, type Dispatch, type SetStateAction } from "react";
 import {
   updateItem,
   updateTrack,
@@ -18,7 +18,11 @@ import { getStatus } from "../../helper/helper";
 import DangerButton from "../button/DangerButton";
 import { removeStockItem } from "../../services/Part.Service";
 import StatusModal from "../modals/Parts/StatusModal";
+//import RepairHistory from "../../components/modals/Parts/RepairHistory"
 import { useTranslation } from "react-i18next";
+import RepairForm from "../modals/Parts/RepairFrom";
+import RepairHistory, { type Repair } from "../modals/Parts/RepairHistory";
+import axios from "axios";
 
 type Props = {
   setSerialNumber: Dispatch<SetStateAction<string>>;
@@ -55,6 +59,9 @@ export const ItemStockTable = ({
     deployedDate: null,
   });
   const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [showRepairForm, setShowRepairForm] = useState(false);
+  //const isUnderRepair = selectedStock?.remarks === "on-hold";
+  const [repairs, setRepairs] = useState<Repair[]>([]);
   const [toBeUpdated, setToBeUpdated] = useState<number>(0);
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const [formData, setFormData] = useState<ITStocks>({
@@ -72,6 +79,7 @@ export const ItemStockTable = ({
     remarks: "",
   });
   const { t } = useTranslation();
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000/api";
   // Tracking Modal
   const handleUpdate = async () => {
     const res = await updateTrack(selectedStock);
@@ -106,6 +114,23 @@ export const ItemStockTable = ({
       );
     }
   };
+  const isUnderRepair = repairs.some(
+    (r) =>
+      r.serial_number === selectedStock.serialNumber &&
+      (r.status === "pending" || r.status === "in_progress")
+  );
+  useEffect(() => {
+    if (!selectedStock?.serialNumber || !isOpen) return;
+
+    const fetchRepairs = async () => {
+      const res = await axios.get(
+        `${API_URL}/repairs/${selectedStock.serialNumber}`
+      );
+      setRepairs(res.data);
+    };
+
+    fetchRepairs();
+  }, [selectedStock?.serialNumber, isOpen, API_URL]);
   // console.log("selectedStock: ", selectedStock)
   // useEffect(() => {
   //   console.log(formData);
@@ -621,30 +646,23 @@ export const ItemStockTable = ({
       <StatusModal isOpen={isOpen} onClose={() => setIsOpen(false)}>
         <table className="mb-4 items-center justify-center">
           <thead>
-            <th className="bg-sky-200 border border-neutral-400 px-3 py-2 text-neutral-900 text-center">
-              PR Date:
-            </th>
-            <th className="bg-sky-200 border border-neutral-400 px-3 py-2 text-neutral-900 text-center">
-              Date Received:
-            </th>
-            <th className="bg-sky-200 border border-neutral-400 px-3 py-2 text-neutral-900 text-center">
-              Serial Number:
-            </th>
-            {selectedStock.remarks === "on-hold" ?
-              <>
-                <th className="bg-sky-200 border border-neutral-400 px-3 py-2 text-neutral-900 text-center">
-                  Repair Started:
-                </th>
-                <th className="bg-sky-200 border border-neutral-400 px-3 py-2 text-neutral-900 text-center">
-                  Repair Ended:
-                </th>
-              </> : ""}
-            <th className="bg-sky-200 border border-neutral-400 px-3 py-2 text-neutral-900 text-center">
-              Updated By:
-            </th>
-            <th className="bg-sky-200 border border-neutral-400 px-3 py-2 text-neutral-900 text-center">
-              Remarks
-            </th>
+            <tr>
+              <th className="bg-sky-200 border border-neutral-400 px-3 py-2 text-neutral-900 text-center">
+                {t("table.prd")}
+              </th>
+              <th className="bg-sky-200 border border-neutral-400 px-3 py-2 text-neutral-900 text-center">
+                {t("table.red")}
+              </th>
+              <th className="bg-sky-200 border border-neutral-400 px-3 py-2 text-neutral-900 text-center">
+                {t("table.sn")}
+              </th>
+              <th className="bg-sky-200 border border-neutral-400 px-3 py-2 text-neutral-900 text-center">
+                {t("table.Upt")}
+              </th>
+              <th className="bg-sky-200 border border-neutral-400 px-3 py-2 text-neutral-900 text-center">
+                {t("table.rea")}
+              </th>
+            </tr>
           </thead>
           <tbody>
             <tr>
@@ -659,11 +677,6 @@ export const ItemStockTable = ({
                   : "N/A"}
               </td>
               <td className="border border-neutral-400 px-3 py-2">{selectedStock?.serialNumber || ""}</td>
-              {selectedStock.remarks === "on-hold" ?
-                <>
-                  <td className="border border-neutral-400 px-3 py-2">March 24, 2026</td>
-                  <td className="border border-neutral-400 px-3 py-2">March 25, 2026</td>
-                </> : ""}
               <td className="border border-neutral-400 px-3 py-2">
                 <input
                   className="w-fit py-2 px-4 border border-gray-300 outline-blue-400 rounded-md disabled:border-0 text-center"
@@ -692,30 +705,40 @@ export const ItemStockTable = ({
                   className="w-full py-2 px-4 border border-gray-300 outline-blue-400 rounded-md disabled:border-0 text-center"
                 />
               </td>
-              <div className="p-2">
-                <select
-                  className={`border w-full p-2 mb-4 mt-1 appearance-none border-gray-300 outline-blue-400 rounded-3xl disabled:border-0 text-center focus:outline-none
+              <td>
+                <div className="p-2">
+                  <select
+                    className={`border w-full p-2 mb-4 mt-1 appearance-none border-gray-300 outline-blue-400 rounded-3xl disabled:border-0 text-center focus:outline-none
                     ${selectedStock.remarks === "deployed" ? "bg-green-400" : selectedStock.remarks === "on-hold" ?
-                      "bg-orange-400" : selectedStock.remarks === "unavailable" ? "bg-gray-400" : ""}
+                        "bg-orange-400" : selectedStock.remarks === "unavailable" ? "bg-gray-400" : ""}
                   `}
-                  value={selectedStock?.remarks || ""}
-                  disabled={!isEditing}
-                  onChange={(e) =>
-                    setSelectedStock({
-                      ...selectedStock,
-                      remarks: e.target.value,
-                    })
-                  }
-                >
-                  <option value="">{selectedStock?.remarks || ""}</option>
-                  <option value="available">Available</option>
-                  <option value="deployed">Deployed</option>
-                  <option value="on-hold">On-hold</option>
-                </select>
-              </div>
+                    value={selectedStock?.remarks || ""}
+                    disabled={!isEditing}
+                    onChange={(e) =>
+                      setSelectedStock({
+                        ...selectedStock,
+                        remarks: e.target.value,
+                      })
+                    }
+                  >
+                    <option value="">{selectedStock?.remarks || ""}</option>
+                    <option value="available">Available</option>
+                    <option value="deployed">Deployed</option>
+                    <option value="on-hold">On-hold</option>
+                  </select>
+                </div>
+              </td>
             </tr>
           </tbody>
         </table>
+        {showRepairForm && (
+          <RepairForm
+            serialNumber={selectedStock?.serialNumber || ""}
+            onClose={() => setShowRepairForm(false)}
+          />
+        )}
+
+        <RepairHistory serialNumber={selectedStock?.serialNumber || ""} repairs={repairs} />
 
         {isEditing ?
           <div className="flex justify-end gap-2">
@@ -725,7 +748,7 @@ export const ItemStockTable = ({
             />
             <SuccessButton text="Save" onClick={handleUpdate} />
           </div> :
-          <div className="flex justify-end gap-2">
+          <div className="flex justify-end gap-2 mb-2">
             <SecondaryButton
               text="Cancel"
               onClick={() => setIsOpen(false)}
@@ -734,6 +757,22 @@ export const ItemStockTable = ({
               text="Edit"
               onClick={() => setIsEditing(true)}//HandleSetUpdateStock(stock)
             />
+            {showRepairForm
+              ? <button
+                className="border border-orange-400 hover:bg-orange-500 transition text-black px-4 py-2 rounded-md w-full"
+                onClick={() => setShowRepairForm(false)}
+              >
+                Cancel Repair
+              </button>
+              : isUnderRepair ?
+                <p className="text-red-500 text-sm w-full">
+                  This item is currently under repair.
+                </p> : <button
+                  className="border border-orange-400 hover:bg-orange-500 transition text-black p-2 rounded-md w-full"
+                  onClick={() => setShowRepairForm(true)}
+                >
+                  Send to Repair
+                </button>}
           </div>}
       </StatusModal>
     </>

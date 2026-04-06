@@ -36,16 +36,10 @@ const Modal: React.FC<ModalProps> = ({
                             <i className="bx  bx-x"></i>
                         </h4>
                     </button>
-                    {/*<button
-                        className="text-gray-500 hover:text-black"
-                        onClick={onClose}
-                    >
-                        ✕
-                    </button>*/}
                 </div>
 
                 {/* Body */}
-                <div>{children}</div>
+                <div className="overflow-y-scroll max-h-180">{children}</div>
             </div>
         </div>
     );

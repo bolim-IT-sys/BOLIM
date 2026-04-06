@@ -2,6 +2,7 @@
 const express = require("express");
 const cors = require("cors");
 const sequelize = require("./database/index.js");
+const repairRoutes = require("./routes/repair_records.routes");
 const app = express();
 
 const dotenv = require("dotenv");
@@ -15,20 +16,24 @@ const PORT = process.env.PORT;
 // const HOST = "0.0.0.0";
 
 const corsOptions = {
-  origin: [[process.env.FRONTEND_URL]], // allowed origins
+  origin: [process.env.FRONTEND_URL], // allowed origins
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true, // if you need cookies or auth headers
 };
 
 // Middleware to parse JSON
-app.use(express.json(corsOptions));
-app.use(cors());
+app.use(express.json());
+app.use(cors(corsOptions));
 
 // API ROUTES
 app.use(
   "/api/uploads/pinImage",
   express.static(path.join(__dirname, "uploads/pinImage")),
 );
+
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+app.use("/api/repairs", repairRoutes);
+//console.log("Static path:", path.join(__dirname, "uploads"));
 
 const exportRoutes = require("./routes/export.routes.js");
 app.use("/api", exportRoutes);
@@ -50,29 +55,12 @@ app.get("/", (req, res) => {
   res.send("Hello from Node backend 🚀");
 });
 
-// Sync database before starting server
-sequelize
-  .sync({
-    alter: true,
-    // alter: false,
-  })
-  .then(() => {
-    console.log("Database synced successfully");
-    app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
-    });
-  })
-  .catch((error) => {
-    console.error("Error syncing database:", error);
-  });
-
-// Start server
 async function startServer() {
   try {
     await sequelize.authenticate();
     console.log("✅ Database connected successfully.");
 
-    await sequelize.sync(); // sync models
+    await sequelize.sync();
     console.log("🧱 Models synchronized.");
 
     app.listen(PORT, () => {
