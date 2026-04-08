@@ -738,8 +738,6 @@ export const ItemStockTable = ({
           />
         )}
 
-        <RepairHistory serialNumber={selectedStock?.serialNumber || ""} repairs={repairs} />
-
         {isEditing ?
           <div className="flex justify-end gap-2">
             <SecondaryButton
@@ -774,6 +772,8 @@ export const ItemStockTable = ({
                   Send to Repair
                 </button>}
           </div>}
+
+        <RepairHistory serialNumber={selectedStock?.serialNumber || ""} repairs={repairs} />
       </StatusModal>
     </>
   );

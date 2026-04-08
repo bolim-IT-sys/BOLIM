@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import Swal from "sweetalert2";
 
 type RepairFormProps = {
     serialNumber: string;
@@ -44,6 +45,22 @@ const RepairForm = ({ serialNumber, onClose }: RepairFormProps) => {
         };
     }, [preview]);
 
+    const getStatus = (data: RepairFormData) => {
+        if (data.completed_date) return "completed";
+        if (data.started_date) return "in_progress";
+        return "pending";
+    };
+
+    const subtractOneHour = (dateStr: string) => {
+        const date = new Date(dateStr);
+        const newDate = new Date(date.getTime() - 60 * 60 * 1000);
+
+        const offset = newDate.getTimezoneOffset();
+        return new Date(newDate.getTime() - offset * 60000)
+            .toISOString()
+            .slice(0, 16);
+    };
+
     const handleChange = (
         e: React.ChangeEvent<
             HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
@@ -66,10 +83,23 @@ const RepairForm = ({ serialNumber, onClose }: RepairFormProps) => {
                 [name]: imageUrl,
             }));
         } else {
-            setForm((prev) => ({
-                ...prev,
-                [name]: e.target.value,
-            }));
+            setForm((prev) => {
+                const updated = {
+                    ...prev,
+                    [name]: e.target.value,
+                }
+
+                if (updated.completed_date) {
+                    if (!updated.started_date) {
+                        updated.started_date = subtractOneHour(updated.completed_date!)
+                    }
+                }
+
+                return {
+                    ...updated,
+                    status: getStatus(updated),
+                }
+            })
         }
     };
 
@@ -85,25 +115,50 @@ const RepairForm = ({ serialNumber, onClose }: RepairFormProps) => {
 
             formData.append(typedKey, value as string | Blob);
         }
+        if (form.completed_date && !form.after_picture) {
+            Swal.fire({
+                icon: "warning",
+                title: "WARNING!",
+                text: "After picture is required when repair is completed.",
+                timer: 3000,
+                showConfirmButton: false,
+            });
+            return;
+        }
         try {
             await axios.post(`${API_URL}/repairs`, formData, {
                 headers: {
                     "Content-Type": "multipart/form-data",
                 }
             });
-            alert("Repair saved!");
+            Swal.fire({
+                icon: "success",
+                title: `Repair saved!`,
+                timer: 3000,
+                showConfirmButton: true,
+            });
             onClose();
         } catch (error) {
             console.error(error);
-            alert("Error saving repair");
+            Swal.fire({
+                icon: "error",
+                title: `Error saving repair!`,
+                timer: 3000,
+                showConfirmButton: false,
+            });
         }
     };
 
     return (
         <form onSubmit={handleSubmit} encType="multipart/form-data" className="flex flex-col items-center p-4 gap-2">
+            <h4 className="text-red-500">Required fields *</h4>
             <div className="w-full flex gap-4 justify-between">
                 <div className="relative flex-1 flex flex-col gap-2">
-                    <label htmlFor="Reported Date" >Serial Number: </label>
+                    <label htmlFor="Reported Date" className="text-red-500">*Reported Date</label>
+                    <input type="datetime-local" name="reported_date" onChange={handleChange} className="p-2 w-full border border-gray-400 rounded-xl outline-none"
+                        value={form.reported_date}
+                        required />
+                    <label htmlFor="Reported Date" >Serial Number</label>
                     <input
                         name="serial_number"
                         placeholder="Serial Number"
@@ -111,10 +166,7 @@ const RepairForm = ({ serialNumber, onClose }: RepairFormProps) => {
                         readOnly
                         onChange={handleChange}
                         className="p-2 w-full border border-gray-400 rounded-xl outline-none" />
-                    <label htmlFor="Reported Date" >Reported Date: </label>
-                    <input type="datetime-local" name="reported_date" onChange={handleChange} className="p-2 w-full border border-gray-400 rounded-xl outline-none"
-                        value={form.reported_date}
-                        required />
+                    <label htmlFor="Issue" className="text-red-500">*Issue Description</label>
                     <textarea
                         name="issue_description"
                         placeholder="Issue Description"
@@ -122,20 +174,26 @@ const RepairForm = ({ serialNumber, onClose }: RepairFormProps) => {
                         required
                         className="p-2 w-full border border-gray-400 outline-none"
                     />
-                    <label htmlFor="Repair Status">Select Repair Status: </label>
-                    <select name="status" onChange={handleChange} className="p-2 w-full border border-gray-400 rounded-xl outline-none">
-                        <option value="pending">Pending</option>
-                        <option value="in_progress">In Progress</option>
-                        <option value="completed">Completed</option>
-                    </select>
-                    <label htmlFor="Date Started">Date Started: </label>
-                    <input type="datetime-local" name="started_date" onChange={handleChange} className="p-2 w-full border border-gray-400 rounded-xl outline-none" />
+                    <label htmlFor="Personnel" className="text-red-500">*Personnel</label>
+                    <input name="personnel" placeholder="Personnel" onChange={handleChange} className="p-2 w-full border border-gray-400 rounded-xl outline-none" required />
                 </div>
                 <div className="relative flex-1 flex flex-col gap-2">
-                    <label htmlFor="Date Completed">Date Completed: </label>
+                    <label htmlFor="Repair Status">Repair Status</label>
+                    <input
+                        value={form.status}
+                        readOnly
+                        className="p-2 w-full border border-gray-400 rounded-xl outline-none"
+                    />
+                    <label htmlFor="Date Started">Date Started</label>
+                    <input
+                        type="datetime-local"
+                        name="started_date"
+                        value={form.started_date}
+                        onChange={handleChange}
+                        className="p-2 w-full border border-gray-400 rounded-xl outline-none" />
+                    <label htmlFor="Date Completed">Date Completed</label>
                     <input type="datetime-local" name="completed_date" onChange={handleChange} className="p-2 w-full border border-gray-400 rounded-xl outline-none" />
-                    <input name="personnel" placeholder="Personnel" onChange={handleChange} className="p-2 w-full border border-gray-400 rounded-xl outline-none" required />
-                    <label htmlFor="Before Picture">Before Picture: </label>
+                    <label htmlFor="Before Picture" className="text-red-500">*Before Picture</label>
                     <input type="file" name="before_picture" onChange={handleChange} className="p-2 w-full border border-gray-400 rounded-xl outline-none" required />
                     {preview.before_picture && (
                         <img
@@ -143,7 +201,7 @@ const RepairForm = ({ serialNumber, onClose }: RepairFormProps) => {
                             className="w-40 h-40 object-cover rounded border"
                         />
                     )}
-                    <label htmlFor="After Picture">After Picture: </label>
+                    <label htmlFor="After Picture">After Picture</label>
                     <input type="file" name="after_picture" onChange={handleChange} className="p-2 w-full border border-gray-400 rounded-xl outline-none" />
                     {preview.after_picture && (
                         <img

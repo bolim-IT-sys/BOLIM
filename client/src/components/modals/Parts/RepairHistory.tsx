@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useTranslation } from "react-i18next";
+import Swal from "sweetalert2";
 
 export type Repair = {
     id: number;
@@ -82,7 +83,13 @@ const RepairHistory = ({ serialNumber }: Props) => {
             if (!editData) return;
 
             if (editData.completed_date && !file) {
-                alert("After picture is required when repair is completed.");
+                Swal.fire({
+                    icon: "warning",
+                    title: "WARNING!",
+                    text: "After picture is required when repair is completed.",
+                    timer: 3000,
+                    showConfirmButton: false,
+                });
                 return;
             }
 
@@ -114,7 +121,12 @@ const RepairHistory = ({ serialNumber }: Props) => {
                     )
             );
 
-            alert("Repair updated!");
+            Swal.fire({
+                icon: "success",
+                title: `Repair updated!`,
+                timer: 3000,
+                showConfirmButton: true,
+            });
             setEditingId(null);
         } catch (err) {
             console.error(err);
@@ -125,6 +137,15 @@ const RepairHistory = ({ serialNumber }: Props) => {
         const now = new Date();
         const offset = now.getTimezoneOffset();
         return new Date(now.getTime() - offset * 60000)
+            .toISOString()
+            .slice(0, 16);
+    };
+    const subtractOneHour = (dateStr: string) => {
+        const date = new Date(dateStr);
+        const newDate = new Date(date.getTime() - 60 * 60 * 1000);
+
+        const offset = newDate.getTimezoneOffset();
+        return new Date(newDate.getTime() - offset * 60000)
             .toISOString()
             .slice(0, 16);
     };
@@ -198,43 +219,56 @@ const RepairHistory = ({ serialNumber }: Props) => {
                                 <div className="text-start">
                                     {editingId !== r.id ? (
                                         <>
-                                            <div className="flex justify-around">
-                                                <div className="flex flex-col">
-                                                    <span>{t("rh.SN")} {r.serial_number}</span>
-                                                    <span>{t("rh.RD")} {formatLongDate(String(r.reported_date))}</span>
-                                                    <span>{t("rh.ID")} {r.issue_description}</span>
-                                                    <span>{t("rh.RS")} {r.status}</span>
-                                                    <span>{t("rh.SD")} {formatLongDate(String(r.started_date))}</span>
-                                                    <span>{t("rh.CD")} {formatLongDate(String(r.completed_date))}</span>
-                                                    <span>{t("rh.Pers")} {r.personnel}</span>
-                                                </div>
-                                                <div className="flex">
-                                                    <span>{t("rh.Bef")}
-                                                        <img
-                                                            src={
-                                                                r.before_picture
-                                                                    ? `${API_BASE}/${r.before_picture.replace(/^\/+/, "")}`
-                                                                    : "/placeholder.png"
-                                                            }
-                                                            alt="Before"
-                                                            className="w-40 h-40 object-cover rounded border"
-                                                            onClick={() => setSelectedImage(`${API_BASE}${r.before_picture}`)}
-                                                        />
-                                                    </span>
-                                                    <span>{t("rh.Aft")}
-                                                        <img
-                                                            src={
-                                                                r.after_picture
-                                                                    ? `${API_BASE}/${r.after_picture.replace(/^\/+/, "")}`
-                                                                    : "/placeholder.png"
-                                                            }
-                                                            alt="Before"
-                                                            className="w-40 h-40 object-cover rounded border"
-                                                            onClick={() => setSelectedImage(`${API_BASE}${r.after_picture}`)}
-                                                        />
-                                                    </span>
-                                                </div>
-                                            </div>
+                                            <table className="text-center">
+                                                <thead>
+                                                    <tr>
+                                                        <th className="p-1 border">{t("rh.RD")}</th>
+                                                        <th className="p-1 border">{t("rh.SN")}</th>
+                                                        <th className="p-1 border">{t("rh.ID")}</th>
+                                                        <th className="p-1 border">{t("rh.Pers")}</th>
+                                                        <th className="p-1 border">{t("rh.SD")}</th>
+                                                        <th className="p-1 border">{t("rh.CD")}</th>
+                                                        <th className="p-1 border">{t("rh.RS")}</th>
+                                                        <th className="p-1 border">{t("rh.Bef")}</th>
+                                                        <th className="p-1 border">{t("rh.Aft")}</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td className="p-1 border">{formatLongDate(String(r.reported_date))}</td>
+                                                        <td className="p-1 border">{r.serial_number}</td>
+                                                        <td className="p-1 border">{r.issue_description}</td>
+                                                        <td className="p-1 border">{r.personnel}</td>
+                                                        <td className="p-1 border">{formatLongDate(String(r.started_date))}</td>
+                                                        <td className="p-1 border">{formatLongDate(String(r.completed_date))}</td>
+                                                        <td className="p-1 border">{r.status}</td>
+                                                        <td className="p-1 border">
+                                                            <img
+                                                                src={
+                                                                    r.before_picture
+                                                                        ? `${API_BASE}/${r.before_picture.replace(/^\/+/, "")}`
+                                                                        : "/placeholder.png"
+                                                                }
+                                                                alt="Before"
+                                                                className="w-40 h-40 object-cover rounded border"
+                                                                onClick={() => setSelectedImage(`${API_BASE}${r.before_picture}`)}
+                                                            />
+                                                        </td>
+                                                        <td className="p-1 border">
+                                                            <img
+                                                                src={
+                                                                    r.after_picture
+                                                                        ? `${API_BASE}/${r.after_picture.replace(/^\/+/, "")}`
+                                                                        : "/placeholder.png"
+                                                                }
+                                                                alt="Before"
+                                                                className="w-40 h-40 object-cover rounded border"
+                                                                onClick={() => setSelectedImage(`${API_BASE}${r.after_picture}`)}
+                                                            />
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
                                             {isEditable && (
                                                 <button
                                                     className="bg-blue-500 text-white px-3 py-1 rounded mt-2"
@@ -279,6 +313,9 @@ const RepairHistory = ({ serialNumber }: Props) => {
                                                                         // 🔥 AUTO SET COMPLETED DATE
                                                                         if (newStatus === "completed" && !prev.completed_date) {
                                                                             updated.completed_date = getNowLocal();
+                                                                            if (!updated.started_date) {
+                                                                                updated.started_date = subtractOneHour(updated.completed_date!);
+                                                                            }
                                                                         }
 
                                                                         return updated;

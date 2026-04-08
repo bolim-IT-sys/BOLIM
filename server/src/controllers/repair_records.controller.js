@@ -17,7 +17,8 @@ const updateRepair = async (req, res) => {
     }
 
     if (
-      (status === "completed" || completed_date) &&
+      status === "completed" &&
+      !repair.completed_date &&
       !req.file &&
       !repair.after_picture
     ) {
