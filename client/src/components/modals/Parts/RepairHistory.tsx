@@ -161,45 +161,6 @@ const RepairHistory = ({ serialNumber }: Props) => {
 
         return local.toISOString().slice(0, 16); // ✅ "YYYY-MM-DDTHH:mm"
     };
-    {/* contents of repairs.map
-        <div key={r.id} className="text-start flex justify-around">
-                                <div className="flex flex-col">
-                                    <span>Serial Number: {r.serial_number}</span>
-                                    <span>Reported Date: {formatLongDate(String(r.reported_date))}</span>
-                                    <span>Issue Description: {r.issue_description}</span>
-                                    <span>Repair Status: {r.status}</span>
-                                    <span>Started Date: {formatLongDate(String(r.started_date))}</span>
-                                    <span>Completed Date: {formatLongDate(String(r.completed_date))}</span>
-                                    <span>Personnel: {r.personnel}</span>
-                                </div>
-                                <div className="flex">
-                                    <span>Before:
-                                        <img
-                                            src={
-                                                r.before_picture
-                                                    ? `${API_BASE}/${r.before_picture.replace(/^\/+/, "")}`
-                                                    : "/placeholder.png"
-                                            }
-                                            alt="Before"
-                                            className="w-40 h-40 object-cover rounded border"
-                                            onClick={() => setSelectedImage(`${API_BASE}${r.before_picture}`)}
-                                        />
-                                    </span>
-                                    <span>After:
-                                        <img
-                                            src={
-                                                r.after_picture
-                                                    ? `${API_BASE}/${r.after_picture.replace(/^\/+/, "")}`
-                                                    : "/placeholder.png"
-                                            }
-                                            alt="Before"
-                                            className="w-40 h-40 object-cover rounded border"
-                                            onClick={() => setSelectedImage(`${API_BASE}${r.after_picture}`)}
-                                        />
-                                    </span>
-                                </div>
-                            </div>
-    */}
 
     return (
         <div className="mb-2">
@@ -219,30 +180,30 @@ const RepairHistory = ({ serialNumber }: Props) => {
                                 <div className="text-start">
                                     {editingId !== r.id ? (
                                         <>
-                                            <table className="text-center">
+                                            <table className="text-center w-full">
                                                 <thead>
                                                     <tr>
-                                                        <th className="p-1 border">{t("rh.RD")}</th>
-                                                        <th className="p-1 border">{t("rh.SN")}</th>
-                                                        <th className="p-1 border">{t("rh.ID")}</th>
-                                                        <th className="p-1 border">{t("rh.Pers")}</th>
-                                                        <th className="p-1 border">{t("rh.SD")}</th>
-                                                        <th className="p-1 border">{t("rh.CD")}</th>
-                                                        <th className="p-1 border">{t("rh.RS")}</th>
-                                                        <th className="p-1 border">{t("rh.Bef")}</th>
-                                                        <th className="p-1 border">{t("rh.Aft")}</th>
+                                                        <th className="p-2 border">{t("rh.RD")}</th>
+                                                        {/*<th className="p-2 border">{t("rh.SN")}</th>*/}
+                                                        <th className="p-2 border">{t("rh.ID")}</th>
+                                                        <th className="p-2 border">{t("rh.Pers")}</th>
+                                                        <th className="p-2 border">{t("rh.SD")}</th>
+                                                        <th className="p-2 border">{t("rh.CD")}</th>
+                                                        <th className="p-2 border">{t("rh.RS")}</th>
+                                                        <th className="p-2 border">{t("rh.Bef")}</th>
+                                                        <th className="p-2 border">{t("rh.Aft")}</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     <tr>
-                                                        <td className="p-1 border">{formatLongDate(String(r.reported_date))}</td>
-                                                        <td className="p-1 border">{r.serial_number}</td>
-                                                        <td className="p-1 border">{r.issue_description}</td>
-                                                        <td className="p-1 border">{r.personnel}</td>
-                                                        <td className="p-1 border">{formatLongDate(String(r.started_date))}</td>
-                                                        <td className="p-1 border">{formatLongDate(String(r.completed_date))}</td>
-                                                        <td className="p-1 border">{r.status}</td>
-                                                        <td className="p-1 border">
+                                                        <td className="p-2 border">{formatLongDate(String(r.reported_date))}</td>
+                                                        {/*<td className="p-2 border">{r.serial_number}</td>*/}
+                                                        <td className="p-2 border">{r.issue_description}</td>
+                                                        <td className="p-2 border">{r.personnel}</td>
+                                                        <td className="p-2 border">{formatLongDate(String(r.started_date))}</td>
+                                                        <td className="p-2 border">{formatLongDate(String(r.completed_date))}</td>
+                                                        <td className="p-2 border">{r.status}</td>
+                                                        <td className="p-2 border">
                                                             <img
                                                                 src={
                                                                     r.before_picture
@@ -254,7 +215,7 @@ const RepairHistory = ({ serialNumber }: Props) => {
                                                                 onClick={() => setSelectedImage(`${API_BASE}${r.before_picture}`)}
                                                             />
                                                         </td>
-                                                        <td className="p-1 border">
+                                                        <td className="p-2 border">
                                                             <img
                                                                 src={
                                                                     r.after_picture
