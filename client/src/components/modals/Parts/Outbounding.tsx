@@ -13,6 +13,7 @@ import {
 import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
 import Swal from "sweetalert2";
 import Select, { type SingleValue } from "react-select"
+import PrintLabel from "./PrintLabel";
 
 interface Props {
   item: Part;
@@ -35,7 +36,7 @@ type OptionType = {
   value: string;
   label: string;
 };
-const station: OptionType[] = [
+{/*const station: OptionType[] = [
   { value: "Sub1", label: "Sub1" },
   { value: "Sub2", label: "Sub2" },
   { value: "Sub3", label: "Sub3" },
@@ -56,10 +57,10 @@ const station: OptionType[] = [
   { value: "Airleak", label: "Airleak" },
   { value: "Circuit", label: "Circuit" },
   { value: "Fuse and Relay", label: "Fuse and Relay" },
-];
+];*/}
 const department: OptionType[] = [
   { value: "Assembly", label: "Assembly" },
-  { value: "Cutting & Crimpping", label: "Cutting & Crimpping" },
+  { value: "Cutting & Crimpping", label: "Cutting & Crimping" },
   { value: "Line 1", label: "Line 1" },
   { value: "Line 2", label: "Line 2" },
   { value: "Line 3", label: "Line 3" },
@@ -126,7 +127,7 @@ export const Outbounding = ({
     }));
   }, [formData, item, serialNumber]);
   // Test code ONLY! ------------------------
-  const handleOutbound = async (action: "pending" | "on_hold" | "completed") => {
+  {/*const handleOutbound = async (action: "in_progress" | "on_hold" | "completed") => {
     setOutBounding(true);
     try {
       if (type === "it") {
@@ -190,9 +191,9 @@ export const Outbounding = ({
         import.meta.env.VITE_TIME_OUT,
       );
     }
-  };
+  };*/}
   //--------------------------
-  {/*const handleOutbound = async () => {
+  const handleOutbound = async () => {
     setOutBounding(true);
     try {
       if (type === "it") {
@@ -252,7 +253,7 @@ export const Outbounding = ({
         import.meta.env.VITE_TIME_OUT,
       );
     }
-  };*/}
+  };
 
   // CHECKING IF THE FORM IS COMPLETE BEFORE ENABLING THE SUBMIT BUTTON
   const incompleteForm = () => {
@@ -311,7 +312,8 @@ export const Outbounding = ({
               <SuccessButton
                 text="Request"
                 loadingText="OUTBOUNDING"
-                onClick={() => handleOutbound("pending")}
+                //onClick={() => handleOutbound("in_progress")}
+                onClick={() => handleOutbound}
                 isLoading={outbounding}
                 disabled={outbounding || incompleteForm()}
               />
@@ -381,7 +383,7 @@ export const Outbounding = ({
                 >
                   <p>STATION</p>
                 </label>
-                <div className="w-full">
+                {/*<div className="w-full">
                   <Select<OptionType>
                     options={station}
                     onChange={(option: SingleValue<OptionType>) =>
@@ -389,7 +391,7 @@ export const Outbounding = ({
                     isSearchable
                     placeholder="Select Station"
                   />
-                </div>
+                </div>*/}
               </div>
               <div className="mb-1">
                 <label
@@ -459,6 +461,16 @@ export const Outbounding = ({
               autoComplete={`outboundDate`}
             />
           </div>
+          {type === "pin" ?
+            formData.quantity === "" ?
+              null
+              : <PrintLabel parts={{
+                serial_number: `${formData.partNumber}`,
+                completed_date: `${formData.quantity}`,
+                personnel: `${formData.outboundDate}`,
+              }} />
+            : null}
+
         </div >
       </Modal >
     </>

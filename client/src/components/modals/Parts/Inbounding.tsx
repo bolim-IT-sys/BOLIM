@@ -14,6 +14,7 @@ import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
 import ZebraPrint from "../../../pages/AdminPages/Components/ZebraPrint";
 import { SwitchButton } from "../../button/SwitchButton";
 import { UseZebraPrinter } from "../../../services/ZebraPrinter.Service";
+import InboundPrintLabel from "./InboundPrintLabel";
 
 interface Props {
   item: Part;
@@ -368,6 +369,15 @@ export const Inbounding = ({
                 </div>
               </div>
             ) : null}
+            {type === "pin" ?
+              formData.quantity === "" ?
+                null
+                : <InboundPrintLabel parts={{
+                  serial_number: `${formData.partNumber}`,
+                  quantity: `${formData.quantity}`,
+                  date: `${formData.inboundDate}`,
+                }} />
+              : null}
           </div>
         )}
       </Modal>
