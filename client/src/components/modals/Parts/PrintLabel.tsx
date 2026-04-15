@@ -3,7 +3,7 @@ import { QRCodeCanvas } from "qrcode.react";
 
 type Part = {
     serial_number: string;
-    completed_date?: string;
+    quantity?: string;
     personnel?: string;
 };
 
@@ -25,31 +25,61 @@ const PrintLabel: React.FC<{ parts: Part }> = ({ parts }) => {
         if (win) {
             win.document.write(`
       <html>
-        <head>
-          <title>QR Sticker</title>
-          <style>
-            @page {
-              size: 2in 2in;
-              margin: 0;
-            }
+          <head>
+            <style>
+              @page {
+                size: 2in 2in;
+                margin: 0;
+              }
 
-            body {
-              margin: 0;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-            }
+              body {
+                margin: 0;
+                font-family: Arial, sans-serif;
+              }
 
-            img {
-              width: 1.8in;
-              height: 1.8in;
-            }
-          </style>
-        </head>
-        <body>
-          <img src="${imgData}" />
-        </body>
-      </html>
+              .label {
+                width: 3in;
+                height: 3in;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 6px;
+                box-sizing: border-box;
+              }
+
+              .qr {
+				padding: 0.5rem
+			  }
+
+              .qr img {
+                width: 1.5in;
+                height: 1.5in;
+              }
+
+              .info {
+                font-size: 25px;
+                line-height: 1.4;
+                text-align: left;
+              }
+
+              .info strong {
+                display: block;
+              }
+            </style>
+          </head>
+          <body>
+            <div class="label">
+              <div class="qr">
+                <img src="${imgData}" />
+              </div>
+
+              <div class="info">
+                <strong>SN:</strong> ${parts.serial_number}
+                <strong>Qty:</strong> ${parts.quantity}
+              </div>
+            </div>
+          </body>
+        </html>
     `);
 
             win.document.close();
@@ -61,7 +91,7 @@ const PrintLabel: React.FC<{ parts: Part }> = ({ parts }) => {
         }
     };
 
-    const qrCanvas = `Serial: ${parts.serial_number} Quantity: ${parts.completed_date} Outbound Date: ${parts.personnel}`
+    const qrCanvas = `Serial: ${parts.serial_number} Quantity: ${parts.quantity} Outbound Date: ${parts.personnel}`
 
     return (
         <div>

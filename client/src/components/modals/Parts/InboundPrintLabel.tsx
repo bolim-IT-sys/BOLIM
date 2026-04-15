@@ -23,34 +23,93 @@ const InboundPrintLabel: React.FC<{ parts: Part }> = ({ parts }) => {
         const win = window.open("", "", "width=600,height=600");
 
         if (win) {
+            {/*win.document.write(`
+                <html>
+                <head>
+                <title>QR Sticker</title>
+                <style>
+                @page {
+                    size: 2in 2in;
+                    margin: 0;
+                    }
+                    
+                    body {
+                        margin: 0;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        }
+                        
+                        img {
+                            width: 1.8in;
+                            height: 1.8in;
+                            }
+                            </style>
+                            </head>
+                            <body>
+                            <img src="${imgData}" />
+                            </body>
+                            </html>
+                            `);*/}
             win.document.write(`
-      <html>
-        <head>
-          <title>QR Sticker</title>
-          <style>
-            @page {
-              size: 2in 2in;
-              margin: 0;
-            }
+                      <html>
+                          <head>
+                            <style>
+                              @page {
+                                size: 2in 2in;
+                                margin: 0;
+                              }
+                
+                              body {
+                                margin: 0;
+                                font-family: Arial, sans-serif;
+                              }
+                
+                              .label {
+                                width: 3in;
+                                height: 3in;
+                                display: flex;
+                                align-items: center;
+                                justify-content: space-between;
+                                padding: 6px;
+                                box-sizing: border-box;
+                              }
+                
+                              .qr {
+                                padding: 0.5rem
+                              }
+                
+                              .qr img {
+                                width: 1.5in;
+                                height: 1.5in;
+                              }
+                
+                              .info {
+                                font-size: 25px;
+                                line-height: 1.4;
+                                text-align: left;
+                              }
+                
+                              .info strong {
+                                display: block;
+                              }
+                            </style>
+                          </head>
+                          <body>
+                            <div class="label">
+                              <div class="qr">
+                                <img src="${imgData}" />
+                              </div>
+                
+                              <div class="info">
+                                <strong>SN:</strong> ${parts.serial_number}
+                                <strong>Qty:</strong> ${parts.quantity}
+                              </div>
+                            </div>
+                          </body>
+                        </html>
+                    `);
 
-            body {
-              margin: 0;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-            }
-
-            img {
-              width: 1.8in;
-              height: 1.8in;
-            }
-          </style>
-        </head>
-        <body>
-          <img src="${imgData}" />
-        </body>
-      </html>
-    `);
 
             win.document.close();
 

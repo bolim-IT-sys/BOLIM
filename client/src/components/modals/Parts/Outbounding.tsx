@@ -466,7 +466,7 @@ export const Outbounding = ({
               null
               : <PrintLabel parts={{
                 serial_number: `${formData.partNumber}`,
-                completed_date: `${formData.quantity}`,
+                quantity: `${formData.quantity}`,
                 personnel: `${formData.outboundDate}`,
               }} />
             : null}
