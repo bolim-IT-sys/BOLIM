@@ -135,6 +135,7 @@ module.exports = {
   getOutQuantity,
   getTotal,
   getTotalByYear,
+  getTotalByYearExcludingCurrentMonth,
   getAverageOutboundPerMonth,
   getSafetyStock,
 };
