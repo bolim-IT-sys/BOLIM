@@ -1,6 +1,7 @@
 import type { Dispatch, SetStateAction } from "react";
 import { Link, useLocation } from "react-router-dom";
 import type { User } from "../../services/User.Service";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   user: User;
@@ -18,6 +19,7 @@ export const MobileItems = ({
   setShowSideBar,
 }: Props) => {
   const location = useLocation();
+  const { t } = useTranslation()
 
   return (
     <>
@@ -33,7 +35,7 @@ export const MobileItems = ({
           <h4
             className={`absolute w-45 mt-1 start-12 font-bold ${isShowing ? "opacity-100" : "opacity-0"} ${isHidden ? "pointer-events-none" : ""} transition-all duration-250 ease-in-out`}
           >
-            Dashboard
+            {t("sNav.dash")}
           </h4>
         </Link>
         {user?.pins ? (
@@ -48,7 +50,7 @@ export const MobileItems = ({
             <h4
               className={`absolute w-45 mt-1 start-12 font-bold ${isShowing ? "opacity-100" : "opacity-0"} ${isHidden ? "pointer-events-none" : ""} transition-all duration-250 ease-in-out`}
             >
-              Pins
+              {t("sNav.pins")}
             </h4>
           </Link>
         ) : null}
@@ -64,7 +66,7 @@ export const MobileItems = ({
             <h4
               className={`absolute w-45 mt-1 start-12 font-bold ${isShowing ? "opacity-100" : "opacity-0"} ${isHidden ? "pointer-events-none" : ""} transition-all duration-250 ease-in-out`}
             >
-              IT Stocks
+              {t("sNav.it")}
             </h4>
           </Link>
         ) : null}
@@ -80,7 +82,7 @@ export const MobileItems = ({
             <h4
               className={`absolute w-45 mt-1 start-12 font-bold ${isShowing ? "opacity-100" : "opacity-0"} ${isHidden ? "pointer-events-none" : ""} transition-all duration-250 ease-in-out`}
             >
-              Material Control
+              {t("sNav.material")}
             </h4>
           </Link>
         ) : null}
@@ -98,7 +100,7 @@ export const MobileItems = ({
               <h4
                 className={`absolute w-45 mt-1 start-12 font-bold ${isShowing ? "opacity-100" : "opacity-0"} ${isHidden ? "pointer-events-none" : ""} transition-all duration-250 ease-in-out`}
               >
-                User Management
+                {t("sNav.user")}
               </h4>
             </Link>
           </>

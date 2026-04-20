@@ -40,7 +40,7 @@ export const WebItems = ({
           <h3 className="flex justify-center items-center mx-2 my-1">
             <i className="bx bxs-dashboard mt-1 ms-0.5"></i>
           </h3>
-          <SideNavBarToolTip isHidden={isHidden} toolTipName={"Dashboard"} />
+          <SideNavBarToolTip isHidden={isHidden} toolTipName={t("sNav.dash")} />
           <h4
             className={`absolute w-45 mt-1 start-12 font-bold ${isShowing ? "opacity-100" : "opacity-0"} ${isHidden ? "pointer-events-none" : ""} transition-all duration-250 ease-in-out`}
           >
@@ -55,7 +55,7 @@ export const WebItems = ({
             <h3 className="flex justify-center items-center mx-2 my-1">
               <i className="bx bx-usb mt-1 ms-0.5"></i>
             </h3>
-            <SideNavBarToolTip isHidden={isHidden} toolTipName={"Pins"} />
+            <SideNavBarToolTip isHidden={isHidden} toolTipName={t("sNav.pins")} />
             <h4
               className={`absolute w-45 mt-1 start-12 font-bold ${isShowing ? "opacity-100" : "opacity-0"} ${isHidden ? "pointer-events-none" : ""} transition-all duration-250 ease-in-out`}
             >
@@ -71,7 +71,7 @@ export const WebItems = ({
             <h3 className="flex justify-center items-center mx-2 my-1">
               <i className="bx bx-desktop mt-1 ms-0.5"></i>
             </h3>
-            <SideNavBarToolTip isHidden={isHidden} toolTipName={"IT Stocks"} />
+            <SideNavBarToolTip isHidden={isHidden} toolTipName={t("sNav.it")} />
             <h4
               className={`absolute w-45 mt-1 start-12 font-bold ${isShowing ? "opacity-100" : "opacity-0"} ${isHidden ? "pointer-events-none" : ""} transition-all duration-250 ease-in-out`}
             >
@@ -89,7 +89,7 @@ export const WebItems = ({
             </h3>
             <SideNavBarToolTip
               isHidden={isHidden}
-              toolTipName={"Material Control"}
+              toolTipName={t("sNav.material")}
             />
             <h4
               className={`absolute w-45 mt-1 start-12 font-bold ${isShowing ? "opacity-100" : "opacity-0"} ${isHidden ? "pointer-events-none" : ""} transition-all duration-250 ease-in-out`}
@@ -134,7 +134,7 @@ export const WebItems = ({
               <h3 className="flex justify-center items-center mx-2 my-1">
                 <i className="bx bxs-group mt-1 ms-0.5"></i>
               </h3>
-              <SideNavBarToolTip isHidden={isHidden} toolTipName={"Users"} />
+              <SideNavBarToolTip isHidden={isHidden} toolTipName={t("sNav.user")} />
               <h4
                 className={`absolute w-45 mt-1 start-12 font-bold ${isShowing ? "opacity-100" : "opacity-0"} ${isHidden ? "pointer-events-none" : ""} transition-all duration-250 ease-in-out`}
               >
