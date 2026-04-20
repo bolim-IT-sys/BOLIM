@@ -1,1 +1,4 @@
-npm install qrcode.react
+npm install lodash.debounce
+npm install ag-grid-community
+npm install --save-dev @types/lodash.debounce
+npm install exceljs
