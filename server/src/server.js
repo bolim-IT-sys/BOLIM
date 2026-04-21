@@ -3,6 +3,7 @@ const express = require("express");
 const cors = require("cors");
 const sequelize = require("./database/index.js");
 const repairRoutes = require("./routes/repair_records.routes");
+const maintenanceRoutes = require("./routes/maintenance_records.routes");
 const app = express();
 
 const dotenv = require("dotenv");
@@ -33,6 +34,7 @@ app.use(
 
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/api/repairs", repairRoutes);
+app.use("/api/maintenance", maintenanceRoutes);
 //console.log("Static path:", path.join(__dirname, "uploads"));
 
 const exportRoutes = require("./routes/export.routes.js");
