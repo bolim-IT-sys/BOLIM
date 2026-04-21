@@ -82,5 +82,33 @@
     "DC": "Date Completed",
     "RH": "Repair History",
     "nrh": "No repair history"
+  },
+  "mainRec": {
+    "date": "DATE",
+    "formNumber": "FORM SN",
+    "line": "LINE",
+    "process": "PROCESS",
+    "code": "CODE",
+    "phenomenon": "PHENOMENON",
+    "detail": "DETAIL OF ACTION",
+    "material": "MATERIAL",
+    "qty": "QTY",
+    "occurTime": "OCCUR TIME",
+    "finishTime": "FINISH TIME",
+    "downTime": "DOWN TIME (mins)",
+    "incharge": "INCHARGE",
+    "shift": "SHIFT",
+    "repairComp": "REPAIR COMPLETED STICKER SN",
+    "type": "TYPE",
+    "labelSN": "LABEL SERIAL No.",
+    "holderNumber": "HOLDER NUMBER",
+    "pin": "PIN NO.",
+    "pinCheck": "PIN CHECK",
+    "pinSpec": "PIN SPEC",
+    "pinHeight": "PIN HEIGHT",
+    "pinDeformation": "PIN DEFORMAITON",
+    "pinSpring": "PIN SPRING",
+    "kyungshinLabel": "KYUNGSHIN LABEL",
+    "remarks": "REMARKS"
   }
 }

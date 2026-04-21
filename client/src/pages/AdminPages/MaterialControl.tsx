@@ -8,6 +8,7 @@ import { AgGridReact } from "ag-grid-react";
 import { ModuleRegistry, AllCommunityModule, type CellValueChangedEvent, type ColDef, type ColGroupDef } from "ag-grid-community";
 import debounce from "lodash.debounce";
 import TimeCellEditor from "./TimePicker";
+import { useTranslation } from "react-i18next";
 
 
 ModuleRegistry.registerModules([AllCommunityModule]);
@@ -23,60 +24,62 @@ interface ContextType {
 export default function MaterialControl() {
   const [rowData, setRowData] = useState<Row[]>([]);
   const [isFetching, setIsFetching] = useState<boolean>();
+  const { t } = useTranslation();
+
   const columnDefs: (ColDef<Row> | ColGroupDef<Row>)[] = [
-    { headerName: "DATE", field: "date", headerClass: "bg-[#FCE4D6]" },
-    { headerName: "FORM SN", field: "formNumber", headerClass: "bg-[#FCE4D6]" },
+    { headerName: t("mainRec.date"), field: "date", headerClass: "bg-[#FCE4D6]" },
+    { headerName: t("mainRec.formNumber"), field: "formNumber", headerClass: "bg-[#FCE4D6]" },
     {
-      headerName: "LINE", field: "line", headerClass: "bg-[#FCE4D6]", cellEditor: "agSelectCellEditor", cellEditorParams: {
+      headerName: t("mainRec.line"), field: "line", headerClass: "bg-[#FCE4D6]", cellEditor: "agSelectCellEditor", cellEditorParams: {
         values: ["L1", "L2", "L3", "L4", "L5", "L6", "L7", "L8", "L9", "L10", "L11", "L12", "L13", "L14", "L15", "L16", "L17", "L18", "L19", "ABAG"]
       }
     },
     {
-      headerName: "PROCESS", field: "process", headerClass: "bg-[#FCE4D6]", cellEditor: "agSelectCellEditor", cellEditorParams: {
+      headerName: t("mainRec.process"), field: "process", headerClass: "bg-[#FCE4D6]", cellEditor: "agSelectCellEditor", cellEditorParams: {
         values: ["CIRCUIT", "DIMENSION", "PRODUCT INPECTION", "GROMMET", "VISION", "TORQUE", "ASSEMBLY BOARD", "PCB BLOCK", "FUSE AND RELAY", "WRAP UP", "PACKING", "SUB", "DIM/CIR/WRAP/PROD"]
       }
     },
     {
-      headerName: "CODE", field: "code", headerClass: "bg-[#FCE4D6]", cellEditor: "agSelectCellEditor", cellEditorParams: {
+      headerName: t("mainRec.code"), field: "code", headerClass: "bg-[#FCE4D6]", cellEditor: "agSelectCellEditor", cellEditorParams: {
         values: ["A", "B", "C", "D", "E", "F"]
       }
     },
-    { headerName: "PHENOMENON", field: "phenomenon", headerClass: "bg-[#D9E1F2]", width: 250 },
-    { headerName: "DETAIL OF ACTION", field: "detail", headerClass: "bg-[#D9E1F2]", width: 300 },
-    { headerName: "MATERIAL", field: "material", headerClass: "bg-[#D9E1F2]", },
-    { headerName: "QTY", field: "qty", headerClass: "bg-[#D9E1F2]", },
-    { headerName: "OCCUR TIME", field: "occurTime", cellEditor: TimeCellEditor, valueFormatter: (params) => formatTo12Hour(params.value), headerClass: "bg-[#E2EFDA]", },
-    { headerName: "FINISH TIME", field: "finishTime", cellEditor: TimeCellEditor, valueFormatter: (params) => formatTo12Hour(params.value), headerClass: "bg-[#E2EFDA]", },
-    { headerName: "DOWN TIME (mins)", field: "downTime", headerClass: "bg-[#E2EFDA]", },
-    { headerName: "INCHARGE", field: "incharge", headerClass: "bg-[#E2EFDA]", },
-    { headerName: "SHIFT", field: "shift", headerClass: "bg-[#E2EFDA]", },
+    { headerName: t("mainRec.phenomenon"), field: "phenomenon", headerClass: "bg-[#D9E1F2]", width: 250 },
+    { headerName: t("mainRec.detail"), field: "detail", headerClass: "bg-[#D9E1F2]", width: 300 },
+    { headerName: t("mainRec.material"), field: "material", headerClass: "bg-[#D9E1F2]", },
+    { headerName: t("mainRec.qty"), field: "qty", headerClass: "bg-[#D9E1F2]", },
+    { headerName: t("mainRec.occurTime"), field: "occurTime", cellEditor: TimeCellEditor, valueFormatter: (params) => formatTo12Hour(params.value), headerClass: "bg-[#E2EFDA]", },
+    { headerName: t("mainRec.finishTime"), field: "finishTime", cellEditor: TimeCellEditor, valueFormatter: (params) => formatTo12Hour(params.value), headerClass: "bg-[#E2EFDA]", },
+    { headerName: t("mainRec.downTime"), field: "downTime", headerClass: "bg-[#E2EFDA]", },
+    { headerName: t("mainRec.incharge"), field: "incharge", headerClass: "bg-[#E2EFDA]", },
+    { headerName: t("mainRec.shift"), field: "shift", headerClass: "bg-[#E2EFDA]", },
 
     {
-      headerName: "REPAIR COMPLETED STICKER SN", headerClass: "bg-[#FFF2CC]",
+      headerName: t("mainRec.repairComp"), headerClass: "bg-[#FFF2CC]",
       children: [
         {
-          headerName: "TYPE", field: "type", headerClass: "bg-[#FFF2CC]", cellEditor: "agSelectCellEditor", cellEditorParams: {
+          headerName: t("mainRec.type"), field: "type", headerClass: "bg-[#FFF2CC]", cellEditor: "agSelectCellEditor", cellEditorParams: {
             values: ["CHANGE PIN", "CHANGE HOLDER", "CHECK"]
           }
         },
-        { headerName: "LABEL SERIAL No.", field: "labelSN", headerClass: "bg-[#FFF2CC]", },
-        { headerName: "HOLDER NUMBER", field: "holderNumber", headerClass: "bg-[#FFF2CC]", },
-        { headerName: "PIN NO.", field: "pin", headerClass: "bg-[#FFF2CC]", },
+        { headerName: t("mainRec.labelSN"), field: "labelSN", headerClass: "bg-[#FFF2CC]", },
+        { headerName: t("mainRec.holderNumber"), field: "holderNumber", headerClass: "bg-[#FFF2CC]", },
+        { headerName: t("mainRec.pin"), field: "pin", headerClass: "bg-[#FFF2CC]", },
       ],
     },
 
     {
-      headerName: "PIN CHECK", headerClass: "bg-[#D9D9D9]",
+      headerName: t("mainRec.pinCheck"), headerClass: "bg-[#D9D9D9]",
       children: [
-        { headerName: "PIN SPEC", field: "pinSpec", headerClass: "bg-[#D9D9D9]", },
-        { headerName: "PIN HEIGHT", field: "pinHeight", headerClass: "bg-[#D9D9D9]", },
-        { headerName: "PIN DEFORMATION", field: "pinDeformation", headerClass: "bg-[#D9D9D9]", },
-        { headerName: "PIN SPRING", field: "pinSpring", headerClass: "bg-[#D9D9D9]", },
+        { headerName: t("mainRec.pinSpec"), field: "pinSpec", headerClass: "bg-[#D9D9D9]", },
+        { headerName: t("mainRec.pinHeight"), field: "pinHeight", headerClass: "bg-[#D9D9D9]", },
+        { headerName: t("mainRec.pinDeformation"), field: "pinDeformation", headerClass: "bg-[#D9D9D9]", },
+        { headerName: t("mainRec.pinSpring"), field: "pinSpring", headerClass: "bg-[#D9D9D9]", },
       ],
     },
 
-    { headerName: "KYUNGSHIN LABEL", field: "kyungshinLabel", headerClass: "bg-[#D9D9D9]", },
-    { headerName: "REMARKS", field: "remarks", headerClass: "bg-[#F8CBAD]", },
+    { headerName: t("mainRec.kyungshinLabel"), field: "kyungshinLabel", headerClass: "bg-[#D9D9D9]", },
+    { headerName: t("mainRec.remarks"), field: "remarks", headerClass: "bg-[#F8CBAD]", },
   ];
 
   type Row = {

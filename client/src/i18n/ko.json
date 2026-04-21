@@ -82,5 +82,33 @@
     "DC": "완료 날짜",
     "RH": "수리 내역",
     "nrh": "수리 이력 없음"
+  },
+  "mainRec": {
+    "date": "날짜",
+    "formNumber": "양식 일련 번호",
+    "line": "선",
+    "process": "프로세스",
+    "code": "암호",
+    "phenomenon": "현상",
+    "detail": "작전 상세 내역",
+    "material": "재료",
+    "qty": "수량",
+    "occurTime": "발생 시간",
+    "finishTime": "종료 시간",
+    "downTime": "대기 시간(분)",
+    "incharge": "충전",
+    "shift": "옮기다",
+    "repairComp": "수리 완료 스티커 일련번호",
+    "type": "유형",
+    "labelSN": "라벨 일련 번호",
+    "holderNumber": "소유자 번호",
+    "pin": "핀번호",
+    "pinCheck": "핀 확인",
+    "pinSpec": "핀 사양",
+    "pinHeight": "핀 높이",
+    "pinDeformation": "핀 변형",
+    "pinSpring": "핀 스프링",
+    "kyungshinLabel": "경신레이블",
+    "remarks": "비고"
   }
 }
