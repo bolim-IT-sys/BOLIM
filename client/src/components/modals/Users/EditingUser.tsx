@@ -30,6 +30,7 @@ export const EditingUser = ({ user, fetchAllUsers }: EditingProps) => {
     pins: 0,
     it_stocks: 0,
     materials: 0,
+    movement: 0,
   });
 
   // PUTTING USER DETAILS ON CLICK
@@ -41,6 +42,7 @@ export const EditingUser = ({ user, fetchAllUsers }: EditingProps) => {
       pins: user.pins,
       it_stocks: user.it_stocks,
       materials: user.materials,
+      movement: user.movement,
     }));
   }, [user]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -65,7 +67,7 @@ export const EditingUser = ({ user, fetchAllUsers }: EditingProps) => {
               text: result.message,
               timer: 5000,
               showConfirmButton: false,
-            }).then(() => {});
+            }).then(() => { });
             fetchAllUsers();
             fetchUserDetails();
           },
@@ -89,6 +91,7 @@ export const EditingUser = ({ user, fetchAllUsers }: EditingProps) => {
                 pins: user.pins,
                 it_stocks: user.it_stocks,
                 materials: user.materials,
+                movement: user.movement,
               }));
             });
           },
@@ -131,7 +134,8 @@ export const EditingUser = ({ user, fetchAllUsers }: EditingProps) => {
       user.username === formData.username &&
       user.pins === formData.pins &&
       user.it_stocks === formData.it_stocks &&
-      user.materials === formData.materials
+      user.materials === formData.materials &&
+      user.movement === formData.movement
     );
   };
 
@@ -149,7 +153,7 @@ export const EditingUser = ({ user, fetchAllUsers }: EditingProps) => {
       <Modal
         isOpen={modalShow}
         onClose={() => setModalShow(false)}
-        size="md"
+        size="lg"
         title={
           <>
             <h3 className="text-start">
@@ -271,6 +275,29 @@ export const EditingUser = ({ user, fetchAllUsers }: EditingProps) => {
                   setFormData((prev) => ({
                     ...prev,
                     materials: Number(e.target.value),
+                  }))
+                }
+              >
+                <option value={0}>NOT ADMIN</option>
+                <option value={1}>ADMIN</option>
+              </select>
+            </div>
+            <div className="mb-1">
+              <label
+                htmlFor="material_admin"
+                className="block font-medium text-gray-700"
+              >
+                <p>EQUIPMENT MOVEMENT:</p>
+              </label>
+              <select
+                className="w-full sm:w-40 no-arrow rounded-lg border border-neutral-300 hover:bg-neutral-200 transition duration-350 cursor-pointer px-2 py-2 focus:bg-neutral-50  focus:ring-1 focus:ring-neutral-300 focus:outline-none"
+                id="movement_admin"
+                name="movement_admin"
+                value={formData.movement}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    movement: Number(e.target.value),
                   }))
                 }
               >

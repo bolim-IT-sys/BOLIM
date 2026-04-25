@@ -50,7 +50,8 @@ const findUserByUsername = async (username) => {
 
 const createUser = async (userData) => {
   try {
-    const { username, password, pins, it_stocks, materials } = userData;
+    const { username, password, pins, it_stocks, materials, movement } =
+      userData;
 
     // Hash password before storing
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -62,6 +63,7 @@ const createUser = async (userData) => {
       pins: pins,
       it_stocks: it_stocks,
       materials: materials,
+      movement: movement,
     });
 
     // Return user without password
@@ -87,6 +89,7 @@ const updateUser = async (userId, userData) => {
       pins: userData.pins,
       it_stocks: userData.it_stocks,
       materials: userData.materials,
+      movement: userData.movement,
     };
 
     if (userData.username) {

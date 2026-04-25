@@ -6,6 +6,7 @@ export interface User {
   password?: string | null | BigInteger;
   pins: number;
   it_stocks: number;
+  movement: number;
   materials: number;
 }
 
@@ -15,6 +16,7 @@ export interface CreateUserType {
   pins: number;
   it_stocks: number;
   materials: number;
+  movement: number;
 }
 
 export interface UserResponse {
@@ -45,7 +47,7 @@ export async function fetchUserData(token: string): Promise<UserResponse> {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-      }
+      },
     );
 
     const data = response.data;
@@ -84,7 +86,7 @@ export async function fetchUsers(): Promise<FetchingUsersResponse> {
 }
 
 export async function createUser(
-  formData: CreateUserType
+  formData: CreateUserType,
 ): Promise<UserResponse> {
   try {
     const response = await axios.post(
@@ -94,7 +96,7 @@ export async function createUser(
         headers: {
           "Content-Type": "application/json",
         },
-      }
+      },
     );
     // console.log("creating user");
     if (response.status === 201) {
@@ -108,7 +110,7 @@ export async function createUser(
       const axiosError = error as AxiosError<ApiErrorResponse>;
       console.error(
         "Error creating user:",
-        axiosError.response?.data || axiosError.message
+        axiosError.response?.data || axiosError.message,
       );
 
       // Check if it's a connection error
@@ -141,7 +143,7 @@ export async function createUser(
 
 export async function editUser(
   id: number,
-  formData: CreateUserType
+  formData: CreateUserType,
 ): Promise<UserResponse> {
   try {
     const response = await axios.put(
@@ -151,7 +153,7 @@ export async function editUser(
         headers: {
           "Content-Type": "application/json",
         },
-      }
+      },
     );
     // console.log("editing user details");
     if (response.status === 200) {
@@ -165,7 +167,7 @@ export async function editUser(
       const axiosError = error as AxiosError<ApiErrorResponse>;
       console.error(
         "Error creating user:",
-        axiosError.response?.data || axiosError.message
+        axiosError.response?.data || axiosError.message,
       );
 
       // Check if it's a connection error
@@ -215,7 +217,7 @@ export async function removeUser(id: number): Promise<UserResponse> {
       const axiosError = error as AxiosError<ApiErrorResponse>;
       console.error(
         "Error creating user:",
-        axiosError.response?.data || axiosError.message
+        axiosError.response?.data || axiosError.message,
       );
 
       // Check if it's a connection error
