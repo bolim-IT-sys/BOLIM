@@ -1,7 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import type { User } from "../../services/User.Service";
 import { SideNavBarToolTip } from "./SideNavBarToolTip";
-// import { MoreOptionDropDown } from "./MoreOptionDropDown";
 import type { Dispatch, SetStateAction } from "react";
 import type { Inventory } from "../../services/Inventory.Service";
 import { useTranslation } from "react-i18next";
@@ -19,19 +18,16 @@ type Props = {
 
 export const WebItems = ({
   user,
-  // inventories,
   isHidden,
   isShowing,
   isSuperAdmin,
-  // setShowSideBar,
-  // collapse,
-  // setCollapse,
 }: Props) => {
   const location = useLocation();
   const { t } = useTranslation()
 
   return (
     <>
+      {/*console.log(user)*/}
       <div className="hidden md:flex flex-col justify-start items-start text-neutral-50 gap-1 pt-5.5 mx-3">
         <Link
           className={`group relative p-2 flex items-center ${location.pathname === "/dashboard" ? "bg-neutral-50 text-neutral-800" : "hover:bg-cyan-400"} transition duration-150 w-full rounded cursor-pointer`}
@@ -98,35 +94,28 @@ export const WebItems = ({
             </h4>
           </Link>
         ) : null}
-
-        {/* <MoreOptionDropDown
-          inventories={inventories}
-          isHidden={isHidden}
-          isShowing={isShowing}
-          setShowSideBar={setShowSideBar}
-          collapse={collapse}
-          setCollapse={setCollapse}
-        /> */}
+        {user?.movement ? (
+          <Link
+            className={`group relative p-2 flex items-center ${location.pathname === "/stocks/equipment-movement" ? "bg-neutral-50 text-neutral-800" : "hover:hover:bg-cyan-400"} transition duration-150 w-full rounded cursor-pointer`}
+            to="/stocks/equipment-movement"
+          >
+            <h3 className="flex justify-center items-center mx-2 my-1">
+              <i className="bx bx-transfer mt-1 ms-0.5"></i>
+            </h3>
+            <SideNavBarToolTip
+              isHidden={isHidden}
+              toolTipName={t("Equipment Movement")}
+            />
+            <h4
+              className={`absolute w-45 mt-1 start-12 font-bold ${isShowing ? "opacity-100" : "opacity-0"} ${isHidden ? "pointer-events-none" : ""} transition-all duration-250 ease-in-out`}
+            >
+              {t("Equipment Movement")}
+            </h4>
+          </Link>
+        ) : null}
 
         {isSuperAdmin ? (
           <>
-            {/* <Link
-              className={`group relative p-2 flex items-center ${location.pathname === "/inventory" ? "bg-neutral-50 text-neutral-800" : "hover:hover:bg-cyan-400"} transition duration-150 w-full rounded cursor-pointer`}
-              to="/inventory"
-            >
-              <h3 className="flex justify-center items-center mx-2 my-1">
-                <i className="bx bxs-archive mt-1 ms-0.5"></i>
-              </h3>
-              <SideNavBarToolTip
-                isHidden={isHidden}
-                toolTipName={"Inventory Management"}
-              />
-              <h4
-                className={`absolute w-65 mt-1 start-12 font-bold ${isShowing ? "opacity-100" : "opacity-0"} ${isHidden ? "pointer-events-none" : ""} transition-all duration-250 ease-in-out`}
-              >
-                Inventory Management
-              </h4>
-            </Link> */}
             <Link
               className={`group relative p-2 flex items-center ${location.pathname === "/users" ? "bg-neutral-50 text-neutral-800" : "hover:hover:bg-cyan-400"} transition duration-150 w-full rounded cursor-pointer`}
               to="/users"

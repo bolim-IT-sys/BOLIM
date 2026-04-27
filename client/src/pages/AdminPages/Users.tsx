@@ -195,6 +195,11 @@ export default function Users() {
                       <h5>MATERIAL CONTROL</h5>
                     </div>
                   </th>
+                  <th className="border border-neutral-300 text-center px-2 py-3">
+                    <div className="h-10 flex justify-center items-center flex-col">
+                      <h5>EQUIPMENT MOVEMENT</h5>
+                    </div>
+                  </th>
 
                   <th className="border border-neutral-300 text-center px-2 py-3">
                     <div className="h-10 flex justify-center items-center">
@@ -223,6 +228,11 @@ export default function Users() {
                       className={`${user.materials ? "text-green-700" : "text-neutral-500"} text-center border border-neutral-300 px-3 py-2`}
                     >
                       <h6>{user.materials ? "ADMIN" : "NOT ADMIN"}</h6>
+                    </td>
+                    <td
+                      className={`${user.movement ? "text-green-700" : "text-neutral-500"} text-center border border-neutral-300 px-3 py-2`}
+                    >
+                      <h6>{user.movement ? "ADMIN" : "NOT ADMIN"}</h6>
                     </td>
                     <td
                       className=" text-center border border-neutral-300 p-2"

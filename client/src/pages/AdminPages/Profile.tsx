@@ -23,6 +23,7 @@ export default function Profile() {
     pins: 0,
     it_stocks: 0,
     materials: 0,
+    movement: 0,
   });
   const [id, setId] = useState<number>();
   const [isLoading, setIsLoading] = useState(false);
@@ -70,6 +71,7 @@ export default function Profile() {
               pins: formData.pins,
               it_stocks: formData.it_stocks,
               materials: formData.materials,
+              movement: formData.movement,
             });
           },
           import.meta.env.VITE_TIME_OUT,

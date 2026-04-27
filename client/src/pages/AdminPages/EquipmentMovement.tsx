@@ -48,6 +48,14 @@ export default function EquipmentMovement() {
     };
     const [form, setForm] = useState<MovementFormData>(initialForm);
 
+    const formatDate = (date: string) => {
+        return new Date(date).toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+        });
+    };
+
     const handleExport = async () => {
         try {
             if (!fromDate || !toDate) {
@@ -329,7 +337,7 @@ export default function EquipmentMovement() {
                                         className="hover:bg-gray-50 transition-colors"
                                     >
                                         <td className="px-4 py-3 text-gray-700">{item.personnel}</td>
-                                        <td className="px-4 py-3 text-gray-700">{item.date}</td>
+                                        <td className="px-4 py-3 text-gray-700">{formatDate(item.date)}</td>
                                         <td className="px-4 py-3 text-gray-700">{item.description}</td>
                                         <td className="px-4 py-3 text-gray-700">{item.serial}</td>
                                         <td className="px-4 py-3 text-gray-700">{item.quantity}</td>

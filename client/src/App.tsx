@@ -17,6 +17,7 @@ import Others from "./pages/AdminPages/Others";
 import Users from "./pages/AdminPages/Users";
 import Inventory from "./pages/AdminPages/InventoryManagement";
 import Profile from "./pages/AdminPages/Profile";
+import EquipmentMovement from "./pages/AdminPages/EquipmentMovement";
 
 import "./styles/index.css";
 // import "boxicons/css/boxicons.min.css";
@@ -36,6 +37,7 @@ export default function App() {
             path="/stocks/material-control"
             element={<MaterialControl />}
           />
+          <Route path="/stocks/equipment-movement" element={<EquipmentMovement />} />
           <Route path="/stocks/:inventoryName" element={<Others />} />
 
           <Route path="/inventory" element={<Inventory />} />

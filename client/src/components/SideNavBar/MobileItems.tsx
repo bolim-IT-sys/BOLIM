@@ -86,6 +86,22 @@ export const MobileItems = ({
             </h4>
           </Link>
         ) : null}
+        {user?.movement ? (
+          <Link
+            className={`relative p-2 flex ${!isHidden ? "justify-start" : "justify-start"} items-center ${location.pathname === "/stocks/equipment-movement" ? "bg-neutral-50 text-neutral-800" : "hover:hover:bg-cyan-400"} transition duration-150 w-full rounded cursor-pointer`}
+            to="/stocks/equipment-movement"
+            onClick={() => setShowSideBar(false)}
+          >
+            <h3 className="flex justify-center items-center mx-2 my-1">
+              <i className="bx bx-transfer mt-1"></i>
+            </h3>
+            <h4
+              className={`absolute w-45 mt-1 start-12 font-bold ${isShowing ? "opacity-100" : "opacity-0"} ${isHidden ? "pointer-events-none" : ""} transition-all duration-250 ease-in-out`}
+            >
+              {t("Equipment Movement")}
+            </h4>
+          </Link>
+        ) : null}
 
         {isSuperAdmin ? (
           <>
