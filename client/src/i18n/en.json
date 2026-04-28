@@ -45,6 +45,7 @@
     "pins": "Pins",
     "it": "IT Stocks",
     "material": "Maintenance Records",
+    "movement": "Equipment Movement",
     "user": "User Management"
   },
   "viewParts": {

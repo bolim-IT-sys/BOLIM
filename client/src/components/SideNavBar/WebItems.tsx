@@ -104,12 +104,12 @@ export const WebItems = ({
             </h3>
             <SideNavBarToolTip
               isHidden={isHidden}
-              toolTipName={t("Equipment Movement")}
+              toolTipName={t("sNav.movement")}
             />
             <h4
               className={`absolute w-45 mt-1 start-12 font-bold ${isShowing ? "opacity-100" : "opacity-0"} ${isHidden ? "pointer-events-none" : ""} transition-all duration-250 ease-in-out`}
             >
-              {t("Equipment Movement")}
+              {t("sNav.movement")}
             </h4>
           </Link>
         ) : null}
