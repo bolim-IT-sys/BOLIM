@@ -9,6 +9,7 @@ import { ModuleRegistry, AllCommunityModule, type CellValueChangedEvent, type Co
 import debounce from "lodash.debounce";
 import TimeCellEditor from "./TimePicker";
 import { useTranslation } from "react-i18next";
+import Swal from "sweetalert2";
 
 
 ModuleRegistry.registerModules([AllCommunityModule]);
@@ -25,6 +26,9 @@ export default function MaterialControl() {
   const [rowData, setRowData] = useState<Row[]>([]);
   const [isFetching, setIsFetching] = useState<boolean>();
   const { t } = useTranslation();
+  const [filterType, setFilterType] = useState<"month" | "year">("month");
+  const [selectedMonth, setSelectedMonth] = useState("");
+  const [selectedYear, setSelectedYear] = useState("");
 
   const columnDefs: (ColDef<Row> | ColGroupDef<Row>)[] = [
     { headerName: t("mainRec.date"), field: "date", headerClass: "bg-[#FCE4D6]" },
@@ -232,14 +236,22 @@ export default function MaterialControl() {
     if (isEmpty) return;
 
     // auto-add new row
-    if (params.node.rowIndex === rowData.length - 1) {
-      setRowData((prev) => [...prev, createEmptyRow()]);
+    if (params.node.rowIndex === 0) {
+      // save row
+      debouncedSave(row);
+
+      // move row down and create new input row
+      setRowData((prev) => [
+        createEmptyRow(), // new input row
+        row,              // move edited row down
+        ...prev.slice(1), // keep rest
+      ]);
+    } else {
+      // normal update for existing rows
+      debouncedSave(row);
     }
 
     // console.log("CHANGED:", params.data);
-
-    // auto-save
-    debouncedSave(row);
   };
 
   useEffect(() => {
@@ -263,22 +275,51 @@ export default function MaterialControl() {
   };
 
   const handleExport = async () => {
+    if (filterType === "month" && !selectedMonth) {
+      Swal.fire({
+        icon: "error",
+        title: `Please select a month`,
+        timer: 3000,
+        showConfirmButton: false,
+      });
+      return;
+    }
+
+    if (filterType === "year" && !selectedYear) {
+      Swal.fire({
+        icon: "error",
+        title: `Please enter a year`,
+        timer: 3000,
+        showConfirmButton: false,
+      });
+      return;
+    }
+
     try {
       const res = await axios.post(
         "http://localhost:4000/api/maintenance/export-items-to-excel",
         {
-          data: rowData,
+          month: filterType === "month" ? selectedMonth : null,
+          year: filterType === "year" ? selectedYear : null,
         },
         {
           responseType: "blob",
         }
       );
 
+      let filename = "Maintenance_Records.xlsx";
+
+      if (filterType === "month") {
+        filename = `Maintenance Records_${selectedMonth}.xlsx`;
+      } else if (filterType === "year") {
+        filename = `Maintenance Records_${selectedYear}.xlsx`;
+      }
+
       const url = window.URL.createObjectURL(new Blob([res.data]));
 
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", "Maintenance Records.xlsx");
+      link.setAttribute("download", filename);
 
       document.body.appendChild(link);
       link.click();
@@ -304,13 +345,52 @@ export default function MaterialControl() {
 
   return (
     <div className="h-full flex flex-col gap-4">
-      <div className="w-full h-10 sm:w-4/10 flex gap-2">
+      <div className="w-full h-10 sm:w-4/10 flex gap-2 items-center">
+        <select
+          value={filterType}
+          onChange={(e) => {
+            const value = e.target.value as "month" | "year";
+            setFilterType(value);
+
+            if (value === "month") setSelectedYear("");
+            if (value === "year") setSelectedMonth("");
+          }}
+          className="border px-2 py-1 rounded"
+        >
+          <option value="month">By Month</option>
+          <option value="year">By Year</option>
+        </select>
+
+        {filterType === "month" && (
+          <input
+            type="month"
+            value={selectedMonth}
+            onChange={(e) => setSelectedMonth(e.target.value)}
+            className="border px-2 py-1 rounded"
+          />
+        )}
+
+        {filterType === "year" && (
+          <input
+            type="number"
+            placeholder="Year"
+            value={selectedYear}
+            onChange={(e) => setSelectedYear(e.target.value)}
+            className="border px-2 py-1 rounded w-24"
+          />
+        )}
+
         <button
           onClick={handleExport}
           className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded shadow"
         >
           Export to Excel
         </button>
+
+        <span className="text-sm text-gray-500">
+          {filterType === "month" && selectedMonth && `Exporting: ${selectedMonth}`}
+          {filterType === "year" && selectedYear && `Exporting: ${selectedYear}`}
+        </span>
       </div>
 
       <div
@@ -339,33 +419,8 @@ export default function MaterialControl() {
           <button
             onClick={() =>
               setRowData((prev) => [
+                createEmptyRow(), // 👈 always add at top
                 ...prev,
-                {
-                  date: "",
-                  formNumber: "",
-                  line: "",
-                  process: "",
-                  code: "",
-                  phenomenon: "",
-                  detail: "",
-                  material: "",
-                  qty: "",
-                  occurTime: "",
-                  finishTime: "",
-                  downTime: "",
-                  incharge: "",
-                  shift: "",
-                  type: "",
-                  labelSN: "",
-                  holderNumber: "",
-                  pin: "",
-                  pinSpec: "",
-                  pinHeight: "",
-                  pinDeformation: "",
-                  pinSpring: "",
-                  kyungshinLabel: "",
-                  remarks: "",
-                },
               ])
             }
             className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded shadow mt-2"

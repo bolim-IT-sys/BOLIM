@@ -8,7 +8,8 @@ const Maintenance = sequelize.define(
   {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
 
-    date: { type: DataTypes.DATE, allowNull: true },
+    date: { type: DataTypes.DATEONLY, allowNull: true },
+
     formNumber: { type: DataTypes.STRING(100), allowNull: true },
     line: { type: DataTypes.STRING(50), allowNull: true },
     process: { type: DataTypes.STRING(100), allowNull: true },
@@ -18,11 +19,21 @@ const Maintenance = sequelize.define(
     detail: { type: DataTypes.STRING(255), allowNull: true },
 
     material: { type: DataTypes.STRING(100), allowNull: true },
-    qty: { type: DataTypes.INTEGER, allowNull: true },
 
-    occurTime: { type: DataTypes.STRING(50), allowNull: true },
-    finishTime: { type: DataTypes.STRING(50), allowNull: true },
-    downTime: { type: DataTypes.INTEGER, allowNull: true },
+    qty: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      validate: { isInt: true },
+    },
+
+    occurTime: { type: DataTypes.TIME, allowNull: true },
+    finishTime: { type: DataTypes.TIME, allowNull: true },
+
+    downTime: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      validate: { isInt: true, min: 0 },
+    },
 
     incharge: { type: DataTypes.STRING(50), allowNull: true },
     shift: { type: DataTypes.STRING(50), allowNull: true },
