@@ -4,6 +4,9 @@ const Maintenance = require("../models/maintenance_records.model");
 const ExcelJS = require("exceljs");
 const { Op } = require("sequelize");
 
+//helper
+const toIntOrNull = (val) => (val !== "" && val != null ? parseInt(val) : null);
+
 // view
 router.get("/view", async (req, res) => {
   try {
@@ -19,7 +22,12 @@ router.get("/view", async (req, res) => {
 // create
 router.post("/", async (req, res) => {
   try {
-    const row = await Maintenance.create(req.body);
+    const data = { ...req.body };
+
+    data.qty = toIntOrNull(data.qty);
+    data.downTime = toIntOrNull(data.downTime);
+
+    const row = await Maintenance.create(data);
     res.json(row);
   } catch (error) {
     console.error("❌ FULL ERROR:", error);
@@ -37,8 +45,12 @@ router.post("/", async (req, res) => {
 router.put("/:id", async (req, res) => {
   try {
     const { id } = req.params;
+    const data = { ...req.body };
 
-    await Maintenance.update(req.body, {
+    data.qty = toIntOrNull(data.qty);
+    data.downTime = toIntOrNull(data.downTime);
+
+    await Maintenance.update(data, {
       where: { id },
     });
 

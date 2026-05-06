@@ -51,7 +51,11 @@ export default function MaterialControl() {
     { headerName: t("mainRec.phenomenon"), field: "phenomenon", headerClass: "bg-[#D9E1F2]", width: 250 },
     { headerName: t("mainRec.detail"), field: "detail", headerClass: "bg-[#D9E1F2]", width: 300 },
     { headerName: t("mainRec.material"), field: "material", headerClass: "bg-[#D9E1F2]", },
-    { headerName: t("mainRec.qty"), field: "qty", headerClass: "bg-[#D9E1F2]", },
+    {
+      headerName: t("mainRec.qty"), field: "qty", headerClass: "bg-[#D9E1F2]", cellEditor: "agNumberCellEditor",
+      cellEditorParams: { min: 0 },
+      valueParser: (params) => { const val = Number(params.newValue); return isNaN(val) ? null : val; }
+    },
     { headerName: t("mainRec.occurTime"), field: "occurTime", cellEditor: TimeCellEditor, valueFormatter: (params) => formatTo12Hour(params.value), headerClass: "bg-[#E2EFDA]", },
     { headerName: t("mainRec.finishTime"), field: "finishTime", cellEditor: TimeCellEditor, valueFormatter: (params) => formatTo12Hour(params.value), headerClass: "bg-[#E2EFDA]", },
     { headerName: t("mainRec.downTime"), field: "downTime", headerClass: "bg-[#E2EFDA]", },
@@ -96,10 +100,10 @@ export default function MaterialControl() {
     phenomenon: string
     detail: string
     material: string
-    qty: string
+    qty: number | null;
     occurTime: string
     finishTime: string
-    downTime: string
+    downTime: number | null;
     incharge: string
     shift: string
     type: string
@@ -178,10 +182,10 @@ export default function MaterialControl() {
     phenomenon: "",
     detail: "",
     material: "",
-    qty: "",
+    qty: null,
     occurTime: "",
     finishTime: "",
-    downTime: "",
+    downTime: null,
     incharge: "",
     shift: "",
     type: "",
@@ -207,7 +211,7 @@ export default function MaterialControl() {
 
     const diff = endMinutes - startMinutes;
 
-    return diff >= 0 ? diff.toString() : ""; // prevent negative
+    return diff >= 0 ? diff : null; // prevent negative
   };
 
   useEffect(() => {
