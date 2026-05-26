@@ -6,9 +6,7 @@ import {
 } from "react-router-dom";
 
 import Mainlayout from "./pages/Mainlayout";
-
 import LoginPage from "./pages/LoginPage";
-
 import Dashboard from "./pages/AdminPages/Dashboard";
 import Pins from "./pages/AdminPages/Pins";
 import ITStocks from "./pages/AdminPages/ITStocks";
@@ -18,6 +16,7 @@ import Users from "./pages/AdminPages/Users";
 import Inventory from "./pages/AdminPages/InventoryManagement";
 import Profile from "./pages/AdminPages/Profile";
 import EquipmentMovement from "./pages/AdminPages/EquipmentMovement";
+import PinInventory from "./pages/PinInventory"
 
 import "./styles/index.css";
 // import "boxicons/css/boxicons.min.css";
@@ -32,6 +31,7 @@ export default function App() {
           <Route path="/dashboard" element={<Dashboard />} />
 
           <Route path="/stocks/pins" element={<Pins />} />
+          <Route path="/stocks/pin-inventory" element={<PinInventory />} />
           <Route path="/stocks/it-stocks" element={<ITStocks />} />
           <Route
             path="/stocks/material-control"

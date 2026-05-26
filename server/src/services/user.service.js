@@ -50,7 +50,7 @@ const findUserByUsername = async (username) => {
 
 const createUser = async (userData) => {
   try {
-    const { username, password, pins, it_stocks, materials, movement } =
+    const { username, password, pins, it_stocks, materials, movement, pininv } =
       userData;
 
     // Hash password before storing
@@ -64,6 +64,7 @@ const createUser = async (userData) => {
       it_stocks: it_stocks,
       materials: materials,
       movement: movement,
+      pininv: pininv,
     });
 
     // Return user without password
@@ -90,6 +91,7 @@ const updateUser = async (userId, userData) => {
       it_stocks: userData.it_stocks,
       materials: userData.materials,
       movement: userData.movement,
+      pininv: userData.pininv,
     };
 
     if (userData.username) {

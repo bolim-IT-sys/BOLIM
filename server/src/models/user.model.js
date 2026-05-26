@@ -19,6 +19,7 @@ const User = sequelize.define("User", {
   it_stocks: { type: DataTypes.INTEGER, defaultValue: 0 },
   materials: { type: DataTypes.INTEGER, defaultValue: 0 },
   movement: { type: DataTypes.INTEGER, defaultValue: 0 },
+  pininv: { type: DataTypes.INTEGER, defaultValue: 0 },
 });
 
 module.exports = User;

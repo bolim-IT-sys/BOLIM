@@ -5,6 +5,7 @@ const sequelize = require("./database/index.js");
 const repairRoutes = require("./routes/repair_records.routes");
 const maintenanceRoutes = require("./routes/maintenance_records.routes");
 const movementRoutes = require("./routes/movement.routes.js");
+const spareRoutes = require("./routes/spare_parts.routes.js");
 const app = express();
 
 const dotenv = require("dotenv");
@@ -37,6 +38,7 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/api/repairs", repairRoutes);
 app.use("/api/maintenance", maintenanceRoutes);
 app.use("/api/movement", movementRoutes);
+app.use("/api/spare", spareRoutes);
 //console.log("Static path:", path.join(__dirname, "uploads"));
 
 const exportRoutes = require("./routes/export.routes.js");

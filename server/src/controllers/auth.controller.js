@@ -112,6 +112,7 @@ const authenticateToken = async (req, res) => {
         it_stocks: user.it_stocks,
         materials: user.materials,
         movement: user.movement,
+        pininv: user.pininv,
       },
     });
   } catch (error) {

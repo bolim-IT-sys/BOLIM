@@ -20,6 +20,8 @@ export const MobileItems = ({
 }: Props) => {
   const location = useLocation();
   const { t } = useTranslation()
+  //console.log(user.pininv);
+
 
   return (
     <>
@@ -51,6 +53,22 @@ export const MobileItems = ({
               className={`absolute w-45 mt-1 start-12 font-bold ${isShowing ? "opacity-100" : "opacity-0"} ${isHidden ? "pointer-events-none" : ""} transition-all duration-250 ease-in-out`}
             >
               {t("sNav.pins")}
+            </h4>
+          </Link>
+        ) : null}
+        {user?.pininv ? (
+          <Link
+            className={`relative p-2 flex ${!isHidden ? "justify-start" : "justify-start"} items-center ${location.pathname === "/stocks/pin-inventory" ? "bg-neutral-50 text-neutral-800" : "hover:bg-cyan-400"} transition duration-150 w-full rounded cursor-pointer`}
+            to="/stocks/pin-inventory"
+            onClick={() => setShowSideBar(false)}
+          >
+            <h3 className="flex justify-center items-center mx-2 my-1">
+              <i className="bx bx-pin mt-1"></i>
+            </h3>
+            <h4
+              className={`absolute w-45 mt-1 start-12 font-bold ${isShowing ? "opacity-100" : "opacity-0"} ${isHidden ? "pointer-events-none" : ""} transition-all duration-250 ease-in-out`}
+            >
+              {t("Pin Inventory")}
             </h4>
           </Link>
         ) : null}

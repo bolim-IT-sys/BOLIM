@@ -8,6 +8,7 @@ export interface User {
   it_stocks: number;
   movement: number;
   materials: number;
+  pininv: number;
 }
 
 export interface CreateUserType {
@@ -17,6 +18,7 @@ export interface CreateUserType {
   it_stocks: number;
   materials: number;
   movement: number;
+  pininv: number;
 }
 
 export interface UserResponse {

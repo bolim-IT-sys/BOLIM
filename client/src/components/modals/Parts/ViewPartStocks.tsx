@@ -328,12 +328,7 @@ export const ViewPartStocks = ({ item, setData, type }: Props) => {
                   </select>
                 </h4>
               </div>
-              <div className="flex gap-2">{/* Nilagay ko sa div yung history at wrench icon PENDING YUNG REPAIR HISTORY */}
-                <div className="size-8 rounded hover:bg-neutral-200 transition duration-300 ease-in-out cursor-pointer" >
-                  <h2 className="relative flex h-full w-full">
-                    <i className="absolute transform left-[47%] translate-x-[-50%] top-[52%] translate-y-[-50%] bx bx-wrench"></i>
-                  </h2>
-                </div>
+              <div className="flex gap-2">
                 <div
                   className="size-8 rounded hover:bg-neutral-200 transition duration-300 ease-in-out cursor-pointer"
                   onClick={() => {
