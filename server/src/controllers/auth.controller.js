@@ -113,6 +113,7 @@ const authenticateToken = async (req, res) => {
         materials: user.materials,
         movement: user.movement,
         pininv: user.pininv,
+        pininb: user.pininb,
       },
     });
   } catch (error) {

@@ -185,11 +185,19 @@ export default function Users() {
                       <h5>PINS</h5>
                     </div>
                   </th>
+
                   <th className="border border-neutral-300 text-center px-2 py-3">
                     <div className="h-10 flex justify-center items-center flex-col">
                       <h5>PIN INVENTORY</h5>
                     </div>
                   </th>
+
+                  <th className="border border-neutral-300 text-center px-2 py-3">
+                    <div className="h-10 flex justify-center items-center flex-col">
+                      <h5>PIN INBOUND</h5>
+                    </div>
+                  </th>
+
                   <th className="border border-neutral-300 text-center px-2 py-3">
                     <div className="h-10 flex justify-center items-center flex-col">
                       <h5>IT STOCKS</h5>
@@ -224,11 +232,19 @@ export default function Users() {
                     >
                       <h6>{user.pins ? "ADMIN" : "NOT ADMIN"}</h6>
                     </td>
+
                     <td
                       className={`${user.pininv ? "text-green-700" : "text-neutral-500"} text-center border border-neutral-300 px-3 py-2`}
                     >
                       <h6>{user.pininv ? "ADMIN" : "NOT ADMIN"}</h6>
                     </td>
+
+                    <td
+                      className={`${user.pininb ? "text-green-700" : "text-neutral-500"} text-center border border-neutral-300 px-3 py-2`}
+                    >
+                      <h6>{user.pininb ? "ADMIN" : "NOT ADMIN"}</h6>
+                    </td>
+
                     <td
                       className={`${user.it_stocks ? "text-green-700" : "text-neutral-500"} text-center border border-neutral-300 px-3 py-2`}
                     >

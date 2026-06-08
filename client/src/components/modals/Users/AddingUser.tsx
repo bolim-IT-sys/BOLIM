@@ -24,7 +24,8 @@ export const AddingUser = ({ fetchAllUsers }: AddingProps) => {
     it_stocks: 0,
     materials: 0,
     movement: 0,
-    pininv: 0
+    pininv: 0,
+    pininb: 0
   });
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const handleChange = (field: string, value: string) => {
@@ -57,7 +58,8 @@ export const AddingUser = ({ fetchAllUsers }: AddingProps) => {
                 it_stocks: 0,
                 materials: 0,
                 movement: 0,
-                pininv: 0
+                pininv: 0,
+                pininb: 0
               }));
             });
           },
@@ -201,6 +203,30 @@ export const AddingUser = ({ fetchAllUsers }: AddingProps) => {
                 setFormData((prev) => ({
                   ...prev,
                   pininv: Number(e.target.value),
+                }))
+              }
+            >
+              <option value={0}>NOT ADMIN</option>
+              <option value={1}>ADMIN</option>
+            </select>
+          </div>
+
+          <div className="mb-1">
+            <label
+              htmlFor="pininv_admin"
+              className="block font-medium text-gray-700"
+            >
+              <p>PINS INBOUND:</p>
+            </label>
+            <select
+              className="w-full sm:w-40 no-arrow rounded-lg border border-neutral-300 hover:bg-neutral-200 transition duration-350 cursor-pointer px-2 py-2 focus:bg-neutral-50  focus:ring-1 focus:ring-neutral-300 focus:outline-none"
+              id="pininv_admin"
+              name="pininv_admin"
+              value={formData.pininb}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  pininb: Number(e.target.value),
                 }))
               }
             >

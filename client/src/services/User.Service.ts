@@ -9,6 +9,7 @@ export interface User {
   movement: number;
   materials: number;
   pininv: number;
+  pininb: number;
 }
 
 export interface CreateUserType {
@@ -19,6 +20,7 @@ export interface CreateUserType {
   materials: number;
   movement: number;
   pininv: number;
+  pininb: number;
 }
 
 export interface UserResponse {

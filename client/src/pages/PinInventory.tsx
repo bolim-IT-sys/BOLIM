@@ -1,9 +1,9 @@
-import { useCallback, useEffect, useState, type Dispatch, type SetStateAction } from "react";
+import { useCallback, useEffect, useState, useMemo, type Dispatch, type SetStateAction } from "react";
 import { type Part } from "../services/Part.Service";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import type { User } from "../services/User.Service";
 import axios from "axios";
-//import { useTranslation } from "react-i18next";
+import { useTranslation } from "react-i18next";
 import Swal from "sweetalert2";
 
 interface ContextType {
@@ -26,6 +26,12 @@ type SpareData = {
     remarks: string;
     app_holder: string;
     category: string;
+
+    safety_stock: number;
+    securement_rate: number;
+    excess_shortage: number;
+    regular_order_qty: number;
+    avg_monthly_usage: number;
 };
 type Category = {
     id: number;
@@ -41,11 +47,16 @@ export default function InventoryDashboard() {
     const { user } = useOutletContext<ContextType>();
     const navigate = useNavigate();
     const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000/api";
+    const { t } = useTranslation();
     const [inventoryData, setInventoryData] = useState<SpareData[]>([]);
     const [category, setCategory] = useState<Category[]>([]);
-    const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
+    const [selectedCategory, setSelectedCategory] = useState<number | null>(1);
     const [openAddModal, setOpenAddModal] = useState(false);
-    const filteredInventory = selectedCategory === null ? inventoryData : inventoryData.filter(item => item.category_id === selectedCategory);
+    const filteredInventory = useMemo(() => {
+        return selectedCategory === null
+            ? inventoryData
+            : inventoryData.filter((item) => item.category_id === selectedCategory);
+    }, [inventoryData, selectedCategory]);
     const [formData, setFormData] = useState({
         category_id: "",
         part_number: "",
@@ -58,179 +69,77 @@ export default function InventoryDashboard() {
         app_holder: "",
         category: "",
     });
-    const [editingId, setEditingId] = useState<number | null>(null);
-    const [editFormData, setEditFormData] = useState<Partial<SpareData>>({});
     const [searchTerm, setSearchTerm] = useState("");
-    const searchedInventory = filteredInventory.filter((item) => {
+    const searchedInventory = useMemo(() => {
         const search = searchTerm.toLowerCase();
-        return (
-            item.part_number?.toLowerCase().includes(search) ||
-            item.product_name?.toLowerCase().includes(search) ||
-            item.specification?.toLowerCase().includes(search) ||
-            item.maker?.toLowerCase().includes(search) ||
-            item.app_holder?.toLowerCase().includes(search) ||
-            item.category?.toLowerCase().includes(search)
-        );
-    });
+        return filteredInventory.filter((item) => {
+            return (
+                item.part_number?.toLowerCase().includes(search) ||
+                item.product_name?.toLowerCase().includes(search) ||
+                item.specification?.toLowerCase().includes(search) ||
+                item.maker?.toLowerCase().includes(search) ||
+                item.app_holder?.toLowerCase().includes(search) ||
+                item.category?.toLowerCase().includes(search)
+            );
+        });
+    }, [filteredInventory, searchTerm]);
 
     const isProductCategory = selectedCategory === 1 || selectedCategory === 2;
     const columns: Column[] = isProductCategory
         ? [
             { key: "no", label: "No." },
-            { key: "part_number", label: "Part Number [품번]" },
-            { key: "product_name", label: "Product [품명]" },
-            { key: "specification", label: "spec 규격(설명)" },
-            { key: "maker", label: "Maker" },
-            { key: "stock", label: "Stock", align: "right" },
-            { key: "unit_price", label: "Unit Price", align: "right" },
+            { key: "part_number", label: t("pininv.prodnum") },
+            { key: "product_name", label: t("pininv.prodname") },
+            { key: "specification", label: t("pininv.specs") },
+            { key: "maker", label: t("pininv.maker") },
+            { key: "stock", label: t("pininv.stock"), align: "right" },
+            { key: "safety_stock", label: t("pininv.safesto"), align: "right" },
+            { key: "securement_rate", label: t("pininv.sr"), align: "right" },
+            { key: "excess_shortage", label: t("pininv.esq"), align: "right" },
+            { key: "regular_order_qty", label: t("pininv.roq"), align: "right" },
         ]
         : [
             { key: "no", label: "No." },
-            { key: "part_number", label: "Part Number [품번]" },
-            { key: "app_holder", label: "Applicable holder" },
-            { key: "specification", label: "spec 규격(설명)" },
-            { key: "category", label: "Category" },
-            { key: "stock", label: "Stock", align: "right" },
-            { key: "unit_price", label: "Unit Price", align: "right" },
+            { key: "part_number", label: t("pininv.prodnum") },
+            { key: "app_holder", label: t("pininv.appHol") },
+            { key: "specification", label: t("pininv.specs") },
+            { key: "category", label: t("pininv.category") },
+            { key: "stock", label: t("pininv.stock"), align: "right" },
         ];
-    const inputClass = "w-full rounded-lg border border-slate-300 outline-none focus:border-blue-500 px-3 py-1";
     const renderCell = (item: SpareData, column: Column, index: number) => {
-        const isEditing = editingId === item.id;
-
         if (column.key === "no") {
             return index + 1;
         }
 
-        if (column.key === "unit_price") {
-            return isEditing ? (
-                <input
-                    type="text"
-                    name="unit_price"
-                    value={editFormData.unit_price}
-                    onChange={handleEditChange}
-                    className={`${inputClass} text-right`}
-                />
-            ) : (
-                `₩${Number(item.unit_price || 0).toLocaleString()}`
-            );
+        if (column.key === "stock") {
+            return Number(item.stock || 0).toLocaleString();
         }
 
-        if (column.key === "stock") {
-            return isEditing ? (
-                <input
-                    type="text"
-                    name="stock"
-                    value={editFormData.stock || ""}
-                    onChange={handleEditChange}
-                    className={`${inputClass} text-right`}
-                />
-            ) : (
-                item.stock
+        // This shi is for the percentage eg. 0.6 -> 60%; 1.25 -> 125%;
+        if (column.key === "securement_rate") {
+            return `${(Number(item.securement_rate) * 100).toFixed(0)}%`;
+        }
+
+        if (column.key === "excess_shortage") {
+            const value = Number(item.excess_shortage || 0);
+
+            return (
+                <span
+                    className={
+                        value < 0
+                            ? "font-semibold text-red-600"
+                            : value > 0
+                                ? "font-semibold text-green-600"
+                                : "text-slate-600"
+                    }
+                >
+                    {value.toLocaleString()}
+                </span>
             );
         }
 
         const fieldKey = column.key as keyof SpareData;
-        return isEditing ? (
-            <input
-                type="text"
-                name={column.key}
-                value={editFormData[fieldKey] || ""}
-                onChange={handleEditChange}
-                className={inputClass}
-            />
-        ) : (
-            item[fieldKey]
-        );
-    };
-    {/*const categories = [
-        { id: 1, name: "Pin Inventory" },
-        { id: 2, name: "TAB Plates" },
-        { id: 3, name: "Inner Seal" },
-        { id: 4, name: "Machine Spare" },
-    ];
-    const inventoryData = [
-        {
-            partNumber: 'S105A-0.7',
-            product: 'PIN',
-            specs: '통전핀(이중단차핀)',
-            maker: '신안오토테크',
-            stock: 20,
-            avgUsage: 1,
-            coverage: '200%',
-            reorder: 10,
-            price: '1,600',
-            amount: '16,000',
-            status: 'Normal',
-        },
-        {
-            partNumber: 'S100A5-045-5.0',
-            product: 'PIN',
-            maker: 'SHINAN',
-            stock: 46,
-            avgUsage: 17,
-            coverage: '115%',
-            reorder: 6,
-            price: '1,400',
-            amount: '8,400',
-            status: 'Low Stock',
-        },
-        {
-            partNumber: 'S105A5-05-2.0',
-            product: 'PIN',
-            maker: 'SHINAN',
-            stock: 18,
-            avgUsage: 6,
-            coverage: '90%',
-            reorder: 2,
-            price: '2,000',
-            amount: '4,000',
-            status: 'Critical',
-        },
-    ];
-
-    const tabs = [
-        'Pin Inventory',
-        'TAB Plates',
-        'Inner Seal',
-        'Machine Spare',
-    ];*/}
-
-    const handleEdit = (item: SpareData) => {
-
-        setEditingId(item.id);
-
-        setEditFormData(item);
-    };
-
-    const handleEditChange = (
-        e: React.ChangeEvent<HTMLInputElement>
-    ) => {
-
-        setEditFormData({
-            ...editFormData,
-            [e.target.name]: e.target.value,
-        });
-    };
-
-    const handleSaveEdit = async (
-        id: number
-    ) => {
-
-        try {
-
-            await axios.put(
-                `${API_URL}/spare/update/${id}`,
-                editFormData
-            );
-
-            fetchMovements();
-
-            setEditingId(null);
-
-        } catch (error) {
-
-            console.error(error);
-        }
+        return item[fieldKey];
     };
 
     const handleChange = (
@@ -289,15 +198,6 @@ export default function InventoryDashboard() {
         }
     };
 
-    const totalInventoryValue = inventoryData.reduce(
-        (total, item) =>
-            total +
-            (Number(item.stock || 0) *
-                Number(item.unit_price || 0)),
-        0
-    );
-    const totalParts = inventoryData.length;
-
     const fetchMovements = useCallback(async () => {
         try {
             const res = await axios.get(`${API_URL}/spare/view`);
@@ -328,12 +228,8 @@ export default function InventoryDashboard() {
                 <div className="flex flex-col gap-4 rounded-3xl bg-white p-6 shadow-sm lg:flex-row lg:items-center lg:justify-between">
                     <div>
                         <h1 className="text-3xl font-bold text-slate-800">
-                            Spare Parts Inventory
+                            {t("pininv.spi")}
                         </h1>
-                        <p className="mt-1 text-sm text-slate-500">
-                            {/*Inbound, usage monitoring, reorder planning, and stock management.*/}
-                            Price and stock management.
-                        </p>
                     </div>
 
                     <div className="flex flex-wrap gap-3">
@@ -341,7 +237,7 @@ export default function InventoryDashboard() {
                             onClick={() => setOpenAddModal(true)}
                             className="rounded-2xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white shadow hover:bg-blue-700"
                         >
-                            + Add Part
+                            + {t("pininv.addPart")}
                         </button>
 
                         {/*<button className="rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-100">
@@ -350,45 +246,9 @@ export default function InventoryDashboard() {
                     </div>
                 </div>
 
-                {/* Stats */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 2xl:grid-cols-2 gap-5">{/* change this back to 2xl:grid-cols-4 */}
-                    <div className="rounded-3xl bg-white p-6 shadow-sm text-center">{/* remove the text-center if needed */}
-                        <p className="text-sm font-medium text-slate-500">Total Parts</p>
-                        <h2 className="mt-3 text-4xl font-bold text-slate-800">{totalParts}</h2>
-                        {/*<p className="mt-2 text-sm text-emerald-600">+12 this month</p>*/}
-                    </div>
-
-                    {/*<div className="rounded-3xl bg-white p-6 shadow-sm">
-                        <p className="text-sm font-medium text-slate-500">Low Stock</p>
-                        <h2 className="mt-3 text-4xl font-bold text-amber-500">24</h2>
-                        <p className="mt-2 text-sm text-slate-500">Requires monitoring</p>
-                    </div>
-
-                    <div className="rounded-3xl bg-white p-6 shadow-sm">
-                        <p className="text-sm font-medium text-slate-500">Critical Stock</p>
-                        <h2 className="mt-3 text-4xl font-bold text-red-500">8</h2>
-                        <p className="mt-2 text-sm text-slate-500">Immediate reorder needed</p>
-                    </div>*/}
-
-                    <div className="rounded-3xl bg-white p-6 shadow-sm text-center">{/* remove the text-center if needed */}
-                        <p className="text-sm font-medium text-slate-500">Inventory Value</p>
-                        <h2 className="mt-3 text-4xl font-bold text-slate-800">₩{totalInventoryValue.toLocaleString()}</h2>
-                        <p className="mt-2 text-sm text-slate-500">Current stock value</p>
-                    </div>
-                </div>
-
                 {/* Tabs */}
                 <div className="w-full overflow-x-auto rounded-3xl bg-white p-3 shadow-sm">
                     <div className="flex min-w-max gap-3">
-                        <button
-                            onClick={() => setSelectedCategory(null)}
-                            className={`rounded-2xl px-5 py-3 text-sm font-semibold transition ${selectedCategory === null
-                                ? "bg-blue-600 text-white shadow"
-                                : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-                                }`}
-                        >
-                            All
-                        </button>
                         {category.map((category) => (
                             <button
                                 key={category.id}
@@ -438,25 +298,16 @@ export default function InventoryDashboard() {
                                             {column.label}
                                         </th>
                                     ))}
-
-                                    <th className="px-4 py-4 text-center font-semibold">
-                                        Actions
-                                    </th>
                                 </tr>
                             </thead>
 
                             <tbody>
                                 {searchedInventory?.length > 0 ? (
                                     searchedInventory.map((item, index) => {
-                                        const isEditing = editingId === item.id;
-
                                         return (
                                             <tr
                                                 key={item.id}
-                                                className={`border-b border-slate-100 ${isEditing
-                                                    ? "bg-blue-50"
-                                                    : "hover:bg-slate-50"
-                                                    }`}
+                                                className="border-b border-slate-100 hover:bg-slate-50"
                                             >
                                                 {columns.map((column) => (
                                                     <td
@@ -469,43 +320,6 @@ export default function InventoryDashboard() {
                                                         {renderCell(item, column, index)}
                                                     </td>
                                                 ))}
-
-                                                <td className="whitespace-nowrap px-4 py-4 text-center">
-                                                    {isEditing ? (
-                                                        <div className="flex items-center justify-center gap-2">
-                                                            <button
-                                                                onClick={() =>
-                                                                    handleSaveEdit(item.id)
-                                                                }
-                                                                className="rounded-xl bg-emerald-100 px-3 py-2 text-xs font-semibold text-emerald-700 hover:bg-emerald-200"
-                                                            >
-                                                                Save
-                                                            </button>
-
-                                                            <button
-                                                                onClick={() =>
-                                                                    setEditingId(null)
-                                                                }
-                                                                className="rounded-xl bg-slate-100 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-200"
-                                                            >
-                                                                Cancel
-                                                            </button>
-                                                        </div>
-                                                    ) : (
-                                                        <div className="flex items-center justify-center gap-2">
-                                                            {/*<button className="rounded-xl bg-blue-100 px-3 py-2 text-xs font-semibold text-blue-700 hover:bg-blue-200">
-                                                                View
-                                                            </button>*/}
-
-                                                            <button
-                                                                onClick={() => handleEdit(item)}
-                                                                className="rounded-xl bg-slate-100 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-200"
-                                                            >
-                                                                Edit
-                                                            </button>
-                                                        </div>
-                                                    )}
-                                                </td>
                                             </tr>
                                         );
                                     })
@@ -523,9 +337,6 @@ export default function InventoryDashboard() {
                         </table>
                     </div>
                 </div>
-
-                {/* Bottom Section */}
-
             </div>
             {openAddModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
@@ -536,7 +347,7 @@ export default function InventoryDashboard() {
 
                         <div className="mb-6 flex items-center justify-between">
                             <h2 className="text-2xl font-bold text-slate-800">
-                                Add Spare Part
+                                {t("pininv.asp")}
                             </h2>
 
                             <button
@@ -545,7 +356,7 @@ export default function InventoryDashboard() {
                                 }
                                 className="rounded-xl bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-200"
                             >
-                                Close
+                                {t("pininv.close")}
                             </button>
                         </div>
 
@@ -574,7 +385,7 @@ export default function InventoryDashboard() {
 
                                 <div>
                                     <label className="mb-2 block text-sm font-semibold text-slate-700">
-                                        Part Number
+                                        {t("pininv.prodnum")}
                                     </label>
 
                                     <input
@@ -589,7 +400,7 @@ export default function InventoryDashboard() {
 
                                 <div>
                                     <label className="mb-2 block text-sm font-semibold text-slate-700">
-                                        Product Name
+                                        {t("pininv.prodname")}
                                     </label>
 
                                     <input
@@ -604,7 +415,7 @@ export default function InventoryDashboard() {
 
                                 <div>
                                     <label className="mb-2 block text-sm font-semibold text-slate-700">
-                                        Maker
+                                        {t("pininv.maker")}
                                     </label>
 
                                     <input
@@ -618,7 +429,7 @@ export default function InventoryDashboard() {
 
                                 <div>
                                     <label className="mb-2 block text-sm font-semibold text-slate-700">
-                                        Application Holder
+                                        {t("pininv.appHol")}
                                     </label>
 
                                     <input
@@ -632,7 +443,7 @@ export default function InventoryDashboard() {
 
                                 <div>
                                     <label className="mb-2 block text-sm font-semibold text-slate-700">
-                                        Category
+                                        {t("pininv.category")}
                                     </label>
 
                                     <input
@@ -646,7 +457,7 @@ export default function InventoryDashboard() {
 
                                 <div>
                                     <label className="mb-2 block text-sm font-semibold text-slate-700">
-                                        Unit Price
+                                        {t("pininv.unitprice")}
                                     </label>
 
                                     <input
@@ -660,7 +471,7 @@ export default function InventoryDashboard() {
 
                                 <div>
                                     <label className="mb-2 block text-sm font-semibold text-slate-700">
-                                        Category Tab
+                                        {t("pininv.tab")}
                                     </label>
 
                                     <select
@@ -670,7 +481,7 @@ export default function InventoryDashboard() {
                                         className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-blue-500"
                                     >
                                         <option value="">
-                                            Select Category
+                                            {t("pininv.select")}
                                         </option>
 
                                         {category.map(category => (
@@ -687,7 +498,7 @@ export default function InventoryDashboard() {
 
                             <div>
                                 <label className="mb-2 block text-sm font-semibold text-slate-700">
-                                    Specification
+                                    {t("pininv.specs")}
                                 </label>
 
                                 <input
@@ -699,22 +510,7 @@ export default function InventoryDashboard() {
                                 />
                             </div>
 
-                            <div>
-                                <label className="mb-2 block text-sm font-semibold text-slate-700">
-                                    Remarks
-                                </label>
-
-                                <textarea
-                                    name="remarks"
-                                    value={formData.remarks}
-                                    onChange={handleChange}
-                                    rows={3}
-                                    className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-blue-500"
-                                />
-                            </div>
-
                             <div className="flex justify-end gap-3 pt-4">
-
                                 <button
                                     type="button"
                                     onClick={() =>
@@ -722,14 +518,14 @@ export default function InventoryDashboard() {
                                     }
                                     className="rounded-2xl border border-slate-200 px-5 py-3 font-semibold text-slate-700 hover:bg-slate-100"
                                 >
-                                    Cancel
+                                    {t("pininv.cancel")}
                                 </button>
 
                                 <button
                                     type="submit"
                                     className="rounded-2xl bg-blue-600 px-6 py-3 font-semibold text-white hover:bg-blue-700"
                                 >
-                                    Save Part
+                                    {t("pininv.savepart")}
                                 </button>
                             </div>
                         </form>

@@ -69,15 +69,36 @@ export const WebItems = ({
             </h3>
             <SideNavBarToolTip
               isHidden={isHidden}
-              toolTipName={t("Pin Inventory")}
+              toolTipName={t("pininv.pinin")}
             />
             <h4
               className={`absolute w-45 mt-1 start-12 font-bold ${isShowing ? "opacity-100" : "opacity-0"} ${isHidden ? "pointer-events-none" : ""} transition-all duration-250 ease-in-out`}
             >
-              {t("Pin Inventory")}
+              {t("pininv.pinin")}
             </h4>
           </Link>
         ) : null}
+
+        {user?.pininb ? (
+          <Link
+            className={`group relative p-2 flex items-center ${location.pathname === "/stocks/pin-inboundusage" ? "bg-neutral-50 text-neutral-800" : "hover:hover:bg-cyan-400"} transition duration-150 w-full rounded cursor-pointer`}
+            to="/stocks/pin-inboundusage"
+          >
+            <h3 className="flex justify-center items-center mx-2 my-1">
+              <i className="bx bx-archive mt-1 ms-0.5"></i>
+            </h3>
+            <SideNavBarToolTip
+              isHidden={isHidden}
+              toolTipName={t("pininv.pinsinbound")}
+            />
+            <h4
+              className={`absolute w-45 mt-1 start-12 font-bold ${isShowing ? "opacity-100" : "opacity-0"} ${isHidden ? "pointer-events-none" : ""} transition-all duration-250 ease-in-out`}
+            >
+              {t("pininv.pinsinbound")}
+            </h4>
+          </Link>
+        ) : null}
+
         {user?.it_stocks ? (
           <Link
             className={`group relative p-2 flex items-center ${location.pathname === "/stocks/it-stocks" ? "bg-neutral-50 text-neutral-800" : "hover:hover:bg-cyan-400"} transition duration-150 w-full rounded cursor-pointer`}

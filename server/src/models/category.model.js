@@ -1,7 +1,7 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../database");
 
-console.log("✅ category model loaded");
+//console.log("✅ category model loaded");
 
 const Category = sequelize.define(
   "Category",

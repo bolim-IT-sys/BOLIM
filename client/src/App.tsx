@@ -17,6 +17,7 @@ import Inventory from "./pages/AdminPages/InventoryManagement";
 import Profile from "./pages/AdminPages/Profile";
 import EquipmentMovement from "./pages/AdminPages/EquipmentMovement";
 import PinInventory from "./pages/PinInventory"
+import PinInbound from "./pages/AdminPages/PinInbound"
 
 import "./styles/index.css";
 // import "boxicons/css/boxicons.min.css";
@@ -32,6 +33,7 @@ export default function App() {
 
           <Route path="/stocks/pins" element={<Pins />} />
           <Route path="/stocks/pin-inventory" element={<PinInventory />} />
+          <Route path="/stocks/pin-inboundusage" element={<PinInbound />} />
           <Route path="/stocks/it-stocks" element={<ITStocks />} />
           <Route
             path="/stocks/material-control"
